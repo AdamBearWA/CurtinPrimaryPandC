@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CPC_VERSION', '2.6.6' );
+define( 'CPC_VERSION', '2.6.7' );
 
 /* -----------------------------------------------------------------
  * 1. Theme supports
@@ -63,21 +63,21 @@ add_action( 'wp_enqueue_scripts', function () {
 		null
 	);
 
-	// NOTE: the CSS/JS filenames carry the version (curtin-263.*) because the
+	// NOTE: the CSS/JS filenames carry the version (curtin-264.*) because the
 	// SWAG/nginx proxy caches these static assets by PATH and ignores the ?ver
 	// query string — a plain version bump does NOT bust it (see
 	// Theme-Deployment-Notes.md §8). Renaming the file on every CSS/JS change is
 	// the reliable cache-bust. Bump both the filename and CPC_VERSION together.
 	wp_enqueue_style(
 		'cpc-main',
-		get_stylesheet_directory_uri() . '/assets/css/curtin-263.css',
+		get_stylesheet_directory_uri() . '/assets/css/curtin-264.css',
 		array( 'cpc-fonts' ),
 		CPC_VERSION
 	);
 
 	wp_enqueue_script(
 		'cpc-ui',
-		get_stylesheet_directory_uri() . '/assets/js/curtin-263.js',
+		get_stylesheet_directory_uri() . '/assets/js/curtin-264.js',
 		array(),
 		CPC_VERSION,
 		true
@@ -371,7 +371,7 @@ function cpc_category_tiles_shortcode() {
 		array(
 			'title' => __( 'Art Cards', 'curtin-pc-shop' ),
 			'sub'   => __( 'Greeting-card sets from our community artwork', 'curtin-pc-shop' ),
-			'url'   => home_url( '/cards/' ),
+			'url'   => home_url( '/art-cards/' ),
 			'cat'   => 'art-cards',
 		),
 	);
