@@ -42,12 +42,10 @@ if ( $olive_product ) {
 		<p class="cpc-hero-lede"><?php esc_html_e( 'Curtin Primary volunteers harvested local Karawara olives to be professionally cold pressed into premium extra virgin olive oil. The result is a fresh, flavourful oil you\'ll love using every day.', 'curtin-pc-shop' ); ?></p>
 		<div class="cpc-price-row">
 			<div class="cpc-price"><?php echo esc_html( $hero_price ); ?></div>
-			<div class="cpc-price-meta"><?php esc_html_e( 'Limited seasonal release', 'curtin-pc-shop' ); ?><br><?php esc_html_e( 'Shop now while stocks last', 'curtin-pc-shop' ); ?></div>
 		</div>
 		<div class="cpc-cta-row">
 			<a class="cpc-btn cpc-cta" href="<?php echo esc_url( $hero_url ); ?>"><?php esc_html_e( 'Shop Curtin Gold', 'curtin-pc-shop' ); ?></a>
 		</div>
-		<div class="cpc-fund"><?php echo cpc_tick( 15, '#1f6b41' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php esc_html_e( '100% of profits support our P&C', 'curtin-pc-shop' ); ?></div>
 	</div>
 	<div class="cpc-hero-art">
 		<?php if ( $hero_has_image ) : ?>
@@ -102,13 +100,10 @@ if ( ! $card_img && function_exists( 'wc_placeholder_img_src' ) ) {
 		<p class="cpc-hero-lede"><?php esc_html_e( 'One big community artwork, turned into a set of four greeting cards. Blank inside, ready to send — and every set funds our classrooms.', 'curtin-pc-shop' ); ?></p>
 		<div class="cpc-price-row">
 			<div class="cpc-price"><?php echo esc_html( $card_price ); ?></div>
-			<div class="cpc-price-meta"><?php esc_html_e( 'Set of four · 120 × 120 mm', 'curtin-pc-shop' ); ?><br><?php esc_html_e( 'white envelopes · blank inside', 'curtin-pc-shop' ); ?></div>
 		</div>
 		<div class="cpc-cta-row">
 			<a class="cpc-btn cpc-cta" href="<?php echo esc_url( home_url( '/cards/' ) ); ?>"><?php esc_html_e( 'Shop the cards', 'curtin-pc-shop' ); ?></a>
-			<a class="cpc-lnk cpc-cta-text" href="#cpc-story"><?php esc_html_e( 'Read the story', 'curtin-pc-shop' ); ?></a>
 		</div>
-		<div class="cpc-fund"><?php echo cpc_tick( 15, '#1f6b41' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php esc_html_e( '100% of profits fund our school', 'curtin-pc-shop' ); ?></div>
 	</div>
 	<div class="cpc-hero-art">
 		<?php if ( $card_img ) : ?>
@@ -137,10 +132,14 @@ if ( ! $card_img && function_exists( 'wc_placeholder_img_src' ) ) {
 </section>
 
 <!-- THE COLLECTION -->
+<?php
+/* Heading comes from the card product category name, not hard-coded copy. */
+$cards_term    = get_term_by( 'slug', 'art-cards', 'product_cat' );
+$cards_heading = ( $cards_term && ! is_wp_error( $cards_term ) ) ? $cards_term->name : __( 'Art Cards', 'curtin-pc-shop' );
+?>
 <section id="cpc-cards" class="cpc-collection cpc-container">
 	<div class="cpc-collection-head">
-		<h2><?php esc_html_e( 'The collection', 'curtin-pc-shop' ); ?></h2>
-		<div class="cpc-collection-note"><?php esc_html_e( 'Every set · four cards · $10', 'curtin-pc-shop' ); ?></div>
+		<h2><?php echo esc_html( $cards_heading ); ?></h2>
 	</div>
 	<div class="cpc-grid3">
 		<?php
@@ -164,6 +163,7 @@ if ( ! $card_img && function_exists( 'wc_placeholder_img_src' ) ) {
 		if ( ! empty( $products ) ) :
 			foreach ( $products as $p ) :
 				$img = $p->get_image_id() ? wp_get_attachment_image_url( $p->get_image_id(), 'large' ) : wc_placeholder_img_src( 'large' );
+				$meta = wp_strip_all_tags( $p->get_short_description() );
 				?>
 				<div class="cpc-card cpc-lift">
 					<a class="cpc-card-imglink" href="<?php echo esc_url( get_permalink( $p->get_id() ) ); ?>">
@@ -171,7 +171,7 @@ if ( ! $card_img && function_exists( 'wc_placeholder_img_src' ) ) {
 					</a>
 					<div class="cpc-card-body">
 						<a class="cpc-card-titlelink" href="<?php echo esc_url( get_permalink( $p->get_id() ) ); ?>"><span class="cpc-card-title"><?php echo esc_html( $p->get_name() ); ?></span></a>
-						<div class="cpc-card-meta"><?php esc_html_e( 'Set of four · blank inside', 'curtin-pc-shop' ); ?></div>
+						<?php if ( '' !== $meta ) : ?><div class="cpc-card-meta"><?php echo esc_html( $meta ); ?></div><?php endif; ?>
 						<div class="cpc-card-foot">
 							<div class="cpc-card-price"><?php echo wp_kses_post( $p->get_price_html() ); ?></div>
 							<?php if ( $p->is_purchasable() && $p->is_in_stock() ) : ?>

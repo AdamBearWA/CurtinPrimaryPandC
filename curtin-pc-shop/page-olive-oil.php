@@ -51,7 +51,7 @@ if ( $olive_product ) {
 
 <!-- SHOP CURTIN GOLD (product grid) -->
 <div id="cpc-shop"></div>
-<?php echo do_shortcode( '[cpc_products category="olive-oil" heading="Shop Curtin Gold" note="250mL · limited seasonal release"]' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+<?php echo do_shortcode( '[cpc_products category="olive-oil" heading="Shop Curtin Gold"]' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 
 <!-- SECTION 2: OUR STORY (story band — matches the cards page component) -->
 <section class="cpc-story cpc-container">
