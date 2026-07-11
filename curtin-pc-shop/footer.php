@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<div>
 					<div class="cpc-footer-coltitle"><?php esc_html_e( 'Shop', 'curtin-pc-shop' ); ?></div>
 					<div class="cpc-footer-links">
-						<a class="cpc-lnk" href="<?php echo esc_url( cpc_shop_url() ); ?>"><?php esc_html_e( 'Art Cards', 'curtin-pc-shop' ); ?></a>
+						<a class="cpc-lnk" href="<?php echo esc_url( cpc_shop_url() ); ?>"><?php esc_html_e( 'Art cards', 'curtin-pc-shop' ); ?></a>
 						<a class="cpc-lnk" href="<?php echo esc_url( cpc_olive_url() ); ?>"><?php esc_html_e( 'Olive oil', 'curtin-pc-shop' ); ?></a>
 					</div>
 				</div>

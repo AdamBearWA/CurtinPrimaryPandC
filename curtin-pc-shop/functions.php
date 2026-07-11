@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CPC_VERSION', '2.6.7' );
+define( 'CPC_VERSION', '2.6.8' );
 
 /* -----------------------------------------------------------------
  * 1. Theme supports
@@ -369,7 +369,7 @@ function cpc_category_tiles_shortcode() {
 			'cat'   => 'olive-oil',
 		),
 		array(
-			'title' => __( 'Art Cards', 'curtin-pc-shop' ),
+			'title' => __( 'Art cards', 'curtin-pc-shop' ),
 			'sub'   => __( 'Greeting-card sets from our community artwork', 'curtin-pc-shop' ),
 			'url'   => home_url( '/art-cards/' ),
 			'cat'   => 'art-cards',

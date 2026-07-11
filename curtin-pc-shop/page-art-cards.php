@@ -1,6 +1,6 @@
 <?php
 /**
- * Art Cards category page (slug "art-cards") — Butterfly Garden hero, story band,
+ * Art cards category page (slug "art-cards") — Butterfly Garden hero, story band,
  * and the greeting-card product grid. Mirrors the olive-oil page style.
  *
  * @package curtin-pc-shop
@@ -69,7 +69,7 @@ if ( ! $card_img && function_exists( 'wc_placeholder_img_src' ) ) {
 
 <!-- THE COLLECTION (product grid) -->
 <div id="cpc-cards"></div>
-<?php echo do_shortcode( '[cpc_products category="art-cards" heading="Art Cards"]' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+<?php echo do_shortcode( '[cpc_products category="art-cards" heading="Art cards"]' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 
 <!-- THE STORY BEHIND THE CARDS (navy story band — reuses the olive-oil "Our Story" component) -->
 <section class="cpc-story cpc-container" style="margin-bottom:64px">
