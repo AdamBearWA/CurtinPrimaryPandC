@@ -36,7 +36,6 @@ if ( $olive_product ) {
 <!-- SECTION 1: HERO -->
 <section class="cpc-olive-hero cpc-container">
 	<div class="cpc-olive-hero-copy">
-		<div class="cpc-olive-pill"><?php esc_html_e( 'Curtin Gold', 'curtin-pc-shop' ); ?></div>
 		<h1><?php esc_html_e( 'A harvest shared by our community.', 'curtin-pc-shop' ); ?></h1>
 		<p class="cpc-olive-lede"><?php esc_html_e( 'Last autumn, something special happened in Karawara. Local residents invited us to harvest the olives from the trees outside their homes. Families from the Curtin Primary community then come together to turn them into our limited seasonal release of extra virgin olive oil.', 'curtin-pc-shop' ); ?></p>
 		<div class="cpc-cta-row">

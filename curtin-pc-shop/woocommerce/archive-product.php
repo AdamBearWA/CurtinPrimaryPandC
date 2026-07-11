@@ -20,7 +20,6 @@ get_header();
 	</div>
 	<div class="cpc-collection-head">
 		<h2><?php esc_html_e( 'Art cards', 'curtin-pc-shop' ); ?></h2>
-		<div class="cpc-collection-note"><?php esc_html_e( 'Every set &middot; four cards &middot; $10', 'curtin-pc-shop' ); ?></div>
 	</div>
 
 	<?php if ( have_posts() ) : ?>
