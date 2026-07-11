@@ -135,7 +135,7 @@ if ( ! $card_img && function_exists( 'wc_placeholder_img_src' ) ) {
 <?php
 /* Heading comes from the card product category name, not hard-coded copy. */
 $cards_term    = get_term_by( 'slug', 'art-cards', 'product_cat' );
-$cards_heading = ( $cards_term && ! is_wp_error( $cards_term ) ) ? $cards_term->name : __( 'Art Cards', 'curtin-pc-shop' );
+$cards_heading = ( $cards_term && ! is_wp_error( $cards_term ) ) ? $cards_term->name : __( 'Art cards', 'curtin-pc-shop' );
 ?>
 <section id="cpc-cards" class="cpc-collection cpc-container">
 	<div class="cpc-collection-head">

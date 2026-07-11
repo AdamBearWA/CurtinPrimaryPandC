@@ -19,7 +19,7 @@ get_header();
 		<p class="cpc-hero-lede"><?php esc_html_e( 'Floral cards created by our whole school community — perfect for birthdays, thank-yous and celebrations, with every set supporting Curtin Primary.', 'curtin-pc-shop' ); ?></p>
 	</div>
 	<div class="cpc-collection-head">
-		<h2><?php esc_html_e( 'Art Cards', 'curtin-pc-shop' ); ?></h2>
+		<h2><?php esc_html_e( 'Art cards', 'curtin-pc-shop' ); ?></h2>
 		<div class="cpc-collection-note"><?php esc_html_e( 'Every set &middot; four cards &middot; $10', 'curtin-pc-shop' ); ?></div>
 	</div>
 

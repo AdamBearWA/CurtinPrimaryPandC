@@ -67,7 +67,7 @@ $is_olive = is_page( 'olive-oil' );
 					<a class="cpc-lnk<?php echo $is_home ? ' cpc-active' : ''; ?>" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'Home', 'curtin-pc-shop' ); ?></a>
 					<a class="cpc-lnk<?php echo $is_shop ? ' cpc-active' : ''; ?>" href="<?php echo esc_url( home_url( '/shop/' ) ); ?>"><?php esc_html_e( 'Shop', 'curtin-pc-shop' ); ?></a>
 					<a class="cpc-lnk<?php echo $is_olive ? ' cpc-active' : ''; ?>" href="<?php echo esc_url( cpc_olive_url() ); ?>"><?php esc_html_e( 'Olive oil', 'curtin-pc-shop' ); ?></a>
-					<a class="cpc-lnk" href="<?php echo esc_url( home_url( '/art-cards/' ) ); ?>"><?php esc_html_e( 'Art Cards', 'curtin-pc-shop' ); ?></a>
+					<a class="cpc-lnk" href="<?php echo esc_url( home_url( '/art-cards/' ) ); ?>"><?php esc_html_e( 'Art cards', 'curtin-pc-shop' ); ?></a>
 					<?php
 				}
 				?>
