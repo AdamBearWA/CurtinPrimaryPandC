@@ -625,3 +625,14 @@ body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(-
 .cpc-cardstory details[open] summary::after{content:'\2212'}
 .cpc-cardstory p{margin:14px 0 0;font:400 15.5px/1.7 var(--font-body);color:var(--c-body);max-width:680px}
 @media (max-width:860px){.cpc-cardstory{padding:4px 22px 44px}}
+
+/* #4 — pickup orders only need name + email. Hide the billing ADDRESS fields
+   (kept: first/last name + phone) when the customer prefers collection
+   (body.cpc-pickup, toggled by JS, which also auto-sets the address to the
+   pickup location so card payment still validates). :has() degrades safely. */
+.cpc-pickup .wc-block-components-address-form > .wc-block-components-address-form__country,
+.cpc-pickup .wc-block-components-address-form > :has(#billing-address_1),
+.cpc-pickup .wc-block-components-address-form > :has(#billing-city),
+.cpc-pickup .wc-block-components-address-form > :has(#billing-state),
+.cpc-pickup .wc-block-components-address-form > :has(#billing-postcode),
+.cpc-pickup .wc-block-components-address-form__address_2-toggle{display:none!important}
