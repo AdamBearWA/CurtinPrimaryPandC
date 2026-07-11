@@ -31,7 +31,7 @@ if ( ! $card_img && function_exists( 'wc_placeholder_img_src' ) ) {
 <!-- HERO -->
 <section class="cpc-hero cpc-container">
 	<div class="cpc-hero-copy">
-		<div class="cpc-eyebrow"><?php esc_html_e( 'The Butterfly Garden · painted 2023', 'curtin-pc-shop' ); ?></div>
+		<div class="cpc-eyebrow"><?php esc_html_e( 'The Butterfly Garden', 'curtin-pc-shop' ); ?></div>
 		<h1 class="cpc-h1"><?php esc_html_e( 'Cards our whole school painted together', 'curtin-pc-shop' ); ?></h1>
 		<p class="cpc-hero-lede"><?php esc_html_e( 'One big community artwork, turned into sets of four greeting cards. Blank inside, ready to send — and every set funds our classrooms.', 'curtin-pc-shop' ); ?></p>
 		<div class="cpc-price-row">
@@ -72,7 +72,17 @@ if ( ! $card_img && function_exists( 'wc_placeholder_img_src' ) ) {
 
 <!-- THE COLLECTION (product grid) -->
 <div id="cpc-cards"></div>
-<?php echo do_shortcode( '[cpc_products category="cards" heading="Greeting cards" note="Every set · four cards · $10" meta="Set of four · blank inside"]' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+<?php echo do_shortcode( '[cpc_products category="art-cards" heading="Art Cards" note="Every set · four cards · $10" meta="Set of four · blank inside"]' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+
+<!-- READ THE STORY (fuller story, below the grid) -->
+<section class="cpc-cardstory cpc-container">
+	<details>
+		<summary><?php esc_html_e( 'Read the story behind the cards', 'curtin-pc-shop' ); ?></summary>
+		<p><?php esc_html_e( 'The Curtin Primary P&C Art Card Series showcases a beautiful collection of floral illustrations created by students, parents and staff from the Curtin Primary School community as part of a whole-school art project facilitated by local artist Kelly Muller.', 'curtin-pc-shop' ); ?></p>
+		<p><?php esc_html_e( 'Each card celebrates the creativity of our school, making them perfect for birthdays, thank yous, celebrations or simply staying in touch. Best of all, every purchase helps raise funds for the Curtin Primary P&C, supporting projects, resources and opportunities that benefit our students.', 'curtin-pc-shop' ); ?></p>
+		<p><?php esc_html_e( 'Created by our community, for our community, these cards are a meaningful way to share a thoughtful message while giving back to the Curtin Primary School P&C community.', 'curtin-pc-shop' ); ?></p>
+	</details>
+</section>
 
 <?php
 get_footer();

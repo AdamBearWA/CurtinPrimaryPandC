@@ -86,6 +86,7 @@ body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(-
 .cpc-story-cols{flex:1;display:flex;gap:44px}
 .cpc-story-cols p{margin:0;font:400 15px/1.7 var(--font-body);color:#b9cbdb;max-width:300px}
 .cpc-story-cols b{color:#fff;font-weight:600}
+.cpc-story-cols>div{flex:1;display:flex;flex-direction:column;gap:14px}
 
 /* ---- The collection --------------------------------------- */
 .cpc-collection{padding:64px var(--gutter) 8px}
@@ -169,7 +170,7 @@ body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(-
 .cpc-prow-detail.cpc-open{display:block}
 
 /* ---- Olive oil page --------------------------------------- */
-.cpc-olive-hero{display:flex;align-items:stretch;background:linear-gradient(120deg,var(--c-olive-1) 0%,var(--c-olive-2) 60%,var(--c-olive-3) 100%);color:#eef3e6}
+.cpc-olive-hero{display:flex;align-items:stretch;background:linear-gradient(120deg,var(--c-olive-1) 0%,var(--c-olive-2) 60%,var(--c-olive-3) 100%);color:#eef3e6;border-radius:var(--r-band);overflow:hidden}
 .cpc-olive-hero-copy{flex:1;padding:72px 32px 72px var(--gutter);display:flex;flex-direction:column;justify-content:center;max-width:560px}
 .cpc-olive-pill{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;background:#ffffff1f;color:#e7f0d6;font:700 12px/1 var(--font-body);letter-spacing:.12em;text-transform:uppercase;padding:8px 14px;border-radius:var(--r-pill);margin-bottom:22px}
 .cpc-olive-hero-copy h1{margin:0;font:700 48px/1.06 var(--font-head);letter-spacing:-.02em;color:#fff}
@@ -222,7 +223,7 @@ body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(-
 .cpc-olive-suburbs li{background:#fff;border:1px solid var(--c-line);border-radius:var(--r-pill);padding:6px 14px;font:500 13px/1 var(--font-body);color:var(--c-ink)}
 
 /* ---- Olive: Thank you ---------------------------------------- */
-.cpc-olive-thanks{padding:64px var(--gutter);background:linear-gradient(120deg,var(--c-olive-1) 0%,var(--c-olive-2) 60%,var(--c-olive-3) 100%)}
+.cpc-olive-thanks{padding:64px var(--gutter);background:linear-gradient(120deg,var(--c-olive-1) 0%,var(--c-olive-2) 60%,var(--c-olive-3) 100%);border-radius:var(--r-band);overflow:hidden}
 .cpc-olive-thanks-inner{max-width:640px;margin:0 auto;text-align:center;color:#eef3e6}
 .cpc-olive-thanks-inner h2{margin:0;font:700 30px/1.15 var(--font-head);color:#fff;letter-spacing:-.01em}
 .cpc-olive-thanks-kicker{font:600 16px/1.4 var(--font-body);color:#d6e3c7;margin:10px 0 18px}
@@ -327,6 +328,7 @@ body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(-
   .cpc-olive-delivery{padding:8px 22px 40px}
   .cpc-olive-delivery-grid{grid-template-columns:1fr}
   .cpc-olive-thanks{padding:40px 22px}
+  .cpc-olive-hero,.cpc-olive-thanks{border-radius:0}
   .cpc-olive-faq{padding:40px 22px}
   .cpc-collection-intro h1{font-size:28px}
 }
@@ -572,3 +574,54 @@ body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(-
 
 /* hide the auto page title on the front page (Home renders via page.php) */
 .home .cpc-page-title{display:none}
+
+/* ============================================================
+   v2.6.1 — checkout & mobile UX fixes
+   ============================================================ */
+
+/* #9 — styled mobile nav (menu items were unstyled <li> with disc bullets) */
+.cpc-nav li.menu-item{list-style:none;margin:0;padding:0}
+@media (max-width:860px){
+  .cpc-nav{gap:0;padding-top:74px}
+  .cpc-nav li.menu-item{width:100%;border-bottom:1px solid var(--c-line)}
+  .cpc-nav li.menu-item:last-child{border-bottom:0}
+  .cpc-nav li.menu-item > a{display:flex;align-items:center;width:100%;min-height:52px;
+    padding:14px 2px;font:600 17px/1.2 var(--font-body);color:var(--c-ink);letter-spacing:-.01em}
+  .cpc-nav li.menu-item > a.cpc-active{color:var(--c-blue)}
+  .cpc-nav li.menu-item > a:hover{color:var(--c-blue)}
+}
+
+/* #2 — Square card field: reserve height + gentle loading hint so a slow
+   paint never looks like a broken empty box (JS adds .cpc-sq-ready once the
+   secure Square iframe has painted). */
+.cpc-woo .sq-card-wrapper{position:relative;min-height:52px}
+.cpc-woo .sq-card-wrapper::before{content:"Card details load securely below";
+  position:absolute;inset:0;display:flex;align-items:center;padding:0 12px;border-radius:10px;
+  background:#f4f6f8;font:500 13px/1.4 var(--font-body);color:var(--c-muted);z-index:0}
+.cpc-woo.cpc-sq-ready .sq-card-wrapper::before{display:none}
+.cpc-woo .sq-card-wrapper > *{position:relative;z-index:1}
+
+/* #5 — the sticky buy bar must never hide page content: clear its height. */
+:root{--cpc-buybar-h:78px}
+@media (max-width:860px){
+  body.cpc-has-buybar{padding-bottom:calc(var(--cpc-buybar-h) + env(safe-area-inset-bottom))}
+  body.cpc-has-buybar .cpc-pinfo,
+  body.cpc-has-buybar .cpc-prows{scroll-margin-bottom:var(--cpc-buybar-h)}
+}
+
+/* #10 — one-item cart: a low-key "Continue shopping" link fills the dead space */
+.cpc-cart-continue{margin:20px auto 0;display:flex;justify-content:center}
+.cpc-cart-continue a{display:inline-flex;align-items:center;gap:8px;min-height:44px;
+  font:700 15px/1 var(--font-body);color:var(--c-blue);text-decoration:none}
+.cpc-cart-continue a:hover{color:var(--c-blue-deep);text-decoration:underline}
+
+/* #8 — "Read the story" expander below the card grid */
+.cpc-cardstory{padding:8px var(--gutter) 60px}
+.cpc-cardstory details{border-top:1px solid var(--c-line);padding-top:22px;max-width:760px}
+.cpc-cardstory summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:8px;
+  min-height:44px;font:700 16px/1.3 var(--font-head);color:var(--c-ink);letter-spacing:-.01em}
+.cpc-cardstory summary::-webkit-details-marker{display:none}
+.cpc-cardstory summary::after{content:'+';font:400 20px/1 var(--font-body);color:var(--c-muted)}
+.cpc-cardstory details[open] summary::after{content:'\2212'}
+.cpc-cardstory p{margin:14px 0 0;font:400 15.5px/1.7 var(--font-body);color:var(--c-body);max-width:680px}
+@media (max-width:860px){.cpc-cardstory{padding:4px 22px 44px}}

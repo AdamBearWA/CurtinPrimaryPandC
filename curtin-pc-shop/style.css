@@ -1,17 +1,17 @@
 /*
 Theme Name: Curtin Primary P&C Shop
 Theme URI: https://curtinprimarypandc.example
-Description: Story-led fundraising shop for the Curtin Primary School P&C. Child theme of Storefront. Sells greeting-card sets ($10, set of four) drawn from the community "Butterfly Garden" artwork, and Curtin Gold extra virgin olive oil. Home, Shop and category pages are built from editable WordPress blocks (Full-width canvas template) so content can be edited from the admin UI.
+Description: Story-led fundraising shop for the Curtin Primary School P&C. Child theme of Storefront. Sells greeting-card sets ($10, set of four) drawn from the community "Butterfly Garden" artwork, and Curtin Gold extra virgin olive oil. Home, Shop and category pages use polished PHP templates in a home to shop to category to product structure.
 Author: Curtin Primary School P&C
 Template: storefront
-Version: 2.5.3
+Version: 2.6.1
 Requires at least: 6.0
 Requires PHP: 7.4
 Text Domain: curtin-pc-shop
 */
 
 /*
-  All visual styling lives in assets/css/curtin.css, which functions.php
+  All visual styling lives in assets/css/curtin-260.css, which functions.php
   enqueues LAST so it wins the cascade over Storefront + WooCommerce defaults.
   This file only carries the theme header WordPress requires.
 */

@@ -97,7 +97,7 @@ if ( ! $card_img && function_exists( 'wc_placeholder_img_src' ) ) {
 <!-- HERO (The collection — Butterfly Garden cards) -->
 <section class="cpc-hero cpc-container">
 	<div class="cpc-hero-copy">
-		<div class="cpc-eyebrow"><?php esc_html_e( 'The Butterfly Garden · painted 2023', 'curtin-pc-shop' ); ?></div>
+		<div class="cpc-eyebrow"><?php esc_html_e( 'The Butterfly Garden', 'curtin-pc-shop' ); ?></div>
 		<h2 class="cpc-h1"><?php esc_html_e( 'Cards our whole school painted together', 'curtin-pc-shop' ); ?></h2>
 		<p class="cpc-hero-lede"><?php esc_html_e( 'One big community artwork, turned into a set of four greeting cards. Blank inside, ready to send — and every set funds our classrooms.', 'curtin-pc-shop' ); ?></p>
 		<div class="cpc-price-row">
