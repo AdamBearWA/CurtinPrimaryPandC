@@ -81,7 +81,6 @@ while ( have_posts() ) :
 
 			<div class="cpc-pprice-row">
 				<div class="cpc-pprice"><?php echo wp_kses_post( $product->get_price_html() ); ?></div>
-				<div class="cpc-pprice-meta"><?php echo $is_olive ? esc_html__( '250mL bottle', 'curtin-pc-shop' ) : esc_html__( 'Set of four cards · $2.50 each', 'curtin-pc-shop' ); ?></div>
 			</div>
 
 			<?php
@@ -91,18 +90,6 @@ while ( have_posts() ) :
 				?>
 				<div class="cpc-pdesc"><?php echo wp_kses_post( wpautop( $desc ) ); ?></div>
 			<?php endif; ?>
-
-			<div class="cpc-features">
-				<?php if ( $is_olive ) : ?>
-					<div class="cpc-feature"><?php echo cpc_tick(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php esc_html_e( 'Community harvested', 'curtin-pc-shop' ); ?></div>
-					<div class="cpc-feature"><?php echo cpc_tick(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php esc_html_e( 'Cold pressed in York', 'curtin-pc-shop' ); ?></div>
-					<div class="cpc-feature"><?php echo cpc_tick(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php esc_html_e( 'Limited seasonal release', 'curtin-pc-shop' ); ?></div>
-				<?php else : ?>
-					<div class="cpc-feature"><?php echo cpc_tick(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php esc_html_e( 'Set of four · 120 × 120 mm square', 'curtin-pc-shop' ); ?></div>
-					<div class="cpc-feature"><?php echo cpc_tick(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php esc_html_e( 'White envelopes included', 'curtin-pc-shop' ); ?></div>
-					<div class="cpc-feature"><?php echo cpc_tick(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php esc_html_e( 'Blank inside, ready for your message', 'curtin-pc-shop' ); ?></div>
-				<?php endif; ?>
-			</div>
 
 			<?php if ( $product->is_purchasable() && $product->is_in_stock() ) : ?>
 				<form class="cart cpc-buyrow" action="<?php echo esc_url( apply_filters( 'woocommerce_add_to_cart_form_action', $product->get_permalink() ) ); ?>" method="post" enctype="multipart/form-data">
@@ -118,11 +105,6 @@ while ( have_posts() ) :
 			<?php else : ?>
 				<div class="cpc-buyrow"><span class="cpc-addtocart" style="opacity:.6;cursor:default"><?php esc_html_e( 'Currently unavailable', 'curtin-pc-shop' ); ?></span></div>
 			<?php endif; ?>
-
-			<div class="cpc-support-note">
-				<?php echo cpc_bird( 30, 21, '#1d6fb8' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-				<div><?php esc_html_e( 'Every set directly funds Curtin Primary School classrooms — thank you for supporting our school.', 'curtin-pc-shop' ); ?></div>
-			</div>
 
 			<div class="cpc-prows">
 				<?php if ( $is_olive ) : ?>
