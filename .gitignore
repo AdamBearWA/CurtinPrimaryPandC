@@ -1,0 +1,30 @@
+# ─── OS / editor cruft ────────────────────────────────
+.DS_Store
+Thumbs.db
+Desktop.ini
+*~
+*.swp
+.vscode/
+.idea/
+
+# ─── Packaged theme builds & build folders ────────────
+# The deployable theme is produced by zipping curtin-pc-shop/.
+# Those artifacts are regenerated on every release — keep them
+# (and any scratch build folders) out of version control.
+*.zip
+build-*/
+dist/
+_deprecated-templates/
+
+# ─── Dependencies / tooling (if added later) ──────────
+node_modules/
+vendor/
+
+# ─── Logs & temp ──────────────────────────────────────
+*.log
+*.tmp
+.cache/
+
+# ─── WordPress runtime — never commit ─────────────────
+wp-config.php
+*.sql
