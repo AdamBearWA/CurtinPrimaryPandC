@@ -153,7 +153,7 @@
           '<a class="cpc-empty-cta" href="' + cardsUrl + '">Browse the cards</a>' +
           '<a class="cpc-empty-link" href="' + oliveUrl + '">See the olive oil</a>' +
         '</div>' +
-        '<div class="cpc-empty-note"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1f6b41" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Free pickup from the front office</div>';
+        '<div class="cpc-empty-note"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1f6b41" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Free pickup</div>';
 
       block.classList.add('cpc-emptied');
       block.appendChild(wrap);
@@ -169,5 +169,77 @@
       }, 200);
     }
 
+  });
+})();
+
+/* ============================================================
+   v2.6.1 — checkout "Order summary" de-dupe, cart continue-shopping
+   link, Square card-field loading state. Progressive enhancement.
+   ============================================================ */
+(function () {
+  'use strict';
+  function ready(fn){ if (document.readyState !== 'loading') { fn(); } else { document.addEventListener('DOMContentLoaded', fn); } }
+
+  ready(function () {
+    var isCheckout = !!document.querySelector('.wp-block-woocommerce-checkout');
+    var isCart = !!document.querySelector('.wp-block-woocommerce-cart');
+    if (!isCheckout && !isCart) { return; }
+
+    /* #3 — the block checkout shows a collapsible "Order summary" at the top
+       (kept) and the full order-summary table lower down / in the sidebar,
+       both titled "Order summary". Rename the latter so it isn't repeated. */
+    function renameOrderSummary(){
+      var titles = document.querySelectorAll(
+        '.wp-block-woocommerce-checkout-order-summary-block .wc-block-components-checkout-step__title,' +
+        '.wp-block-woocommerce-checkout-order-summary-block .wc-block-components-title');
+      titles.forEach(function (h){
+        if (/^\s*Order summary\s*$/i.test(h.textContent)) { h.textContent = 'Your order'; }
+      });
+    }
+
+    /* #2 — mark the checkout ready once the Square secure card iframe paints,
+       so the "Card details load securely below" hint can be hidden. */
+    function squareReady(){
+      var f = document.querySelector(
+        '.wc-block-checkout__payment-method iframe[name^="single-card"],' +
+        '.sq-card-iframe-container iframe, .sq-card-wrapper iframe');
+      if (f) { document.body.classList.add('cpc-sq-ready'); }
+    }
+
+    /* #10 — add a low-key "Continue shopping" link on a populated cart. */
+    function addCartContinue(){
+      if (document.querySelector('.cpc-cart-continue')) { return; }
+      var host = document.querySelector('.wp-block-woocommerce-proceed-to-checkout-block');
+      var hasItems = document.querySelector('.wc-block-cart-items, .wc-block-cart__submit-button');
+      if (!host || !hasItems) { return; }
+      var shopHref = '/shop/';
+      var nav = document.querySelector('.cpc-nav');
+      if (nav){
+        var s = [].slice.call(nav.querySelectorAll('a')).find(function (a){ return /shop|card/i.test(a.textContent); });
+        if (s) { shopHref = s.getAttribute('href'); }
+      }
+      var wrap = document.createElement('div');
+      wrap.className = 'cpc-cart-continue';
+      wrap.innerHTML = '<a href="' + shopHref + '">← Continue shopping</a>';
+      host.appendChild(wrap);
+    }
+
+    function tick(){
+      if (isCheckout){ renameOrderSummary(); squareReady(); }
+      if (isCart){ addCartContinue(); }
+    }
+
+    var start = Date.now();
+    var iv = setInterval(function (){
+      tick();
+      if (Date.now() - start > 12000) { clearInterval(iv); }
+    }, 300);
+
+    /* Re-apply through the block checkout/cart's client-side re-renders. */
+    if ('MutationObserver' in window){
+      var mo = new MutationObserver(function (){ tick(); });
+      mo.observe(document.body, { childList: true, subtree: true });
+      setTimeout(function (){ mo.disconnect(); }, 15000);
+    }
   });
 })();

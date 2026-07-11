@@ -45,21 +45,7 @@ if ( $olive_product ) {
 	</div>
 
 	<div class="cpc-olive-hero-art">
-		<?php if ( $hero_has_image ) : ?>
-			<img src="<?php echo esc_url( $hero_img ); ?>" alt="<?php echo esc_attr( $hero_alt ); ?>" style="width:100%;height:100%;object-fit:cover;display:block">
-		<?php else : ?>
-			<svg width="150" height="250" viewBox="0 0 120 200" fill="none" aria-hidden="true">
-				<ellipse cx="60" cy="40" rx="44" ry="36" fill="#7d9a4e" opacity="0.45"/>
-				<path d="M60 10 C71 26 71 54 60 72 C49 54 49 26 60 10 Z" fill="#a9c46c"/>
-				<path d="M26 32 C44 34 56 48 60 66 C40 64 28 50 26 32 Z" fill="#8fb255"/>
-				<path d="M94 32 C76 34 64 48 60 66 C80 64 92 50 94 32 Z" fill="#8fb255"/>
-				<circle cx="43" cy="58" r="10" fill="#3c5a2a"/>
-				<circle cx="76" cy="55" r="8.5" fill="#536b2f"/>
-				<rect x="45" y="92" width="30" height="92" rx="10" fill="#d8ca98"/>
-				<rect x="49" y="76" width="22" height="22" rx="4" fill="#c0af75"/>
-				<rect x="47" y="120" width="26" height="46" rx="5" fill="#f4f0e4"/>
-			</svg>
-		<?php endif; ?>
+		<span style="position:static;color:#cdd9b9;font:500 14px/1.4 var(--font-body);text-align:center;padding:0 24px"><?php esc_html_e( 'Harvest photo coming soon', 'curtin-pc-shop' ); ?></span>
 	</div>
 </section>
 
@@ -67,21 +53,20 @@ if ( $olive_product ) {
 <div id="cpc-shop"></div>
 <?php echo do_shortcode( '[cpc_products category="olive-oil" heading="Shop Curtin Gold" note="250mL · limited seasonal release"]' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 
-<!-- SECTION 2: OUR STORY -->
-<section class="cpc-olive-story cpc-container">
-	<div class="cpc-olive-story-photo">
-		<!-- TODO: swap for a real harvest-day photo when supplied. -->
-		<span><?php esc_html_e( 'Harvest day photo coming soon', 'curtin-pc-shop' ); ?></span>
-	</div>
-	<div class="cpc-olive-story-copy">
-		<h2><?php esc_html_e( 'Our Story', 'curtin-pc-shop' ); ?></h2>
-		<p class="cpc-olive-story-kicker"><?php esc_html_e( "From Karawara's trees to your table", 'curtin-pc-shop' ); ?></p>
-		<p><?php esc_html_e( 'This autumn, a simple idea brought our community together.', 'curtin-pc-shop' ); ?></p>
-		<p><?php esc_html_e( 'Inspired by one of our P&C mums, who wondered whether the olives growing throughout Karawara could be put to good use, the Curtin Primary School P&C set out to create something special.', 'curtin-pc-shop' ); ?></p>
-		<p><?php esc_html_e( 'After receiving the generous support of local residents, families from our school community came together to harvest thousands of olives by hand. The olives were then professionally cold pressed in York into our limited seasonal release of 100% extra virgin olive oil.', 'curtin-pc-shop' ); ?></p>
-		<p><?php esc_html_e( 'Every bottle celebrates the generosity of our neighbours, the efforts of our volunteers and the power of a community working together.', 'curtin-pc-shop' ); ?></p>
-		<p><?php esc_html_e( "By purchasing a bottle, you're helping this project continue to grow.", 'curtin-pc-shop' ); ?></p>
-		<a class="cpc-lnk cpc-cta-text" href="#cpc-shop"><?php esc_html_e( 'Shop our Olive Oil', 'curtin-pc-shop' ); ?></a>
+<!-- SECTION 2: OUR STORY (story band — matches the cards page component) -->
+<section class="cpc-story cpc-container">
+	<h2><?php esc_html_e( 'Our Story', 'curtin-pc-shop' ); ?></h2>
+	<div class="cpc-story-cols">
+		<div>
+			<p style="color:#fff;font-weight:600;max-width:none"><?php esc_html_e( "From Karawara's trees to your table", 'curtin-pc-shop' ); ?></p>
+			<p><?php esc_html_e( 'This autumn, a simple idea brought our community together. Inspired by one of our P&C mums, who wondered whether the olives growing throughout Karawara could be put to good use, the Curtin Primary School P&C set out to create something special.', 'curtin-pc-shop' ); ?></p>
+			<p><?php esc_html_e( 'After receiving the generous support of local residents, families from our school community came together to harvest thousands of olives by hand. The olives were then professionally cold pressed in York into our limited seasonal release of 100% extra virgin olive oil.', 'curtin-pc-shop' ); ?></p>
+		</div>
+		<div>
+			<p><?php esc_html_e( 'Every bottle celebrates the generosity of our neighbours, the efforts of our volunteers and the power of a community working together.', 'curtin-pc-shop' ); ?></p>
+			<p><?php esc_html_e( "By purchasing a bottle, you're helping this project continue to grow.", 'curtin-pc-shop' ); ?></p>
+			<a class="cpc-lnk cpc-cta-text" href="#cpc-shop" style="color:#fff"><?php esc_html_e( 'Shop our Olive Oil', 'curtin-pc-shop' ); ?></a>
+		</div>
 	</div>
 </section>
 
@@ -94,7 +79,7 @@ if ( $olive_product ) {
 			<p class="cpc-feature-text"><?php esc_html_e( 'Our neighbours share their trees.', 'curtin-pc-shop' ); ?></p>
 		</div>
 		<div>
-			<div class="cpc-feature-icon" aria-hidden="true">&#127866;</div>
+			<div class="cpc-feature-icon" aria-hidden="true">&#129746;</div>
 			<div class="cpc-feature-title"><?php esc_html_e( 'Cold pressed in York', 'curtin-pc-shop' ); ?></div>
 			<p class="cpc-feature-text"><?php esc_html_e( 'The harvest is professionally cold pressed into 100% extra virgin olive oil.', 'curtin-pc-shop' ); ?></p>
 		</div>

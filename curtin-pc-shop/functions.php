@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CPC_VERSION', '2.5.3' );
+define( 'CPC_VERSION', '2.6.1' );
 
 /* -----------------------------------------------------------------
  * 1. Theme supports
@@ -63,16 +63,21 @@ add_action( 'wp_enqueue_scripts', function () {
 		null
 	);
 
+	// NOTE: the CSS/JS filenames carry the version (curtin-261.*) because the
+	// SWAG/nginx proxy caches these static assets by PATH and ignores the ?ver
+	// query string — a plain version bump does NOT bust it (see
+	// Theme-Deployment-Notes.md §8). Renaming the file on every CSS/JS change is
+	// the reliable cache-bust. Bump both the filename and CPC_VERSION together.
 	wp_enqueue_style(
 		'cpc-main',
-		get_stylesheet_directory_uri() . '/assets/css/curtin.css',
+		get_stylesheet_directory_uri() . '/assets/css/curtin-261.css',
 		array( 'cpc-fonts' ),
 		CPC_VERSION
 	);
 
 	wp_enqueue_script(
 		'cpc-ui',
-		get_stylesheet_directory_uri() . '/assets/js/curtin.js',
+		get_stylesheet_directory_uri() . '/assets/js/curtin-261.js',
 		array(),
 		CPC_VERSION,
 		true
@@ -364,10 +369,10 @@ function cpc_category_tiles_shortcode() {
 			'cat'   => 'olive-oil',
 		),
 		array(
-			'title' => __( 'Cards', 'curtin-pc-shop' ),
+			'title' => __( 'Art Cards', 'curtin-pc-shop' ),
 			'sub'   => __( 'Greeting-card sets from our community artwork', 'curtin-pc-shop' ),
 			'url'   => home_url( '/cards/' ),
-			'cat'   => 'cards',
+			'cat'   => 'art-cards',
 		),
 	);
 
@@ -421,112 +426,20 @@ add_action( 'wp_enqueue_scripts', function () {
 }, 101 );
 
 /* -----------------------------------------------------------------
- * 7. Checkout: "Collection or delivery?" — Curtin Gold olive oil.
- *    Uses the native WooCommerce Blocks "Additional checkout fields"
- *    API (WC 9.9+) so it works with the Checkout block used on this
- *    site. Delivery is only offered for the 4 serviced suburbs; the
- *    $5 delivery fee is waived for 2+ bottles of olive oil.
+ * 7. Delivery pricing — Curtin Gold olive oil.
+ *
+ *    Collection vs delivery is chosen with WooCommerce's native
+ *    Ship / Pickup toggle (Local Pickup + a $5 Flat rate limited to
+ *    the 6152 postcode zone = Karawara, Manning, Salter Point, Como).
+ *    That single control is the source of truth. The old custom
+ *    "Collection or delivery?" checkout field duplicated the toggle
+ *    and could stack a second $5 fee on top of the flat rate, so it
+ *    (and its suburb/address fields) has been removed.
+ *
+ *    Rule: $5 flat-rate delivery for a single bottle; FREE for 2+
+ *    bottles of Curtin Gold. "Free for 2+" is implemented by zeroing
+ *    the flat-rate cost when the cart holds 2 or more bottles.
  * --------------------------------------------------------------- */
-add_action( 'woocommerce_init', function () {
-	if ( ! function_exists( 'woocommerce_register_additional_checkout_field' ) ) {
-		return; // WooCommerce too old for the Blocks additional-fields API.
-	}
-
-	woocommerce_register_additional_checkout_field(
-		array(
-			'id'       => 'curtin/delivery-method',
-			'label'    => __( 'Collection or delivery?', 'curtin-pc-shop' ),
-			'location' => 'order',
-			'type'     => 'select',
-			'required' => true,
-			'options'  => array(
-				array( 'value' => 'collection', 'label' => __( 'Free collection (Karawara, advertised collection day)', 'curtin-pc-shop' ) ),
-				array( 'value' => 'delivery', 'label' => __( 'Local delivery ($5, free for 2+ bottles)', 'curtin-pc-shop' ) ),
-			),
-		)
-	);
-
-	woocommerce_register_additional_checkout_field(
-		array(
-			'id'       => 'curtin/delivery-suburb',
-			'label'    => __( 'Delivery suburb', 'curtin-pc-shop' ),
-			'location' => 'order',
-			'type'     => 'select',
-			'options'  => array(
-				array( 'value' => 'karawara', 'label' => __( 'Karawara', 'curtin-pc-shop' ) ),
-				array( 'value' => 'manning', 'label' => __( 'Manning', 'curtin-pc-shop' ) ),
-				array( 'value' => 'salter-point', 'label' => __( 'Salter Point', 'curtin-pc-shop' ) ),
-				array( 'value' => 'como', 'label' => __( 'Como', 'curtin-pc-shop' ) ),
-			),
-			'required' => array(
-				'checkout' => array(
-					'properties' => array(
-						'additional_fields' => array(
-							'properties' => array(
-								'curtin/delivery-method' => array( 'const' => 'delivery' ),
-							),
-						),
-					),
-				),
-			),
-			'hidden'   => array(
-				'checkout' => array(
-					'properties' => array(
-						'additional_fields' => array(
-							'properties' => array(
-								'curtin/delivery-method' => array( 'not' => array( 'const' => 'delivery' ) ),
-							),
-						),
-					),
-				),
-			),
-		)
-	);
-
-	woocommerce_register_additional_checkout_field(
-		array(
-			'id'       => 'curtin/delivery-address',
-			'label'    => __( 'Delivery address', 'curtin-pc-shop' ),
-			'location' => 'order',
-			'type'     => 'text',
-			'required' => array(
-				'checkout' => array(
-					'properties' => array(
-						'additional_fields' => array(
-							'properties' => array(
-								'curtin/delivery-method' => array( 'const' => 'delivery' ),
-							),
-						),
-					),
-				),
-			),
-			'hidden'   => array(
-				'checkout' => array(
-					'properties' => array(
-						'additional_fields' => array(
-							'properties' => array(
-								'curtin/delivery-method' => array( 'not' => array( 'const' => 'delivery' ) ),
-							),
-						),
-					),
-				),
-			),
-		)
-	);
-} );
-
-/** Read a registered additional-checkout-field value from the current (session-backed) customer. */
-function cpc_get_checkout_field( $field_id ) {
-	if ( ! class_exists( '\Automattic\WooCommerce\Blocks\Package' ) || ! function_exists( 'WC' ) ) {
-		return null;
-	}
-	try {
-		$checkout_fields = \Automattic\WooCommerce\Blocks\Package::container()->get( \Automattic\WooCommerce\Blocks\Domain\Services\CheckoutFields::class );
-		return $checkout_fields->get_field_from_object( $field_id, WC()->customer, 'other' );
-	} catch ( \Throwable $e ) {
-		return null;
-	}
-}
 
 /** How many Curtin Gold (olive-oil category) bottles are in the cart? */
 function cpc_olive_qty_in_cart( $cart ) {
@@ -539,24 +452,23 @@ function cpc_olive_qty_in_cart( $cart ) {
 	return $qty;
 }
 
-// $5 local delivery fee — waived for 2 or more bottles of Curtin Gold.
-add_action( 'woocommerce_cart_calculate_fees', function ( $cart ) {
-	if ( is_admin() && ! defined( 'DOING_AJAX' ) ) {
-		return;
+// Free local delivery for 2+ bottles of Curtin Gold — zero the flat-rate cost.
+add_filter( 'woocommerce_package_rates', function ( $rates, $package ) {
+	if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+		return $rates;
 	}
-	if ( $cart->is_empty() ) {
-		return;
+	if ( cpc_olive_qty_in_cart( WC()->cart ) < 2 ) {
+		return $rates; // single bottle keeps the $5 flat rate
 	}
-	$olive_qty = cpc_olive_qty_in_cart( $cart );
-	if ( $olive_qty < 1 ) {
-		return; // No olive oil in cart — delivery fee doesn't apply.
+	foreach ( $rates as $rate ) {
+		if ( 'flat_rate' === $rate->get_method_id() ) {
+			$rate->set_cost( 0 );
+			$taxes = array();
+			foreach ( (array) $rate->get_taxes() as $k => $v ) {
+				$taxes[ $k ] = 0;
+			}
+			$rate->set_taxes( $taxes );
+		}
 	}
-	$delivery_method = cpc_get_checkout_field( 'curtin/delivery-method' );
-	if ( 'delivery' !== $delivery_method ) {
-		return;
-	}
-	if ( $olive_qty >= 2 ) {
-		return; // Free delivery for 2+ bottles.
-	}
-	$cart->add_fee( __( 'Local delivery', 'curtin-pc-shop' ), 5.00, false );
-} );
+	return $rates;
+}, 10, 2 );
