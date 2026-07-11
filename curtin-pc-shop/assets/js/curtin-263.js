@@ -245,39 +245,45 @@
 })();
 
 /* ============================================================
-   v2.6.2 — trim billing to name + email for pickup (block checkout)
+   v2.6.3 — pickup billing trim (robust) + region-specific
+   "no delivery here" message. Polls so it works regardless of
+   when the block checkout's data stores finish loading.
    ============================================================ */
 (function () {
   'use strict';
   if (!document.querySelector('.wp-block-woocommerce-checkout')) { return; }
-  if (!window.wp || !wp.data) { return; }
 
   var PICKUP_ADDR = { country: 'AU', address_1: '20 Goss Avenue', address_2: '', city: 'Manning', state: 'WA', postcode: '6152' };
+  var DELIVERY_MSG = 'We currently deliver within postcode 6152 only — Karawara, Manning, Salter Point and Como. This address is outside our delivery area, so please choose “Pickup” above, or use an address within 6152.';
 
-  function prefersCollection(){
-    try { return !!wp.data.select('wc/store/checkout').prefersCollection(); } catch (e) { return false; }
-  }
-  function billingAddr1(){
-    try { return (wp.data.select('wc/store/cart').getCustomerData().billingAddress || {}).address_1 || ''; } catch (e) { return ''; }
-  }
+  function sel(store){ try { return (window.wp && wp.data) ? wp.data.select(store) : null; } catch (e) { return null; } }
+  function prefersCollection(){ try { var s = sel('wc/store/checkout'); return !!(s && s.prefersCollection && s.prefersCollection()); } catch (e) { return false; } }
+  function billingAddr1(){ try { var c = sel('wc/store/cart'); var d = c && c.getCustomerData && c.getCustomerData(); return (d && d.billingAddress && d.billingAddress.address_1) || ''; } catch (e) { return ''; } }
 
-  var last = null;
-  function apply(){
+  // #4 — pickup only needs name + phone: hide the billing ADDRESS fields
+  // (via body.cpc-pickup) and auto-set the address to the pickup location so
+  // card payment still validates.
+  function applyPickup(){
     var pickup = prefersCollection();
     document.body.classList.toggle('cpc-pickup', pickup);
     if (pickup && billingAddr1() !== PICKUP_ADDR.address_1){
-      try { wp.data.dispatch('wc/store/cart').setBillingAddress(PICKUP_ADDR); } catch (e) {}
+      try {
+        var c = sel('wc/store/cart');
+        var cur = (c && c.getCustomerData && c.getCustomerData().billingAddress) || {};
+        wp.data.dispatch('wc/store/cart').setBillingAddress(Object.assign({}, cur, PICKUP_ADDR));
+      } catch (e) {}
     }
-    last = pickup;
   }
 
-  function ready(fn){ if (document.readyState !== 'loading') { fn(); } else { document.addEventListener('DOMContentLoaded', fn); } }
-  ready(function(){
-    apply();
-    var t;
-    wp.data.subscribe(function(){
-      var now = prefersCollection();
-      if (now !== last) { clearTimeout(t); t = setTimeout(apply, 120); }
+  // Out-of-region delivery: replace WooCommerce's generic "no shipping options"
+  // notice with a message that names the delivery area.
+  function applyDeliveryMsg(){
+    document.querySelectorAll('.wc-block-components-shipping-rates-control__no-results-notice .wc-block-components-notice-banner__content').forEach(function (el){
+      if (el.textContent !== DELIVERY_MSG) { el.textContent = DELIVERY_MSG; }
     });
-  });
+  }
+
+  function tick(){ applyPickup(); applyDeliveryMsg(); }
+  var iv = setInterval(tick, 400);
+  if (document.readyState !== 'loading') { tick(); } else { document.addEventListener('DOMContentLoaded', tick); }
 })();
