@@ -243,3 +243,41 @@
     }
   });
 })();
+
+/* ============================================================
+   v2.6.2 — trim billing to name + email for pickup (block checkout)
+   ============================================================ */
+(function () {
+  'use strict';
+  if (!document.querySelector('.wp-block-woocommerce-checkout')) { return; }
+  if (!window.wp || !wp.data) { return; }
+
+  var PICKUP_ADDR = { country: 'AU', address_1: '20 Goss Avenue', address_2: '', city: 'Manning', state: 'WA', postcode: '6152' };
+
+  function prefersCollection(){
+    try { return !!wp.data.select('wc/store/checkout').prefersCollection(); } catch (e) { return false; }
+  }
+  function billingAddr1(){
+    try { return (wp.data.select('wc/store/cart').getCustomerData().billingAddress || {}).address_1 || ''; } catch (e) { return ''; }
+  }
+
+  var last = null;
+  function apply(){
+    var pickup = prefersCollection();
+    document.body.classList.toggle('cpc-pickup', pickup);
+    if (pickup && billingAddr1() !== PICKUP_ADDR.address_1){
+      try { wp.data.dispatch('wc/store/cart').setBillingAddress(PICKUP_ADDR); } catch (e) {}
+    }
+    last = pickup;
+  }
+
+  function ready(fn){ if (document.readyState !== 'loading') { fn(); } else { document.addEventListener('DOMContentLoaded', fn); } }
+  ready(function(){
+    apply();
+    var t;
+    wp.data.subscribe(function(){
+      var now = prefersCollection();
+      if (now !== last) { clearTimeout(t); t = setTimeout(apply, 120); }
+    });
+  });
+})();
