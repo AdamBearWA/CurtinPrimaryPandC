@@ -102,7 +102,7 @@ if ( ! $card_img && function_exists( 'wc_placeholder_img_src' ) ) {
 			<div class="cpc-price"><?php echo esc_html( $card_price ); ?></div>
 		</div>
 		<div class="cpc-cta-row">
-			<a class="cpc-btn cpc-cta" href="<?php echo esc_url( home_url( '/cards/' ) ); ?>"><?php esc_html_e( 'Shop the cards', 'curtin-pc-shop' ); ?></a>
+			<a class="cpc-btn cpc-cta" href="<?php echo esc_url( home_url( '/art-cards/' ) ); ?>"><?php esc_html_e( 'Shop the cards', 'curtin-pc-shop' ); ?></a>
 		</div>
 	</div>
 	<div class="cpc-hero-art">
