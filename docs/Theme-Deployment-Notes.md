@@ -42,6 +42,45 @@ Every new version must land in Git and as a GitHub Release, not just as a zip ha
 **Never assume the source folder matches production.** Confirm the true `CPC_VERSION` via Appearance → Themes → Theme Details on the live site (see §1) before building on top of local files — a version may have been built and handed off but not yet uploaded, or uploaded and reverted.
 
 
+## 7. Keep only the current `curtin-26x.*` asset pair — delete the superseded ones every release
+
+The theme should carry exactly **one** CSS/JS pair: the `curtin-26x.*` files that
+`functions.php` actually enqueues. Because every CSS/JS change forces a filename bump
+(see §8), old files pile up fast — and since the whole `assets/` folder ships inside the
+theme zip, every stale pair bloats the download and gets deployed to the live server for
+no reason. When you bump the asset filename, **delete the previous `curtin-26x.css` and
+`curtin-26x.js`** in the same change so the theme (and therefore the release zip) contains
+only the live pair. Before zipping, confirm `assets/css/` and `assets/js/` each hold a
+single `curtin-26x.*` file and that it matches the enqueue in `functions.php`.
+
+If a change is PHP-only (no CSS/JS edit), do **not** bump or rename the asset pair — keep
+the existing `curtin-26x.*` files as-is; there is nothing to cache-bust.
+
+The Cowork/Linux sandbox mount often refuses `rm` on theme files (`Operation not
+permitted`). When that happens, do the deletion the same way as the rest of the release:
+prune the old assets on the native-fs build copy before zipping, and `git rm` them from
+Adam's Windows clone as part of the release commit.
+
+## 8. The SWAG/nginx proxy caches static assets by path — rename the file on every CSS/JS change
+
+`?ver=` query strings are ignored by the proxy cache, so a plain `CPC_VERSION` bump does
+**not** bust a changed `curtin-26x.css`/`.js` — the browser keeps serving the stale file.
+The reliable cache-bust is to **rename the asset to the next `curtin-26x.*`** and update
+both `wp_enqueue_style`/`wp_enqueue_script` calls (and any doc comments that name the file).
+Bump the filename and `CPC_VERSION` together. As a one-off hotfix you can instead paste
+overrides into Appearance → Customize → Additional CSS (served inline, not cached by path),
+but the durable fix is the rename. Renaming makes the old file superseded — delete it (§7).
+
+## 9. Scan for NUL corruption before zipping
+
+The sandbox mount can silently pad session-edited files with trailing NUL bytes (a file
+can read fine through the editor yet be `data`, not text, on disk). NUL bytes in a `.php`
+template can break it on the live site. Before building the zip, scan every file
+(`for f in $(find . -type f); do [ "$(LC_ALL=C tr -cd '\000' < "$f" | wc -c)" != 0 ] && echo "NUL: $f"; done`)
+and strip trailing NULs (`perl -i -0777 -pe 's/\x00+\z//' <file>`). Building on native fs
+from a cleaned copy (§2) is the safe path. Also exclude mount junk (`.fuse_hidden*`,
+`.DS_Store`) from the zip.
+
 ## Release checklist — run for EVERY new version (Git + GitHub Releases)
 
 The theme is version-controlled at **github.com/AdamBearWA/CurtinPrimaryPandC** (branch `main`);
@@ -50,9 +89,11 @@ must also land in Git and as a GitHub Release — not just as a zip.** Do all of
 
 1. **Bump the version** — `CPC_VERSION` in `functions.php` and `Version:` in `style.css` must match
    and increment (see §6). If CSS/JS changed, rename the asset pair to the next `curtin-26x.*`
-   and update both enqueues (see §8).
-2. **Build the zip** of `curtin-pc-shop/` on a fresh output folder / native fs, NUL-scan, confirm
-   there is no root `woocommerce.php` (see §1, §2, §9).
+   and update both enqueues (see §8), then delete the superseded `curtin-26x.*` pair so only the
+   current one ships (see §7). If the change is PHP-only, leave the asset pair untouched.
+2. **Build the zip** of `curtin-pc-shop/` on a fresh output folder / native fs, NUL-scan and strip
+   (see §9), confirm `assets/css` + `assets/js` hold only the one enqueued `curtin-26x.*` pair (§7),
+   and confirm there is no root `woocommerce.php` (see §1, §2, §9).
 3. **Sync source into the repo** — copy the updated `curtin-pc-shop/` over the clone's
    `curtin-pc-shop/`. Keep the repo's `docs/` copies in sync with the project-folder docs when they change.
 4. **Commit as Adam, no Claude co-author trailers** (identity

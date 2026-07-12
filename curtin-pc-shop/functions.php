@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CPC_VERSION', '2.6.18' );
+define( 'CPC_VERSION', '2.6.19' );
 
 /* -----------------------------------------------------------------
  * 1. Theme supports
@@ -63,21 +63,21 @@ add_action( 'wp_enqueue_scripts', function () {
 		null
 	);
 
-	// NOTE: the CSS/JS filenames carry the version (curtin-268.*) because the
+	// NOTE: the CSS/JS filenames carry the version (curtin-269.*) because the
 	// SWAG/nginx proxy caches these static assets by PATH and ignores the ?ver
 	// query string — a plain version bump does NOT bust it (see
 	// Theme-Deployment-Notes.md §8). Renaming the file on every CSS/JS change is
 	// the reliable cache-bust. Bump both the filename and CPC_VERSION together.
 	wp_enqueue_style(
 		'cpc-main',
-		get_stylesheet_directory_uri() . '/assets/css/curtin-268.css',
+		get_stylesheet_directory_uri() . '/assets/css/curtin-269.css',
 		array( 'cpc-fonts' ),
 		CPC_VERSION
 	);
 
 	wp_enqueue_script(
 		'cpc-ui',
-		get_stylesheet_directory_uri() . '/assets/js/curtin-268.js',
+		get_stylesheet_directory_uri() . '/assets/js/curtin-269.js',
 		array(),
 		CPC_VERSION,
 		true
@@ -89,6 +89,30 @@ add_filter( 'body_class', function ( $classes ) {
 	$classes[] = 'cpc-theme';
 	return $classes;
 } );
+
+/* -----------------------------------------------------------------
+ * cpc_card_meta_text( $product ) — the product short description
+ * reduced to plain text for the .cpc-card-meta line, with the
+ * author's intended line breaks preserved. WooCommerce stores the
+ * short description as HTML (<p>/<br> from the editor), so we convert
+ * those breaks to real newlines BEFORE stripping tags. Card templates
+ * then output it with nl2br( esc_html() ) so the newlines actually
+ * render — previously wp_strip_all_tags() + esc_html() collapsed a
+ * multi-line short description onto a single line.
+ * --------------------------------------------------------------- */
+if ( ! function_exists( 'cpc_card_meta_text' ) ) {
+	function cpc_card_meta_text( $product ) {
+		if ( ! $product ) {
+			return '';
+		}
+		$raw = $product->get_short_description();
+		// Paragraph boundaries and <br> become real newlines first...
+		$raw = preg_replace( '#</p>\s*<p[^>]*>#i', "\n", $raw );
+		$raw = preg_replace( '#<br\s*/?>#i', "\n", $raw );
+		// ...then drop the remaining tags, keeping the newlines.
+		return trim( wp_strip_all_tags( $raw ) );
+	}
+}
 
 /* -----------------------------------------------------------------
  * 4. Strip Storefront/Woo page furniture we don't want.
@@ -324,7 +348,7 @@ function cpc_products_shortcode( $atts ) {
 				<?php foreach ( $products as $p ) :
 					$link = get_permalink( $p->get_id() );
 					$img  = $p->get_image_id() ? wp_get_attachment_image_url( $p->get_image_id(), 'large' ) : wc_placeholder_img_src( 'large' );
-					$meta = '' !== $atts['meta'] ? $atts['meta'] : wp_strip_all_tags( $p->get_short_description() );
+					$meta = '' !== $atts['meta'] ? $atts['meta'] : cpc_card_meta_text( $p );
 					?>
 					<div class="cpc-card cpc-lift">
 						<a class="cpc-card-imglink" href="<?php echo esc_url( $link ); ?>">
@@ -332,7 +356,7 @@ function cpc_products_shortcode( $atts ) {
 						</a>
 						<div class="cpc-card-body">
 							<a class="cpc-card-titlelink" href="<?php echo esc_url( $link ); ?>"><span class="cpc-card-title"><?php echo esc_html( $p->get_name() ); ?></span></a>
-							<?php if ( '' !== $meta ) : ?><div class="cpc-card-meta"><?php echo esc_html( $meta ); ?></div><?php endif; ?>
+							<?php if ( '' !== $meta ) : ?><div class="cpc-card-meta"><?php echo nl2br( esc_html( $meta ) ); ?></div><?php endif; ?>
 							<div class="cpc-card-foot">
 								<div class="cpc-card-price"><?php echo wp_kses_post( $p->get_price_html() ); ?></div>
 								<?php if ( $p->is_purchasable() && $p->is_in_stock() ) : ?>
@@ -368,7 +392,7 @@ if ( ! function_exists( 'cpc_render_product_card' ) ) {
 		}
 		$link = get_permalink( $p->get_id() );
 		$img  = $p->get_image_id() ? wp_get_attachment_image_url( $p->get_image_id(), 'large' ) : wc_placeholder_img_src( 'large' );
-		$meta = wp_strip_all_tags( $p->get_short_description() );
+		$meta = cpc_card_meta_text( $p );
 		?>
 		<div class="cpc-card cpc-lift">
 			<a class="cpc-card-imglink" href="<?php echo esc_url( $link ); ?>">
@@ -376,7 +400,7 @@ if ( ! function_exists( 'cpc_render_product_card' ) ) {
 			</a>
 			<div class="cpc-card-body">
 				<a class="cpc-card-titlelink" href="<?php echo esc_url( $link ); ?>"><span class="cpc-card-title"><?php echo esc_html( $p->get_name() ); ?></span></a>
-				<?php if ( '' !== $meta ) : ?><div class="cpc-card-meta"><?php echo esc_html( $meta ); ?></div><?php endif; ?>
+				<?php if ( '' !== $meta ) : ?><div class="cpc-card-meta"><?php echo nl2br( esc_html( $meta ) ); ?></div><?php endif; ?>
 				<div class="cpc-card-foot">
 					<div class="cpc-card-price"><?php echo wp_kses_post( $p->get_price_html() ); ?></div>
 					<?php if ( $p->is_purchasable() && $p->is_in_stock() ) : ?>

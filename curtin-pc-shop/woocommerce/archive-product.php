@@ -37,7 +37,7 @@ if ( ! function_exists( 'cpc_render_product_card' ) ) {
 		}
 		$link = get_permalink( $p->get_id() );
 		$img  = $p->get_image_id() ? wp_get_attachment_image_url( $p->get_image_id(), 'large' ) : wc_placeholder_img_src( 'large' );
-		$meta = wp_strip_all_tags( $p->get_short_description() );
+		$meta = cpc_card_meta_text( $p );
 		?>
 		<div class="cpc-card cpc-lift">
 			<a class="cpc-card-imglink" href="<?php echo esc_url( $link ); ?>">
@@ -45,7 +45,7 @@ if ( ! function_exists( 'cpc_render_product_card' ) ) {
 			</a>
 			<div class="cpc-card-body">
 				<a class="cpc-card-titlelink" href="<?php echo esc_url( $link ); ?>"><span class="cpc-card-title"><?php echo esc_html( $p->get_name() ); ?></span></a>
-				<?php if ( '' !== $meta ) : ?><div class="cpc-card-meta"><?php echo esc_html( $meta ); ?></div><?php endif; ?>
+				<?php if ( '' !== $meta ) : ?><div class="cpc-card-meta"><?php echo nl2br( esc_html( $meta ) ); ?></div><?php endif; ?>
 				<div class="cpc-card-foot">
 					<div class="cpc-card-price"><?php echo wp_kses_post( $p->get_price_html() ); ?></div>
 					<?php if ( $p->is_purchasable() && $p->is_in_stock() ) : ?>
