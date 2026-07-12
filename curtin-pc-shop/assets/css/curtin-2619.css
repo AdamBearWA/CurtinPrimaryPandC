@@ -749,3 +749,11 @@ body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(-
   border-radius:12px;font:500 15px/1.5 var(--font-body)}
 .cpc-oil-notice svg{flex:0 0 auto;margin-top:1px}
 .cpc-oil-notice-text{flex:1 1 auto}
+
+/* v2.7.5 — when olive oil is headed outside 6152 (body.cpc-oil-blocked), make the
+   Express Checkout area (Apple Pay / Google Pay) non-interactive too, matching the
+   disabled Place order button. Covers the cart and checkout express blocks. */
+.cpc-oil-blocked .wp-block-woocommerce-checkout-express-payment-block,
+.cpc-oil-blocked .wp-block-woocommerce-cart-express-payment-block,
+.cpc-oil-blocked .wc-block-components-express-payment{
+  pointer-events:none!important;opacity:.4;filter:grayscale(1)}
