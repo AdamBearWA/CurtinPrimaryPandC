@@ -15,7 +15,7 @@ $is_shop  = ( function_exists( 'is_shop' ) && is_shop() ) || is_product() || ( f
 $is_olive = is_page( 'olive-oil' );
 
 // Pages built from stacked bespoke sections (home, shop, art cards, olive oil)
-// opt into the consistent vertical rhythm (see curtin-268.css → .cpc-flow).
+// opt into the consistent vertical rhythm (see curtin-269.css → .cpc-flow).
 // Deliberately excludes single-product, cart/checkout/account and other Woo
 // pages, whose spacing is handled by their own templates.
 $cpc_is_flow = is_front_page() || is_page( array( 'shop', 'olive-oil', 'art-cards', 'cards' ) );

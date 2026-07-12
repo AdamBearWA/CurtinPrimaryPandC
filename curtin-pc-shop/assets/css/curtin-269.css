@@ -109,7 +109,7 @@ body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(-
 .cpc-card-add{font:700 13px/1 var(--font-body);color:var(--c-green-deep);background:#fff;border:1.5px solid var(--c-green);padding:10px 16px;border-radius:var(--r-pill);cursor:pointer;text-decoration:none;display:inline-block}
 
 /* ---- Trust strip ------------------------------------------ */
-.cpc-trust{margin-top:40px;padding:30px var(--gutter);background:var(--c-page-tint);border-top:1px solid var(--c-line);border-bottom:1px solid var(--c-line);display:grid;grid-template-columns:repeat(3,1fr);gap:24px;text-align:center}
+.cpc-trust{margin:40px auto 0;max-width:calc(var(--maxw) - 2*var(--gutter));padding:30px 40px;background:var(--c-page-tint);border:1px solid var(--c-line);border-radius:var(--r-band);display:grid;grid-template-columns:repeat(3,1fr);gap:24px;text-align:center}
 .cpc-trust-title{font:700 14.5px/1.2 var(--font-body);color:var(--c-ink)}
 .cpc-trust-sub{font:400 12.5px/1.5 var(--font-body);color:var(--c-muted);margin-top:4px}
 
@@ -296,7 +296,7 @@ body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(-
   .cpc-grid3{grid-template-columns:1fr;gap:16px}
   .cpc-card-img{aspect-ratio:16/10}
 
-  .cpc-trust{grid-template-columns:1fr;text-align:left;gap:14px;padding:24px 22px}
+  .cpc-trust{margin:0;max-width:none;border-left:0;border-right:0;border-radius:0;grid-template-columns:1fr;text-align:left;gap:14px;padding:24px 22px}
 
   .cpc-olive-teaser{padding:8px 22px 26px}
   .cpc-olive-teaser-inner{flex-direction:column;align-items:stretch;padding:24px 22px}
