@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CPC_VERSION', '2.6.24' );
+define( 'CPC_VERSION', '2.6.26' );
 
 /* -----------------------------------------------------------------
  * 1. Theme supports
@@ -63,21 +63,21 @@ add_action( 'wp_enqueue_scripts', function () {
 		null
 	);
 
-	// NOTE: the CSS/JS filenames carry the version (curtin-2612.*) because the
+	// NOTE: the CSS/JS filenames carry the version (curtin-2614.*) because the
 	// SWAG/nginx proxy caches these static assets by PATH and ignores the ?ver
 	// query string — a plain version bump does NOT bust it (see
 	// Theme-Deployment-Notes.md §8). Renaming the file on every CSS/JS change is
 	// the reliable cache-bust. Bump both the filename and CPC_VERSION together.
 	wp_enqueue_style(
 		'cpc-main',
-		get_stylesheet_directory_uri() . '/assets/css/curtin-2612.css',
+		get_stylesheet_directory_uri() . '/assets/css/curtin-2614.css',
 		array( 'cpc-fonts' ),
 		CPC_VERSION
 	);
 
 	wp_enqueue_script(
 		'cpc-ui',
-		get_stylesheet_directory_uri() . '/assets/js/curtin-2612.js',
+		get_stylesheet_directory_uri() . '/assets/js/curtin-2614.js',
 		array(),
 		CPC_VERSION,
 		true
@@ -358,7 +358,7 @@ function cpc_products_shortcode( $atts ) {
 					// Olive-oil products get a green Add-to-cart button; everything else stays blue.
 					$add_olive = has_term( 'olive-oil', 'product_cat', $p->get_id() ) ? ' cpc-add--olive' : '';
 					?>
-					<div class="cpc-card cpc-lift">
+					<div class="cpc-card cpc-lift<?php echo '' !== $add_olive ? ' cpc-card--olive' : ''; ?>">
 						<a class="cpc-card-imglink" href="<?php echo esc_url( $link ); ?>">
 							<div class="cpc-card-img"><img src="<?php echo esc_url( $img ); ?>" alt="<?php echo esc_attr( $p->get_name() ); ?>"></div>
 						</a>
@@ -404,7 +404,7 @@ if ( ! function_exists( 'cpc_render_product_card' ) ) {
 		// Olive-oil products get a green Add-to-cart button; everything else stays blue.
 		$add_olive = has_term( 'olive-oil', 'product_cat', $p->get_id() ) ? ' cpc-add--olive' : '';
 		?>
-		<div class="cpc-card cpc-lift">
+		<div class="cpc-card cpc-lift<?php echo '' !== $add_olive ? ' cpc-card--olive' : ''; ?>">
 			<a class="cpc-card-imglink" href="<?php echo esc_url( $link ); ?>">
 				<div class="cpc-card-img"><img src="<?php echo esc_url( $img ); ?>" alt="<?php echo esc_attr( $p->get_name() ); ?>"></div>
 			</a>

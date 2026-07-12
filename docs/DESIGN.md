@@ -54,6 +54,7 @@ These are deliberate constraints — the store should stay simple and story‑le
 | Green tint | `#eaf6ef` | Mint surfaces |
 | Olive (solid) | `#2c4527` | Olive story / Thank‑You / mailing bands — **solid, no gradient** |
 | Olive fill / hover | `#3f6135` / `#2c4527` | Olive‑oil Add‑to‑cart button (fill / hover) |
+| Olive price / title‑hover | `#2c4527` / `#3f6135` | Olive‑oil **product card** price + card‑title on hover (olive overrides the default blue; scoped via `.cpc-card--olive`) |
 | Ink / Body / Muted | `#1a2026` / `#54606a` / `#8a8378` | Headings / copy / meta |
 | Surface / Line / Soft | `#f4f6f8` / `#eef0f2` / `#fbfcfe` | Image backing / borders / soft panels |
 
@@ -189,6 +190,4 @@ touch‑swipe / mouse‑drag.
   each product's featured image. Every set needs its own flat‑lay.
 - **Individual card designs** are used **only** as product‑page gallery thumbnails — never as
   a hero or listing image.
-- **Card sizes vary** — some sets are 120 × 120 mm square, others 105 × 150 mm portrait — so
-  don't force a square crop; keep each product's true aspect ratio. The P&C supplies final
-  photography.
+- **Card sizes vary** 

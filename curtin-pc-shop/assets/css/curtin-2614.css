@@ -109,6 +109,9 @@ body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(-
 .cpc-card-price{font:700 19px/1 var(--font-head);color:var(--c-blue-deep)}
 .cpc-card-add{font:700 13px/1 var(--font-body);color:#fff;background:var(--c-blue);border:1.5px solid var(--c-blue);padding:10px 16px;border-radius:var(--r-pill);cursor:pointer;text-decoration:none;display:inline-block}
 .cpc-card-add.cpc-add--olive{color:#fff;background:var(--c-olive-2);border-color:var(--c-olive-2)}
+/* Olive-oil product card: olive palette for price + hover title (overrides the default blue). */
+.cpc-card--olive .cpc-card-price{color:var(--c-olive-1)}
+.cpc-card--olive .cpc-card-titlelink:hover .cpc-card-title{color:var(--c-olive-2)}
 
 /* ---- Trust strip ------------------------------------------ */
 .cpc-trust{margin:40px auto 0;max-width:calc(var(--maxw) - 2*var(--gutter));padding:30px 40px;background:var(--c-page-tint);border:1px solid var(--c-line);border-radius:var(--r-band);display:grid;grid-template-columns:repeat(3,1fr);gap:24px;text-align:center}
