@@ -129,6 +129,43 @@ while ( have_posts() ) :
 	</section>
 
 	<?php
+	// --- Up-sells & cross-sells ---
+	// Adam wants both on the single product page (cross-sells normally show
+	// only on the cart). Each row reuses the canonical .cpc-card grid markup.
+	$cpc_related_sections = array(
+		array(
+			'ids'     => (array) $product->get_upsell_ids(),
+			'heading' => __( 'You may also like', 'curtin-pc-shop' ),
+		),
+		array(
+			'ids'     => (array) $product->get_cross_sell_ids(),
+			'heading' => __( 'Goes well with', 'curtin-pc-shop' ),
+		),
+	);
+	foreach ( $cpc_related_sections as $cpc_sec ) :
+		$cpc_ids = array_filter( array_map( 'absint', $cpc_sec['ids'] ) );
+		if ( empty( $cpc_ids ) || ! function_exists( 'cpc_render_product_card' ) ) {
+			continue;
+		}
+		$cpc_items = array();
+		foreach ( $cpc_ids as $cpc_id ) {
+			$cpc_p = wc_get_product( $cpc_id );
+			if ( $cpc_p && 'publish' === $cpc_p->get_status() && $cpc_p->is_visible() ) {
+				$cpc_items[] = $cpc_p;
+			}
+		}
+		if ( empty( $cpc_items ) ) {
+			continue;
+		}
+		?>
+		<section class="cpc-collection cpc-container cpc-related">
+			<div class="cpc-collection-head"><h2><?php echo esc_html( $cpc_sec['heading'] ); ?></h2></div>
+			<div class="cpc-grid3">
+				<?php foreach ( $cpc_items as $cpc_p ) { cpc_render_product_card( $cpc_p ); } ?>
+			</div>
+		</section>
+		<?php
+	endforeach;
 endwhile;
 
 get_footer();

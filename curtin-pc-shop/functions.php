@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CPC_VERSION', '2.6.15' );
+define( 'CPC_VERSION', '2.6.16' );
 
 /* -----------------------------------------------------------------
  * 1. Theme supports
@@ -353,6 +353,43 @@ function cpc_products_shortcode( $atts ) {
 	return ob_get_clean();
 }
 add_shortcode( 'cpc_products', 'cpc_products_shortcode' );
+
+/* -----------------------------------------------------------------
+ * cpc_render_product_card( $p ) — canonical .cpc-card markup used by
+ * the product grids. Registered here (not only in
+ * woocommerce/archive-product.php) so single-product.php can reuse it
+ * for the up-sell / cross-sell rows. archive-product.php keeps its own
+ * function_exists-guarded copy, which this definition pre-empts.
+ * --------------------------------------------------------------- */
+if ( ! function_exists( 'cpc_render_product_card' ) ) {
+	function cpc_render_product_card( $p ) {
+		if ( ! $p ) {
+			return;
+		}
+		$link = get_permalink( $p->get_id() );
+		$img  = $p->get_image_id() ? wp_get_attachment_image_url( $p->get_image_id(), 'large' ) : wc_placeholder_img_src( 'large' );
+		$meta = wp_strip_all_tags( $p->get_short_description() );
+		?>
+		<div class="cpc-card cpc-lift">
+			<a class="cpc-card-imglink" href="<?php echo esc_url( $link ); ?>">
+				<div class="cpc-card-img"><img src="<?php echo esc_url( $img ); ?>" alt="<?php echo esc_attr( $p->get_name() ); ?>"></div>
+			</a>
+			<div class="cpc-card-body">
+				<a class="cpc-card-titlelink" href="<?php echo esc_url( $link ); ?>"><span class="cpc-card-title"><?php echo esc_html( $p->get_name() ); ?></span></a>
+				<?php if ( '' !== $meta ) : ?><div class="cpc-card-meta"><?php echo esc_html( $meta ); ?></div><?php endif; ?>
+				<div class="cpc-card-foot">
+					<div class="cpc-card-price"><?php echo wp_kses_post( $p->get_price_html() ); ?></div>
+					<?php if ( $p->is_purchasable() && $p->is_in_stock() ) : ?>
+						<a href="<?php echo esc_url( $p->add_to_cart_url() ); ?>" data-quantity="1" data-product_id="<?php echo esc_attr( $p->get_id() ); ?>" class="cpc-add cpc-card-add add_to_cart_button ajax_add_to_cart" rel="nofollow"><?php esc_html_e( 'Add to cart', 'curtin-pc-shop' ); ?></a>
+					<?php else : ?>
+						<a class="cpc-add cpc-card-add" href="<?php echo esc_url( $link ); ?>"><?php esc_html_e( 'View', 'curtin-pc-shop' ); ?></a>
+					<?php endif; ?>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
+}
 
 /* -----------------------------------------------------------------
  * [cpc_category_tiles] — the two-up "shop by category" tiles used on
