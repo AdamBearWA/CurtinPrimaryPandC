@@ -48,8 +48,9 @@ body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(-
 .cpc-header{display:flex;align-items:center;justify-content:space-between;padding:22px var(--gutter);border-bottom:1px solid var(--c-line)}
 .cpc-brand{display:flex;align-items:center;gap:12px;text-decoration:none}
 .cpc-brand-mark{flex:none}
+.cpc-brand-logo{flex:none;height:60px;width:auto;display:block}
 .cpc-brand-text{line-height:1.05}
-.cpc-brand-name{font:800 17px/1 var(--font-head);color:var(--c-blue-deep);letter-spacing:-.01em}
+.cpc-brand-name{font:800 22px/1.05 var(--font-head);color:var(--c-blue-deep);letter-spacing:-.01em}
 .cpc-brand-sub{font:600 10px/1 var(--font-body);letter-spacing:.18em;text-transform:uppercase;color:var(--c-green);margin-top:4px}
 .cpc-nav{display:flex;align-items:center;gap:26px;font:600 15px/1 var(--font-body);color:var(--c-body-2)}
 .cpc-nav a{color:var(--c-body-2);text-decoration:none}
@@ -276,6 +277,7 @@ body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(-
   .cpc-cart-label{display:none}
   .cpc-cart{background:none;padding:10px;min-width:44px;min-height:44px;justify-content:center;color:var(--c-blue-deep)}
   .cpc-brand-text{display:none}
+  .cpc-brand-logo{height:48px}
   .cpc-mobile-logo{display:flex;align-items:center;gap:8px}
   .cpc-mobile-logo span{font:800 15px/1 var(--font-head);color:var(--c-blue-deep)}
   .cpc-brand{position:absolute;left:50%;transform:translateX(-50%)}

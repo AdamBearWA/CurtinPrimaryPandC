@@ -18,7 +18,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="cpc-footer-top">
 			<div class="cpc-footer-brand">
 				<div class="cpc-footer-brand-row">
-					<?php echo cpc_bird( 38, 27, '#dfeaf3' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 					<div class="cpc-footer-brand-name"><?php esc_html_e( 'Curtin Primary School P&C', 'curtin-pc-shop' ); ?></div>
 				</div>
 				<p class="cpc-footer-blurb"><?php esc_html_e( 'An initiative of the Curtin Primary School Parents & Citizens Association.', 'curtin-pc-shop' ); ?></p>

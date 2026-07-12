@@ -98,9 +98,9 @@ between sections.
 
 - **Announcement bar** — deep‑blue, centred: **"Created by our community · 100% of profits
   support our P&C"**.
-- **Header** — bird mark + "Curtin Primary School" / "P&C Shop"; primary nav **Home · Olive
+- **Header** — the school bird logo (JPEG) + a "Curtin Primary School P&C" wordmark in Bricolage Grotesque; primary nav **Home · Olive
   oil · Art cards · Contact** (active item blue); blue‑tint cart pill ("Cart · N").
-- **Footer** — navy. Bird mark + "Curtin Primary School P&C" + "An initiative of the Curtin
+- **Footer** — navy. "Curtin Primary School P&C" + "An initiative of the Curtin
   Primary School Parents & Citizens Association."; **Shop** column (Art cards, Olive oil) and
   **Help** column (Contact the P&C); Whadjuk Noongar acknowledgement; "© <year> Curtin
   Primary School P&C · Built on WooCommerce · Secure payments by Square".

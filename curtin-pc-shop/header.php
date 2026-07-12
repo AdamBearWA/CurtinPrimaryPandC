@@ -47,10 +47,9 @@ $cpc_is_flow = is_front_page() || is_page( array( 'shop', 'olive-oil', 'art-card
 		</button>
 
 		<a class="cpc-brand" href="<?php echo esc_url( home_url( '/' ) ); ?>">
-			<?php echo cpc_bird( 42, 29, '#1d6fb8' ); ?>
+			<img class="cpc-brand-logo" src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/curtin-bird.jpg' ); ?>" width="60" height="60" alt="<?php esc_attr_e( 'Curtin Primary School', 'curtin-pc-shop' ); ?>">
 			<span class="cpc-brand-text">
-				<span class="cpc-brand-name"><?php esc_html_e( 'Curtin Primary School', 'curtin-pc-shop' ); ?></span>
-				<span class="cpc-brand-sub"><?php esc_html_e( 'P&C Shop', 'curtin-pc-shop' ); ?></span>
+				<span class="cpc-brand-name"><?php esc_html_e( 'Curtin Primary School P&C', 'curtin-pc-shop' ); ?></span>
 			</span>
 		</a>
 
