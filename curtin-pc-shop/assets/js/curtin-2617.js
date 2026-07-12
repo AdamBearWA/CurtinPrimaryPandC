@@ -373,8 +373,6 @@
   var isCheckout = !!document.querySelector('.wp-block-woocommerce-checkout');
   if ((!isCart && !isCheckout) || !document.body.classList.contains('cpc-has-oil')) { return; }
 
-  var BLOCK_MSG = 'Curtin Gold olive oil can only be delivered within postcode 6152 (Como, Karawara, Manning, Salter Point, Waterford). Please choose Local Pickup, or remove the olive oil, to continue. Greeting cards can be posted anywhere in Australia.';
-
   function sel(store){ try { return (window.wp && wp.data) ? wp.data.select(store) : null; } catch (e) { return null; } }
   function shipPostcode(){
     try {
@@ -389,27 +387,11 @@
     catch (e) { return false; }
   }
 
-  function ensureCheckoutAlert(blocked){
-    var existing = document.querySelector('.cpc-oil-alert');
-    if (!blocked){ if (existing) { existing.remove(); } return; }
-    if (existing) { return; }
-    var host = document.querySelector('.wp-block-woocommerce-checkout .wc-block-checkout__main')
-            || document.querySelector('.wp-block-woocommerce-checkout form')
-            || document.querySelector('.wp-block-woocommerce-checkout');
-    if (!host) { return; }
-    var el = document.createElement('div');
-    el.className = 'cpc-oil-alert';
-    el.setAttribute('role', 'alert');
-    el.textContent = BLOCK_MSG;
-    host.insertBefore(el, host.firstChild);
-  }
-
   function apply(){
     var pc = shipPostcode();
     var blocked = !prefersCollection() && pc !== '' && pc !== '6152';
     document.body.classList.toggle('cpc-oil-blocked', blocked);
     if (isCheckout){
-      ensureCheckoutAlert(blocked);
       document.querySelectorAll('.wc-block-components-checkout-place-order-button').forEach(function (btn){
         if (blocked){ btn.setAttribute('disabled', 'disabled'); btn.setAttribute('aria-disabled', 'true'); }
         else if (btn.getAttribute('aria-disabled') === 'true'){ btn.removeAttribute('disabled'); btn.removeAttribute('aria-disabled'); }

@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CPC_VERSION', '2.7.1' );
+define( 'CPC_VERSION', '2.7.2' );
 
 /* -----------------------------------------------------------------
  * 1. Theme supports
@@ -63,21 +63,21 @@ add_action( 'wp_enqueue_scripts', function () {
 		null
 	);
 
-	// NOTE: the CSS/JS filenames carry the version (curtin-2616.*) because the
+	// NOTE: the CSS/JS filenames carry the version (curtin-2617.*) because the
 	// SWAG/nginx proxy caches these static assets by PATH and ignores the ?ver
 	// query string — a plain version bump does NOT bust it (see
 	// Theme-Deployment-Notes.md §8). Renaming the file on every CSS/JS change is
 	// the reliable cache-bust. Bump both the filename and CPC_VERSION together.
 	wp_enqueue_style(
 		'cpc-main',
-		get_stylesheet_directory_uri() . '/assets/css/curtin-2616.css',
+		get_stylesheet_directory_uri() . '/assets/css/curtin-2617.css',
 		array( 'cpc-fonts' ),
 		CPC_VERSION
 	);
 
 	wp_enqueue_script(
 		'cpc-ui',
-		get_stylesheet_directory_uri() . '/assets/js/curtin-2616.js',
+		get_stylesheet_directory_uri() . '/assets/js/curtin-2617.js',
 		array(),
 		CPC_VERSION,
 		true
@@ -566,8 +566,13 @@ function cpc_category_shipping_rates( $rates, $package ) {
 	// withdraw paid delivery (can't be posted). Local Pickup / other
 	// methods are left untouched so the oil can still be collected.
 	if ( $oil_qty > 0 && ! $oil_deliverable ) {
+		// Remove every zone delivery/pickup rate (Flat rate and any legacy zone
+		// Local Pickup) so an express wallet (Apple Pay / Google Pay) can't
+		// silently fall back to a zone pickup rate for an out-of-area oil order.
+		// Genuine collection uses the block "Local pickup" toggle (pickup_location),
+		// which is not a zone rate and is unaffected.
 		foreach ( $rates as $rate_id => $rate ) {
-			if ( 'flat_rate' === $rate->get_method_id() ) {
+			if ( in_array( $rate->get_method_id(), array( 'flat_rate', 'local_pickup' ), true ) ) {
 				unset( $rates[ $rate_id ] );
 			}
 		}

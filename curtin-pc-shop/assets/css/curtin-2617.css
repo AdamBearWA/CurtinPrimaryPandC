@@ -741,9 +741,3 @@ body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(-
 /* Olive oil headed outside postcode 6152: hide the (misleading) Shipping
    totals row — delivery is unavailable. JS toggles body.cpc-oil-blocked. */
 .cpc-oil-blocked .wc-block-components-totals-shipping{display:none!important}
-
-/* Self-contained out-of-area alert injected on the checkout (mirrors the
-   server-side cart banner so the message is consistent on both pages). */
-.cpc-oil-alert{margin:0 0 20px;padding:14px 18px;border:1px solid #d63638;
-  background:#fcf0f1;color:#8a1f21;border-radius:12px;
-  font:600 15px/1.5 var(--font-body)}
