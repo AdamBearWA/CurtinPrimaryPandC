@@ -37,7 +37,7 @@ The per-version changelog that used to live here has been removed — **the auth
 Every new version must land in Git and as a GitHub Release, not just as a zip handed to Adam. Follow the full "Release checklist" at the bottom of this file. The two things that matter most for traceability:
 
 - **Commit message**: `Theme vX.Y.Z: <one-line summary of the change>`, committed as Adam with no Claude co-author trailers (identity `Adam Niedzwiedz <AdamBearWA@users.noreply.github.com>`). The one-line summary is what replaces the old changelog, so make it specific (what changed and where), e.g. `Theme v2.6.17: remove top hero from Art cards page (page-art-cards.php)`.
-- **Release notes**: publish with `gh release create vX.Y.Z` and attach the built zip; the `--notes` text should describe the change and call out whether assets were cache-bust renamed and whether it's been verified live yet.
+- **Release notes**: publish with `gh release create vX.Y.Z` and attach the built zip. The **release title must be the same as the tag** (`vX.Y.Z`, no "curtin-pc-shop" prefix). The `--notes` text should describe the change and call out whether assets were cache-bust renamed and whether it's been verified live yet.
 
 **Never assume the source folder matches production.** Confirm the true `CPC_VERSION` via Appearance → Themes → Theme Details on the live site (see §1) before building on top of local files — a version may have been built and handed off but not yet uploaded, or uploaded and reverted.
 
@@ -87,7 +87,7 @@ The theme is version-controlled at **github.com/AdamBearWA/CurtinPrimaryPandC** 
 3. **Sync source into the repo** — copy the updated `curtin-pc-shop/` over the clone's `curtin-pc-shop/`. Keep the repo's `docs/` copies in sync with the project-folder docs when they change.
 4. **Commit as Adam, no Claude co-author trailers** (identity `Adam Niedzwiedz <AdamBearWA@users.noreply.github.com>`): `git add -A && git commit -m "Theme vX.Y.Z: <one-line summary>"`.
 5. **Push**: `git push origin main`.
-6. **Publish the GitHub Release** with the zip attached (tag `vX.Y.Z`, at the commit just pushed): `gh release create vX.Y.Z "curtin-pc-shop-vX.Y.Z.zip" --title "curtin-pc-shop vX.Y.Z" --notes "<summary>"` (`gh auth login` once first). `create-github-releases.ps1` in the project folder did the historical backfill (v2.5.3 -> v2.6.15) and is the pattern to copy for a single new release.
+6. **Publish the GitHub Release** with the zip attached (tag `vX.Y.Z`, at the commit just pushed): `gh release create vX.Y.Z "curtin-pc-shop-vX.Y.Z.zip" --title "vX.Y.Z" --notes "<summary>"` (the Release **title must equal the tag** — just `vX.Y.Z`) (`gh auth login` once first). `create-github-releases.ps1` in the project folder did the historical backfill (v2.5.3 -> v2.6.15) and is the pattern to copy for a single new release.
 7. **Then deploy** to the live site and verify in an authenticated, cache-busted browser (see §3-§4).
 
 Reminder: the Cowork/Linux sandbox corrupts Git on the mounted project folder — do any Git work on native fs (e.g. `/tmp`) and hand off via a `git bundle`; Adam pushes from his Windows clone.

@@ -1,5 +1,5 @@
 /* ============================================================
-   Curtin Primary School P&C Shop — theme stylesheet (v2)
+   Curtin Primary P&C Shop — theme stylesheet (v2)
    Ported faithfully from reference/*.html + reference/styles.css.
    Loaded LAST (see functions.php) so it beats Storefront + Woo.
    All selectors are scoped under .cpc-* to avoid collateral damage.
@@ -727,3 +727,23 @@ body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(-
 .cpc-olive-page .cpc-story{background:var(--c-olive-1);color:#eef3e6}
 .cpc-olive-page .cpc-story h2{color:#fff}
 .cpc-olive-page .cpc-story-cols p{color:#d6e3c7}
+
+/* ============================================================
+   v2.7.1 — olive-oil out-of-area delivery UI
+   ============================================================ */
+/* Hide the WooCommerce block-notice dismiss button. Our global
+   .wc-block-components-button pill styling was rendering it as an empty
+   blue pill on the cart/checkout validation banners. These are blocking
+   validation notices, so they shouldn't be dismissible anyway. */
+.cpc-page .wc-block-components-notice-banner__dismiss,
+.cpc-woo .wc-block-components-notice-banner__dismiss{display:none!important}
+
+/* Olive oil headed outside postcode 6152: hide the (misleading) Shipping
+   totals row — delivery is unavailable. JS toggles body.cpc-oil-blocked. */
+.cpc-oil-blocked .wc-block-components-totals-shipping{display:none!important}
+
+/* Self-contained out-of-area alert injected on the checkout (mirrors the
+   server-side cart banner so the message is consistent on both pages). */
+.cpc-oil-alert{margin:0 0 20px;padding:14px 18px;border:1px solid #d63638;
+  background:#fcf0f1;color:#8a1f21;border-radius:12px;
+  font:600 15px/1.5 var(--font-body)}

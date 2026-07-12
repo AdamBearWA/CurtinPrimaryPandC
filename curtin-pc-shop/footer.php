@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="cpc-footer-top">
 			<div class="cpc-footer-brand">
 				<div class="cpc-footer-brand-row">
-					<div class="cpc-footer-brand-name"><?php esc_html_e( 'Curtin Primary School P&C', 'curtin-pc-shop' ); ?></div>
+					<div class="cpc-footer-brand-name"><?php esc_html_e( 'Curtin Primary P&C', 'curtin-pc-shop' ); ?></div>
 				</div>
 				<p class="cpc-footer-blurb"><?php esc_html_e( 'An initiative of the Curtin Primary School Parents & Citizens Association.', 'curtin-pc-shop' ); ?></p>
 			</div>
@@ -40,7 +40,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 		<div class="cpc-footer-base">
 			<div><?php esc_html_e( 'We acknowledge the Whadjuk Noongar people, traditional custodians of this land.', 'curtin-pc-shop' ); ?></div>
-			<div><?php printf( esc_html__( '© %s Curtin Primary School P&C · Built on WooCommerce · Secure payments by Square', 'curtin-pc-shop' ), esc_html( gmdate( 'Y' ) ) ); ?></div>
+			<div><?php printf( esc_html__( '© %s Curtin Primary P&C · Built on WooCommerce · Secure payments by Square', 'curtin-pc-shop' ), esc_html( gmdate( 'Y' ) ) ); ?></div>
 		</div>
 	</div>
 </footer>

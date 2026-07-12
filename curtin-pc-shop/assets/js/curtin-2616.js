@@ -254,7 +254,7 @@
   if (!document.querySelector('.wp-block-woocommerce-checkout')) { return; }
 
   var PICKUP_ADDR = { country: 'AU', address_1: '20 Goss Avenue', address_2: '', city: 'Manning', state: 'WA', postcode: '6152' };
-  var DELIVERY_MSG = 'We currently deliver within postcode 6152 only — Karawara, Manning, Salter Point and Como. This address is outside our delivery area, so please choose “Pickup” above, or use an address within 6152.';
+  var DELIVERY_MSG = 'Curtin Gold olive oil can only be delivered within postcode 6152 (Como, Karawara, Manning, Salter Point, Waterford). Please choose “Pickup” above, or use an address within 6152 — greeting cards can be posted anywhere in Australia.';
 
   function sel(store){ try { return (window.wp && wp.data) ? wp.data.select(store) : null; } catch (e) { return null; } }
   function prefersCollection(){ try { var s = sel('wc/store/checkout'); return !!(s && s.prefersCollection && s.prefersCollection()); } catch (e) { return false; } }
@@ -356,4 +356,67 @@
   }
   if (document.readyState !== 'loading') { initCarousels(); }
   else { document.addEventListener('DOMContentLoaded', initCarousels); }
+})();
+
+/* ============================================================
+   v2.7.1 — olive-oil out-of-area guard (block cart + checkout).
+   The real block is server-side (functions.php §7b); this mirrors it in
+   the React cart/checkout so the UI is consistent: toggles
+   body.cpc-oil-blocked (CSS hides the misleading Shipping row), injects a
+   matching alert on the checkout, and disables Place order while an
+   out-of-area olive-oil delivery is selected. Runs only when the cart
+   actually holds olive oil (body.cpc-has-oil).
+   ============================================================ */
+(function () {
+  'use strict';
+  var isCart = !!document.querySelector('.wp-block-woocommerce-cart');
+  var isCheckout = !!document.querySelector('.wp-block-woocommerce-checkout');
+  if ((!isCart && !isCheckout) || !document.body.classList.contains('cpc-has-oil')) { return; }
+
+  var BLOCK_MSG = 'Curtin Gold olive oil can only be delivered within postcode 6152 (Como, Karawara, Manning, Salter Point, Waterford). Please choose Local Pickup, or remove the olive oil, to continue. Greeting cards can be posted anywhere in Australia.';
+
+  function sel(store){ try { return (window.wp && wp.data) ? wp.data.select(store) : null; } catch (e) { return null; } }
+  function shipPostcode(){
+    try {
+      var c = sel('wc/store/cart');
+      var d = c && c.getCustomerData && c.getCustomerData();
+      var pc = (d && d.shippingAddress && d.shippingAddress.postcode) || '';
+      return String(pc).toUpperCase().replace(/\s+/g, '');
+    } catch (e) { return ''; }
+  }
+  function prefersCollection(){
+    try { var s = sel('wc/store/checkout'); return !!(s && s.prefersCollection && s.prefersCollection()); }
+    catch (e) { return false; }
+  }
+
+  function ensureCheckoutAlert(blocked){
+    var existing = document.querySelector('.cpc-oil-alert');
+    if (!blocked){ if (existing) { existing.remove(); } return; }
+    if (existing) { return; }
+    var host = document.querySelector('.wp-block-woocommerce-checkout .wc-block-checkout__main')
+            || document.querySelector('.wp-block-woocommerce-checkout form')
+            || document.querySelector('.wp-block-woocommerce-checkout');
+    if (!host) { return; }
+    var el = document.createElement('div');
+    el.className = 'cpc-oil-alert';
+    el.setAttribute('role', 'alert');
+    el.textContent = BLOCK_MSG;
+    host.insertBefore(el, host.firstChild);
+  }
+
+  function apply(){
+    var pc = shipPostcode();
+    var blocked = !prefersCollection() && pc !== '' && pc !== '6152';
+    document.body.classList.toggle('cpc-oil-blocked', blocked);
+    if (isCheckout){
+      ensureCheckoutAlert(blocked);
+      document.querySelectorAll('.wc-block-components-checkout-place-order-button').forEach(function (btn){
+        if (blocked){ btn.setAttribute('disabled', 'disabled'); btn.setAttribute('aria-disabled', 'true'); }
+        else if (btn.getAttribute('aria-disabled') === 'true'){ btn.removeAttribute('disabled'); btn.removeAttribute('aria-disabled'); }
+      });
+    }
+  }
+
+  var iv = setInterval(apply, 400);
+  if (document.readyState !== 'loading') { apply(); } else { document.addEventListener('DOMContentLoaded', apply); }
 })();

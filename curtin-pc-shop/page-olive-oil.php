@@ -66,7 +66,7 @@ if ( $olive_product ) {
 		<div>
 			<div class="cpc-feature-icon" aria-hidden="true">&#10084;&#65039;</div>
 			<div class="cpc-feature-title"><?php esc_html_e( 'Supporting our community', 'curtin-pc-shop' ); ?></div>
-			<p class="cpc-feature-text"><?php esc_html_e( 'Every purchase helps the Curtin Primary School P&C create projects, events and initiatives that bring people together.', 'curtin-pc-shop' ); ?></p>
+			<p class="cpc-feature-text"><?php esc_html_e( 'Every purchase helps the Curtin Primary P&C create projects, events and initiatives that bring people together.', 'curtin-pc-shop' ); ?></p>
 		</div>
 	</div>
 </section>
@@ -83,10 +83,11 @@ if ( $olive_product ) {
 			<div class="cpc-olive-delivery-title"><?php esc_html_e( 'Local delivery', 'curtin-pc-shop' ); ?></div>
 			<p><?php esc_html_e( 'Local delivery is available to:', 'curtin-pc-shop' ); ?></p>
 			<ul class="cpc-olive-suburbs">
+				<li><?php esc_html_e( 'Como', 'curtin-pc-shop' ); ?></li>
 				<li><?php esc_html_e( 'Karawara', 'curtin-pc-shop' ); ?></li>
 				<li><?php esc_html_e( 'Manning', 'curtin-pc-shop' ); ?></li>
 				<li><?php esc_html_e( 'Salter Point', 'curtin-pc-shop' ); ?></li>
-				<li><?php esc_html_e( 'Como', 'curtin-pc-shop' ); ?></li>
+				<li><?php esc_html_e( 'Waterford', 'curtin-pc-shop' ); ?></li>
 			</ul>
 			<p><?php esc_html_e( 'Delivery is $5, or free when you purchase two or more bottles.', 'curtin-pc-shop' ); ?></p>
 		</div>
@@ -136,7 +137,7 @@ if ( $olive_product ) {
 		</details>
 		<details class="cpc-faq-item">
 			<summary><?php esc_html_e( "What if I can't make the collection time?", 'curtin-pc-shop' ); ?></summary>
-			<p><?php esc_html_e( 'If you order two bottles or more and live in Karawara, Como, Manning or Salter Point, we will deliver it to you for free on the day of collection! We will leave your oil in a safe place if nobody is home. If you only wish to order one bottle, please contact us and we\'ll work it out together.', 'curtin-pc-shop' ); ?></p>
+			<p><?php esc_html_e( 'If you order two bottles or more and live in Como, Karawara, Manning, Salter Point or Waterford, we will deliver it to you for free on the day of collection! We will leave your oil in a safe place if nobody is home. If you only wish to order one bottle, please contact us and we\'ll work it out together.', 'curtin-pc-shop' ); ?></p>
 		</details>
 		<details class="cpc-faq-item">
 			<summary><?php esc_html_e( 'Can I purchase gifts?', 'curtin-pc-shop' ); ?></summary>

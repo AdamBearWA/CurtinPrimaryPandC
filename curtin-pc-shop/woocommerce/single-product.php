@@ -117,14 +117,6 @@ while ( have_posts() ) :
 				<div class="cpc-buyrow"><span class="cpc-addtocart" style="opacity:.6;cursor:default"><?php esc_html_e( 'Currently unavailable', 'curtin-pc-shop' ); ?></span></div>
 			<?php endif; ?>
 
-			<div class="cpc-prows">
-				<?php if ( $is_olive ) : ?>
-					<div class="cpc-prow"><?php esc_html_e( 'Free collection', 'curtin-pc-shop' ); ?> <span class="cpc-prow-sub"><?php esc_html_e( 'Collect your order from Karawara on Sunday, 2 August from 2-4pm', 'curtin-pc-shop' ); ?></span></div>
-					<div class="cpc-prow"><?php esc_html_e( 'Local delivery', 'curtin-pc-shop' ); ?> <span class="cpc-prow-sub"><?php esc_html_e( 'Karawara, Manning, Salter Point & Como — $5, or free for 2+ bottles', 'curtin-pc-shop' ); ?></span></div>
-				<?php else : ?>
-					<div class="cpc-prow"><?php esc_html_e( 'Free pickup', 'curtin-pc-shop' ); ?></div>
-				<?php endif; ?>
-			</div>
 		</div>
 	</section>
 

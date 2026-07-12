@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CPC_VERSION', '2.7.0' );
+define( 'CPC_VERSION', '2.7.1' );
 
 /* -----------------------------------------------------------------
  * 1. Theme supports
@@ -63,21 +63,21 @@ add_action( 'wp_enqueue_scripts', function () {
 		null
 	);
 
-	// NOTE: the CSS/JS filenames carry the version (curtin-2615.*) because the
+	// NOTE: the CSS/JS filenames carry the version (curtin-2616.*) because the
 	// SWAG/nginx proxy caches these static assets by PATH and ignores the ?ver
 	// query string — a plain version bump does NOT bust it (see
 	// Theme-Deployment-Notes.md §8). Renaming the file on every CSS/JS change is
 	// the reliable cache-bust. Bump both the filename and CPC_VERSION together.
 	wp_enqueue_style(
 		'cpc-main',
-		get_stylesheet_directory_uri() . '/assets/css/curtin-2615.css',
+		get_stylesheet_directory_uri() . '/assets/css/curtin-2616.css',
 		array( 'cpc-fonts' ),
 		CPC_VERSION
 	);
 
 	wp_enqueue_script(
 		'cpc-ui',
-		get_stylesheet_directory_uri() . '/assets/js/curtin-2615.js',
+		get_stylesheet_directory_uri() . '/assets/js/curtin-2616.js',
 		array(),
 		CPC_VERSION,
 		true
@@ -190,6 +190,16 @@ add_filter( 'woocommerce_cart_needs_shipping', function ( $needs ) {
 add_filter( 'body_class', function ( $classes ) {
 	if ( function_exists( 'is_cart' ) && ( is_cart() || is_checkout() || is_account_page() ) ) {
 		$classes[] = 'cpc-woo';
+	}
+	// Flag carts containing olive oil so the block cart/checkout JS + CSS can
+	// mirror the 6152 delivery rule in the UI (server-side block is §7b).
+	if ( function_exists( 'WC' ) && WC()->cart ) {
+		foreach ( WC()->cart->get_cart() as $cpc_item ) {
+			if ( ! empty( $cpc_item['product_id'] ) && has_term( 'olive-oil', 'product_cat', $cpc_item['product_id'] ) ) {
+				$classes[] = 'cpc-has-oil';
+				break;
+			}
+		}
 	}
 	return $classes;
 } );
@@ -517,8 +527,8 @@ add_action( 'wp_enqueue_scripts', function () {
  *      - Art Cards: flat $5 per order, ANY quantity, delivered
  *        ANYWHERE in Australia.
  *      - Olive oil: $5 for a single bottle, FREE for 2+ bottles;
- *        delivery restricted to postcode 6152 (Karawara, Manning,
- *        Salter Point, Como). Local Pickup stays available for oil
+ *        delivery restricted to postcode 6152 (Como, Karawara,
+ *        Manning, Salter Point, Waterford). Local Pickup stays available for oil
  *        going anywhere.
  *      - Combined cart: the two costs add together (cards + 1 oil =
  *        $10; cards + 2 oil = $5).
@@ -657,7 +667,7 @@ function cpc_oil_delivery_blocked() {
 
 /** Clear message shown when olive-oil delivery is blocked. */
 function cpc_oil_block_message() {
-	return __( 'Curtin Gold olive oil can only be delivered within postcode 6152 (Karawara, Manning, Salter Point, Como). Please choose Local Pickup, or remove the olive oil, to continue. Greeting cards can be posted anywhere in Australia.', 'curtin-pc-shop' );
+	return __( 'Curtin Gold olive oil can only be delivered within postcode 6152 (Como, Karawara, Manning, Salter Point, Waterford). Please choose Local Pickup, or remove the olive oil, to continue. Greeting cards can be posted anywhere in Australia.', 'curtin-pc-shop' );
 }
 
 // Store API — covers the block checkout AND Apple Pay / Google Pay express wallets.

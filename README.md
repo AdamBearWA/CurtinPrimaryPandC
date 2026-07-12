@@ -1,6 +1,6 @@
-# Curtin Primary School P&C Shop — `curtin-pc-shop` theme
+# Curtin Primary P&C Shop — `curtin-pc-shop` theme
 
-The custom WordPress theme powering the **Curtin Primary School P&C** fundraising
+The custom WordPress theme powering the **Curtin Primary P&C** fundraising
 store, live at **https://store.curtinprimarypandc.com.au**.
 
 It is a child theme of **Storefront** (WooCommerce) for a small, story‑led shop that
@@ -59,6 +59,23 @@ the theme or deploying.** The critical rules, learned from real production incid
   site before building on top of it.
 - **Verify every deploy** in an authenticated, cache‑busted browser (shop archive, a
   single product, and cart/checkout) — a broken template can look fine from wp‑admin.
+
+## Shipping & delivery
+
+Shipping is calculated in code (`functions.php` §7) because the rules can't be
+expressed in native WooCommerce settings. WooCommerce → Shipping needs just **one
+Australia‑wide zone** with a **Flat rate** (cost 0 — the code sets the real amount)
+plus **Local Pickup**.
+
+- **Art cards** — flat **$5 per order, any quantity, anywhere in Australia**.
+- **Curtin Gold olive oil** — **$5 for one bottle, free for two or more**; delivery is
+  **restricted to postcode 6152** (Como, Karawara, Manning, Salter Point, Waterford).
+  Local Pickup is available anywhere.
+- **Combined carts** add the two together (cards + 1 oil = $10; cards + 2 oil = $5).
+- If the cart holds olive oil and the shipping address is outside 6152, delivery is
+  **blocked** server‑side across the block checkout and Apple Pay / Google Pay
+  (`woocommerce_store_api_cart_errors`) and classic checkout, with a clear notice; the
+  block cart/checkout JS mirrors it (hides the Shipping row, disables Place order).
 
 ## Hosting
 
