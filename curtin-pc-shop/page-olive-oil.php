@@ -38,9 +38,6 @@ if ( $olive_product ) {
 	<div class="cpc-olive-hero-copy">
 		<h1><?php esc_html_e( 'A harvest shared by our community.', 'curtin-pc-shop' ); ?></h1>
 		<p class="cpc-olive-lede"><?php esc_html_e( 'Last autumn, something special happened in Karawara. Local residents invited us to harvest the olives from the trees outside their homes. Families from the Curtin Primary community then come together to turn them into our limited seasonal release of extra virgin olive oil.', 'curtin-pc-shop' ); ?></p>
-		<div class="cpc-cta-row">
-			<a class="cpc-btn cpc-cta" href="#cpc-shop"><?php esc_html_e( 'Shop now', 'curtin-pc-shop' ); ?></a>
-		</div>
 	</div>
 
 	<div class="cpc-olive-hero-art">
@@ -64,7 +61,6 @@ if ( $olive_product ) {
 		<div>
 			<p><?php esc_html_e( 'Every bottle celebrates the generosity of our neighbours, the efforts of our volunteers and the power of a community working together.', 'curtin-pc-shop' ); ?></p>
 			<p><?php esc_html_e( "By purchasing a bottle, you're helping this project continue to grow.", 'curtin-pc-shop' ); ?></p>
-			<a class="cpc-lnk cpc-cta-text" href="#cpc-shop" style="color:#fff"><?php esc_html_e( 'Shop our Olive Oil', 'curtin-pc-shop' ); ?></a>
 		</div>
 	</div>
 </section>

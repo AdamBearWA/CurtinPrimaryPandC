@@ -109,7 +109,7 @@ while ( have_posts() ) :
 						<input type="number" name="quantity" value="1" min="1" step="1" inputmode="numeric" aria-label="<?php esc_attr_e( 'Quantity', 'curtin-pc-shop' ); ?>">
 						<button type="button" data-step="up" aria-label="<?php esc_attr_e( 'Increase quantity', 'curtin-pc-shop' ); ?>">+</button>
 					</div>
-					<button type="submit" name="add-to-cart" value="<?php echo esc_attr( $product->get_id() ); ?>" class="cpc-btn cpc-addtocart">
+					<button type="submit" name="add-to-cart" value="<?php echo esc_attr( $product->get_id() ); ?>" class="cpc-btn cpc-addtocart<?php echo $is_olive ? ' cpc-add--olive' : ''; ?>">
 						<?php printf( esc_html__( 'Add to cart · %s', 'curtin-pc-shop' ), esc_html( $price_plain ) ); ?>
 					</button>
 				</form>
