@@ -237,7 +237,7 @@ body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(-
 .cpc-olive-thanks-cols p{margin:0}
 
 /* ---- Olive: FAQ ------------------------------------------------ */
-.cpc-olive-faq{padding:64px 56px;max-width:calc(var(--maxw) - 2*var(--gutter));margin:0 auto}
+.cpc-olive-faq{padding:64px 0;max-width:calc(var(--maxw) - 2*var(--gutter));margin:0 auto}
 .cpc-olive-faq h2{margin:0 0 20px;font:700 30px/1.15 var(--font-head);color:var(--c-ink);letter-spacing:-.01em}
 .cpc-faq-list{display:flex;flex-direction:column;gap:10px}
 .cpc-faq-item{border:1px solid var(--c-line);border-radius:var(--r-card);padding:18px 22px;background:var(--c-page-tint)}
