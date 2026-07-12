@@ -28,3 +28,6 @@ vendor/
 # ─── WordPress runtime — never commit ─────────────────
 wp-config.php
 *.sql
+
+# FUSE filesystem artifacts (Unraid/Docker mount)
+.fuse_hidden*
