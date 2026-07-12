@@ -56,6 +56,8 @@ if ( $olive_product ) {
 		<div>
 			<p style="color:#fff;font-weight:600;max-width:none"><?php esc_html_e( "From Karawara's trees to your table", 'curtin-pc-shop' ); ?></p>
 			<p><?php esc_html_e( 'This autumn, a simple idea brought our community together. Inspired by one of our P&C mums, who wondered whether the olives growing throughout Karawara could be put to good use, the Curtin Primary School P&C set out to create something special.', 'curtin-pc-shop' ); ?></p>
+		</div>
+		<div>
 			<p><?php esc_html_e( 'After receiving the generous support of local residents, families from our school community came together to harvest thousands of olives by hand. The olives were then professionally cold pressed in York into our limited seasonal release of 100% extra virgin olive oil.', 'curtin-pc-shop' ); ?></p>
 		</div>
 		<div>
@@ -113,11 +115,19 @@ if ( $olive_product ) {
 	<div class="cpc-olive-thanks-inner">
 		<h2><?php esc_html_e( 'Thank You', 'curtin-pc-shop' ); ?></h2>
 		<p class="cpc-olive-thanks-kicker"><?php esc_html_e( 'Behind every bottle is a community.', 'curtin-pc-shop' ); ?></p>
-		<p><?php esc_html_e( 'Some people share the olives from the trees outside their homes.', 'curtin-pc-shop' ); ?></p>
-		<p><?php esc_html_e( 'Some spend the morning harvesting.', 'curtin-pc-shop' ); ?></p>
-		<p><?php esc_html_e( 'Others bottle the oil, apply labels, organise the online store, coordinate collections and deliveries, or quietly take care of the countless details that make a project like this possible.', 'curtin-pc-shop' ); ?></p>
-		<p><?php esc_html_e( 'Together, those generous contributions become something special: a bottle of olive oil that reflects the creativity, generosity and spirit of our Curtin Primary P&C community.', 'curtin-pc-shop' ); ?></p>
-		<p><?php esc_html_e( 'Thank you for helping us keep it growing.', 'curtin-pc-shop' ); ?></p>
+		<div class="cpc-olive-thanks-cols">
+			<div>
+				<p><?php esc_html_e( 'Some people share the olives from the trees outside their homes.', 'curtin-pc-shop' ); ?></p>
+				<p><?php esc_html_e( 'Some spend the morning harvesting.', 'curtin-pc-shop' ); ?></p>
+			</div>
+			<div>
+				<p><?php esc_html_e( 'Others bottle the oil, apply labels, organise the online store, coordinate collections and deliveries, or quietly take care of the countless details that make a project like this possible.', 'curtin-pc-shop' ); ?></p>
+			</div>
+			<div>
+				<p><?php esc_html_e( 'Together, those generous contributions become something special: a bottle of olive oil that reflects the creativity, generosity and spirit of our Curtin Primary P&C community.', 'curtin-pc-shop' ); ?></p>
+				<p><?php esc_html_e( 'Thank you for helping us keep it growing.', 'curtin-pc-shop' ); ?></p>
+			</div>
+		</div>
 	</div>
 </section>
 

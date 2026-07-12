@@ -228,25 +228,28 @@ body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(-
 
 /* ---- Olive: Thank you ---------------------------------------- */
 .cpc-olive-thanks{padding:64px var(--gutter);background:linear-gradient(120deg,var(--c-olive-1) 0%,var(--c-olive-2) 60%,var(--c-olive-3) 100%);border-radius:var(--r-band);overflow:hidden;max-width:calc(var(--maxw) - 2*var(--gutter));margin:0 auto}
-.cpc-olive-thanks-inner{max-width:640px;margin:0 auto;text-align:center;color:#eef3e6}
+.cpc-olive-thanks-inner{max-width:none;margin:0 auto;text-align:center;color:#eef3e6}
 .cpc-olive-thanks-inner h2{margin:0;font:700 30px/1.15 var(--font-head);color:#fff;letter-spacing:-.01em}
 .cpc-olive-thanks-kicker{font:600 16px/1.4 var(--font-body);color:#d6e3c7;margin:10px 0 18px}
 .cpc-olive-thanks-inner p{margin:10px 0 0;font:400 15.5px/1.65 var(--font-body);color:#d6e3c7}
+.cpc-olive-thanks-cols{display:flex;gap:44px;text-align:left;margin-top:22px}
+.cpc-olive-thanks-cols>div{flex:1 1 0;display:flex;flex-direction:column;gap:12px}
+.cpc-olive-thanks-cols p{margin:0}
 
 /* ---- Olive: FAQ ------------------------------------------------ */
-.cpc-olive-faq{padding:64px 56px;background:linear-gradient(120deg,var(--c-olive-1) 0%,var(--c-olive-2) 60%,var(--c-olive-3) 100%);border-radius:var(--r-band);max-width:calc(var(--maxw) - 2*var(--gutter));margin:0 auto}
-.cpc-olive-faq h2{margin:0 0 20px;font:700 30px/1.15 var(--font-head);color:#fff;letter-spacing:-.01em}
+.cpc-olive-faq{padding:64px 56px;max-width:calc(var(--maxw) - 2*var(--gutter));margin:0 auto}
+.cpc-olive-faq h2{margin:0 0 20px;font:700 30px/1.15 var(--font-head);color:var(--c-ink);letter-spacing:-.01em}
 .cpc-faq-list{display:flex;flex-direction:column;gap:10px}
-.cpc-faq-item{border:1px solid rgba(255,255,255,.2);border-radius:var(--r-card);padding:18px 22px;background:rgba(255,255,255,.08)}
-.cpc-faq-item summary{cursor:pointer;font:600 16px/1.4 var(--font-head);color:#fff;list-style:none}
+.cpc-faq-item{border:1px solid var(--c-line);border-radius:var(--r-card);padding:18px 22px;background:var(--c-page-tint)}
+.cpc-faq-item summary{cursor:pointer;font:600 16px/1.4 var(--font-head);color:var(--c-ink);list-style:none}
 .cpc-faq-item summary::-webkit-details-marker{display:none}
-.cpc-faq-item summary::after{content:'+';float:right;font:400 20px/1 var(--font-body);color:#d6e3c7}
+.cpc-faq-item summary::after{content:'+';float:right;font:400 20px/1 var(--font-body);color:var(--c-muted)}
 .cpc-faq-item[open] summary::after{content:'\2212'}
-.cpc-faq-item p{margin:14px 0 0;font:400 15px/1.6 var(--font-body);color:#d6e3c7}
+.cpc-faq-item p{margin:14px 0 0;font:400 15px/1.6 var(--font-body);color:#5b6670}
 
 /* ---- Olive: mailing list -------------------------------------- */
 .cpc-olive-signup{padding:20px var(--gutter) 72px;background:#fff}
-.cpc-olive-signup-inner{max-width:520px;margin:0 auto;text-align:center;background:linear-gradient(120deg,var(--c-olive-1) 0%,var(--c-olive-2) 60%,var(--c-olive-3) 100%);border-radius:var(--r-band);padding:44px}
+.cpc-olive-signup-inner{max-width:calc(var(--maxw) - 2*var(--gutter));margin:0 auto;text-align:center;background:linear-gradient(120deg,var(--c-olive-1) 0%,var(--c-olive-2) 60%,var(--c-olive-3) 100%);border-radius:var(--r-band);padding:44px}
 .cpc-olive-signup-inner h2{margin:0;font:700 26px/1.15 var(--font-head);color:#fff;letter-spacing:-.01em}
 .cpc-olive-signup-inner p{margin:10px 0 22px;font:400 15px/1.6 var(--font-body);color:#d6e3c7}
 .cpc-olive-signup-inner .cpc-olive-form-wrap{text-align:left}
@@ -332,6 +335,7 @@ body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(-
   .cpc-olive-delivery{padding:8px 22px 40px}
   .cpc-olive-delivery-grid{grid-template-columns:1fr}
   .cpc-olive-thanks{padding:40px 22px}
+  .cpc-olive-thanks-cols{flex-direction:column;gap:12px;text-align:center}
   .cpc-olive-hero,.cpc-olive-thanks{border-radius:0}
   .cpc-olive-faq{padding:40px 22px}
   .cpc-collection-intro h1{font-size:28px}

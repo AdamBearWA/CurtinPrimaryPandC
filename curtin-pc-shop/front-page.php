@@ -25,6 +25,8 @@ if ( ! function_exists( 'cpc_fp_render_card' ) ) {
 		}
 		$img  = $p->get_image_id() ? wp_get_attachment_image_url( $p->get_image_id(), 'large' ) : wc_placeholder_img_src( 'large' );
 		$meta = cpc_card_meta_text( $p );
+		// Olive-oil products get a green Add-to-cart button; everything else stays blue.
+		$add_olive = has_term( 'olive-oil', 'product_cat', $p->get_id() ) ? ' cpc-add--olive' : '';
 		?>
 		<div class="cpc-card cpc-lift">
 			<a class="cpc-card-imglink" href="<?php echo esc_url( get_permalink( $p->get_id() ) ); ?>">
@@ -36,9 +38,9 @@ if ( ! function_exists( 'cpc_fp_render_card' ) ) {
 				<div class="cpc-card-foot">
 					<div class="cpc-card-price"><?php echo wp_kses_post( $p->get_price_html() ); ?></div>
 					<?php if ( $p->is_purchasable() && $p->is_in_stock() ) : ?>
-						<a href="<?php echo esc_url( $p->add_to_cart_url() ); ?>" data-quantity="1" data-product_id="<?php echo esc_attr( $p->get_id() ); ?>" class="cpc-add cpc-card-add add_to_cart_button ajax_add_to_cart" rel="nofollow"><?php esc_html_e( 'Add to cart', 'curtin-pc-shop' ); ?></a>
+						<a href="<?php echo esc_url( $p->add_to_cart_url() ); ?>" data-quantity="1" data-product_id="<?php echo esc_attr( $p->get_id() ); ?>" class="cpc-add cpc-card-add<?php echo esc_attr( $add_olive ); ?> add_to_cart_button ajax_add_to_cart" rel="nofollow"><?php esc_html_e( 'Add to cart', 'curtin-pc-shop' ); ?></a>
 					<?php else : ?>
-						<a class="cpc-add cpc-card-add" href="<?php echo esc_url( get_permalink( $p->get_id() ) ); ?>"><?php esc_html_e( 'View', 'curtin-pc-shop' ); ?></a>
+						<a class="cpc-add cpc-card-add<?php echo esc_attr( $add_olive ); ?>" href="<?php echo esc_url( get_permalink( $p->get_id() ) ); ?>"><?php esc_html_e( 'View', 'curtin-pc-shop' ); ?></a>
 					<?php endif; ?>
 				</div>
 			</div>
