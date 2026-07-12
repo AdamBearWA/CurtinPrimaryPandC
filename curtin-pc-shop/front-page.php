@@ -88,6 +88,21 @@ if ( $olive_product ) {
 	</div>
 </section>
 
+<!-- OLIVE HARVEST STORY (green band — wrapped in .cpc-olive-page so .cpc-story renders green like the olive-oil page; same copy as that page's top band) -->
+<div class="cpc-olive-page">
+	<section class="cpc-story cpc-container">
+		<h2><?php esc_html_e( 'A harvest shared by our community', 'curtin-pc-shop' ); ?></h2>
+		<div class="cpc-story-cols">
+			<div>
+				<p><?php esc_html_e( 'Last autumn, a simple idea brought our community together. Inspired by a P&C mum who wondered whether the olives growing throughout Karawara could be put to good use, local residents invited us to harvest the trees outside their homes.', 'curtin-pc-shop' ); ?></p>
+			</div>
+			<div>
+				<p><?php esc_html_e( "Families from Curtin Primary hand-harvested thousands of olives, then had them cold pressed in York into a limited seasonal release of 100% extra virgin olive oil. Every bottle celebrates our neighbours' generosity and our volunteers' work — and every purchase helps the project grow.", 'curtin-pc-shop' ); ?></p>
+			</div>
+		</div>
+	</section>
+</div>
+
 <?php
 /* ---- Art cards: 3 products shown as auto-rotating product cards --- */
 $card_products = function_exists( 'wc_get_products' )
