@@ -35,6 +35,17 @@ while ( have_posts() ) :
 
 	$gallery_ids = $product->get_gallery_image_ids();
 	$thumbs      = array();
+	// Include the featured (primary) image as the FIRST thumbnail whenever there
+	// are gallery images, so a visitor can always click back to it after viewing
+	// another shot. Without this, clicking a gallery thumb swapped the main image
+	// with no thumbnail left to return to the primary image.
+	if ( $gallery_ids && $product->get_image_id() ) {
+		$thumbs[] = array(
+			'thumb' => wp_get_attachment_image_url( $product->get_image_id(), 'woocommerce_gallery_thumbnail' ),
+			'full'  => $main_src,
+			'alt'   => $main_alt,
+		);
+	}
 	foreach ( $gallery_ids as $gid ) {
 		$thumbs[] = array(
 			'thumb' => wp_get_attachment_image_url( $gid, 'woocommerce_gallery_thumbnail' ),
