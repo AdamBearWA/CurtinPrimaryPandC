@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CPC_VERSION', '2.7.2' );
+define( 'CPC_VERSION', '2.7.3' );
 
 /* -----------------------------------------------------------------
  * 1. Theme supports
@@ -558,6 +558,20 @@ function cpc_category_shipping_rates( $rates, $package ) {
 
 	$card_qty = cpc_pkg_cat_qty( $package, 'art-cards' );
 	$oil_qty  = cpc_pkg_cat_qty( $package, 'olive-oil' );
+
+	// Show the correct block Local Pickup location for the cart: the "Olive Oil"
+	// location when the cart holds oil, the "Curtin Primary School" location
+	// otherwise (that location is marked "not for olive oil"). Matched by the
+	// pickup location's label; when only one remains the block auto-selects it.
+	foreach ( $rates as $cpc_rid => $cpc_rate ) {
+		if ( 'pickup_location' !== $cpc_rate->get_method_id() ) {
+			continue;
+		}
+		$cpc_is_olive_loc = ( false !== stripos( $cpc_rate->get_label(), 'olive' ) );
+		if ( ( $oil_qty > 0 ) !== $cpc_is_olive_loc ) {
+			unset( $rates[ $cpc_rid ] );
+		}
+	}
 
 	$postcode        = isset( $package['destination']['postcode'] ) ? strtoupper( preg_replace( '/\s+/', '', $package['destination']['postcode'] ) ) : '';
 	$oil_deliverable = ( '6152' === $postcode );
