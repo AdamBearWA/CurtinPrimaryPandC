@@ -1,0 +1,662 @@
+/* ============================================================
+   Curtin Primary School P&C Shop — theme stylesheet (v2)
+   Ported faithfully from reference/*.html + reference/styles.css.
+   Loaded LAST (see functions.php) so it beats Storefront + Woo.
+   All selectors are scoped under .cpc-* to avoid collateral damage.
+   ============================================================ */
+:root{
+  --c-blue:#1d6fb8; --c-blue-deep:#134e7e; --c-blue-night:#10324f;
+  --c-blue-tint:#eaf3fb; --c-green:#2f8f5b; --c-green-deep:#1f6b41;
+  --c-green-tint:#eaf6ef; --c-olive-1:#2c4527; --c-olive-2:#3f6135;
+  --c-olive-3:#52723d; --c-olive-band:#33502f;
+  --c-ink:#1a2026; --c-ink-2:#232a31; --c-body:#54606a; --c-body-2:#3a424a;
+  --c-muted:#8a8378; --c-surface:#f4f6f8; --c-line:#eef0f2; --c-page-tint:#fbfcfe;
+  --font-head:'Bricolage Grotesque',system-ui,-apple-system,sans-serif;
+  --font-body:'DM Sans',system-ui,-apple-system,sans-serif;
+  --r-pill:999px; --r-card:12px; --r-img:14px; --r-band:16px;
+  --sh-card:0 1px 2px rgba(0,0,0,.04);
+  --sh-hover:0 18px 40px rgba(35,42,49,.14);
+  --sh-cta:0 10px 22px rgba(29,111,184,.28);
+  --sh-art:0 24px 56px rgba(35,42,49,.18);
+  --maxw:1200px; --gutter:48px;
+}
+
+/* ---- Base (theme-scoped) ---------------------------------- */
+html{overflow-x:hidden}
+body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(--c-ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.cpc-theme *{box-sizing:border-box}
+.cpc-theme img{max-width:100%}
+.cpc-container{max-width:var(--maxw);margin:0 auto}
+.cpc-theme h1,.cpc-theme h2,.cpc-theme h3{font-family:var(--font-head)}
+
+/* shared interaction helpers (mirror reference) */
+.cpc-lnk{transition:color .2s ease,opacity .2s ease}
+.cpc-lnk:hover{color:var(--c-blue)}
+.cpc-btn{transition:filter .2s ease}
+.cpc-btn:hover{filter:brightness(1.06)}
+.cpc-lift{transition:transform .25s ease,box-shadow .25s ease}
+.cpc-lift:hover{transform:translateY(-4px);box-shadow:var(--sh-hover)}
+.cpc-add{transition:all .2s ease}
+.cpc-add:hover{background:var(--c-green-deep)!important;color:#fff!important;border-color:var(--c-green-deep)!important}
+
+/* ---- Announcement bar ------------------------------------- */
+.cpc-announce{background:var(--c-blue-deep);color:#dbeafad9;text-align:center;padding:9px 16px;font:500 13px/1.3 var(--font-body)}
+.cpc-announce b{color:#fff;font-weight:600}
+
+/* ---- Header ----------------------------------------------- */
+.cpc-header{display:flex;align-items:center;justify-content:space-between;padding:22px var(--gutter);border-bottom:1px solid var(--c-line)}
+.cpc-brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+.cpc-brand-mark{flex:none}
+.cpc-brand-text{line-height:1.05}
+.cpc-brand-name{font:800 17px/1 var(--font-head);color:var(--c-blue-deep);letter-spacing:-.01em}
+.cpc-brand-sub{font:600 10px/1 var(--font-body);letter-spacing:.18em;text-transform:uppercase;color:var(--c-green);margin-top:4px}
+.cpc-nav{display:flex;align-items:center;gap:26px;font:600 15px/1 var(--font-body);color:var(--c-body-2)}
+.cpc-nav a{color:var(--c-body-2);text-decoration:none}
+.cpc-nav a.cpc-active{color:var(--c-blue)}
+.cpc-right{display:flex;align-items:center;gap:26px}
+.cpc-card-imglink,.cpc-card-titlelink{display:block;text-decoration:none}
+.cpc-card-titlelink:hover .cpc-card-title{color:var(--c-blue)}
+.cpc-cart{display:inline-flex;align-items:center;gap:8px;background:var(--c-blue-tint);color:var(--c-blue-deep);font:700 14px/1 var(--font-body);padding:11px 17px;border-radius:var(--r-pill);text-decoration:none}
+.cpc-hamburger{display:none;background:none;border:0;padding:6px;cursor:pointer}
+.cpc-mobile-logo{display:none}
+
+/* ---- Hero ------------------------------------------------- */
+.cpc-hero{display:flex;align-items:center;gap:56px;padding:72px var(--gutter) 64px}
+.cpc-hero-copy{flex:1;max-width:480px}
+.cpc-eyebrow{font:700 12px/1 var(--font-body);letter-spacing:.16em;text-transform:uppercase;color:var(--c-green);margin-bottom:20px}
+.cpc-h1{margin:0;font:700 50px/1.06 var(--font-head);color:var(--c-ink);letter-spacing:-.02em}
+.cpc-hero-lede{margin:22px 0 0;font:400 17px/1.65 var(--font-body);color:var(--c-body);max-width:420px}
+.cpc-price-row{display:flex;align-items:center;gap:16px;margin-top:30px}
+.cpc-price{font:700 32px/1 var(--font-head);color:var(--c-blue-deep)}
+.cpc-price-meta{font:500 13px/1.45 var(--font-body);color:var(--c-muted)}
+.cpc-cta-row{display:flex;gap:16px;align-items:center;margin-top:22px;flex-wrap:wrap}
+.cpc-cta{background:var(--c-blue);color:#fff;font:700 16px/1 var(--font-body);padding:16px 28px;border-radius:var(--r-pill);text-decoration:none;box-shadow:var(--sh-cta);border:0;cursor:pointer;display:inline-block}
+.cpc-cta-text{font:700 15px/1 var(--font-body);color:var(--c-ink);text-decoration:none;border-bottom:2px solid var(--c-green);padding-bottom:3px}
+.cpc-fund{display:flex;align-items:center;gap:8px;font:600 12.5px/1.4 var(--font-body);color:var(--c-green-deep);margin-top:18px}
+.cpc-hero-art{flex:0 0 50%;position:relative}
+.cpc-hero-art-frame{border-radius:var(--r-img);overflow:hidden;aspect-ratio:5/4;box-shadow:var(--sh-art)}
+.cpc-hero-art-frame img{width:100%;height:100%;object-fit:cover;display:block}
+.cpc-credit{position:absolute;bottom:18px;left:18px;background:#fff;border-radius:10px;padding:11px 15px;box-shadow:0 10px 24px rgba(0,0,0,.16)}
+.cpc-credit-title{font:700 12px/1 var(--font-body);color:var(--c-ink)}
+.cpc-credit-sub{font:500 11px/1 var(--font-body);color:var(--c-muted);margin-top:5px;letter-spacing:.03em}
+
+/* ---- Story band ------------------------------------------- */
+.cpc-story{background:var(--c-blue-night);color:#dbe7f1;border-radius:var(--r-band);margin:0 auto;max-width:calc(var(--maxw) - 2*var(--gutter));padding:52px 56px;display:flex;flex-direction:column;gap:28px;align-items:stretch}
+.cpc-story h2{flex:none;margin:0;font:700 30px/1.18 var(--font-head);color:#fff;letter-spacing:-.01em}
+.cpc-story-cols{display:flex;gap:44px}
+.cpc-story-cols>*{flex:1 1 0}
+.cpc-story-cols p{margin:0;font:400 15px/1.7 var(--font-body);color:#b9cbdb}
+.cpc-story-cols b{color:#fff;font-weight:600}
+.cpc-story-cols>div{flex:1;display:flex;flex-direction:column;gap:14px}
+
+/* ---- The collection --------------------------------------- */
+.cpc-collection{padding:64px var(--gutter) 8px}
+.cpc-collection-intro{max-width:720px;margin:0 0 40px}
+.cpc-collection-intro h1{margin:0 0 10px;font:700 40px/1.1 var(--font-head);color:var(--c-ink);letter-spacing:-.01em}
+.cpc-collection-intro p{margin:14px 0 0;font:400 16px/1.65 var(--font-body);color:var(--c-body)}
+.cpc-collection-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:24px}
+.cpc-collection-head h2{margin:0;font:700 32px/1.1 var(--font-head);color:var(--c-ink);letter-spacing:-.01em}
+.cpc-collection-note{font:500 14px/1 var(--font-body);color:var(--c-muted)}
+.cpc-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.cpc-card{border:1px solid var(--c-line);border-radius:var(--r-card);overflow:hidden;background:#fff;box-shadow:var(--sh-card);text-decoration:none;display:block}
+.cpc-card-img{aspect-ratio:1/1;background:var(--c-surface)}
+.cpc-card-img img{width:100%;height:100%;object-fit:cover;display:block}
+.cpc-card-body{padding:20px}
+.cpc-card-title{font:700 18px/1.2 var(--font-head);color:var(--c-ink)}
+.cpc-card-meta{font:500 13px/1 var(--font-body);color:var(--c-muted);margin-top:6px}
+.cpc-card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:16px}
+.cpc-card-price{font:700 19px/1 var(--font-head);color:var(--c-blue-deep)}
+.cpc-card-add{font:700 13px/1 var(--font-body);color:var(--c-green-deep);background:#fff;border:1.5px solid var(--c-green);padding:10px 16px;border-radius:var(--r-pill);cursor:pointer;text-decoration:none;display:inline-block}
+
+/* ---- Trust strip ------------------------------------------ */
+.cpc-trust{margin-top:40px;padding:30px var(--gutter);background:var(--c-page-tint);border-top:1px solid var(--c-line);border-bottom:1px solid var(--c-line);display:grid;grid-template-columns:repeat(3,1fr);gap:24px;text-align:center}
+.cpc-trust-title{font:700 14.5px/1.2 var(--font-body);color:var(--c-ink)}
+.cpc-trust-sub{font:400 12.5px/1.5 var(--font-body);color:var(--c-muted);margin-top:4px}
+
+/* ---- Olive teaser ----------------------------------------- */
+.cpc-olive-teaser{padding:48px var(--gutter) 56px}
+.cpc-olive-teaser-inner{border-radius:var(--r-band);overflow:hidden;background:linear-gradient(120deg,var(--c-olive-1),var(--c-olive-2) 60%,var(--c-olive-3));display:flex;align-items:center;justify-content:space-between;gap:24px;padding:38px 44px;color:#eef3e6}
+.cpc-pill-soon{display:inline-block;background:#ffffff1f;color:#e7f0d6;font:700 11px/1 var(--font-body);letter-spacing:.12em;text-transform:uppercase;padding:7px 12px;border-radius:var(--r-pill);margin-bottom:14px}
+.cpc-olive-teaser-title{font:700 24px/1.2 var(--font-head);color:#fff}
+.cpc-olive-teaser-text{font:400 14.5px/1.55 var(--font-body);color:#d6e3c7;margin-top:8px;max-width:460px}
+.cpc-olive-btn{flex:none;background:#f4f0e4;color:var(--c-olive-band);font:700 15px/1 var(--font-body);padding:15px 26px;border-radius:var(--r-pill);text-decoration:none}
+
+/* ---- Footer ----------------------------------------------- */
+.cpc-footer{background:var(--c-blue-night);color:#cdddeb;padding:48px var(--gutter) 28px}
+.cpc-footer-top{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap}
+.cpc-footer-brand{max-width:320px}
+.cpc-footer-brand-row{display:flex;align-items:center;gap:11px;margin-bottom:14px}
+.cpc-footer-brand-name{font:800 16px/1 var(--font-head);color:#fff}
+.cpc-footer-blurb{margin:0;font:400 13px/1.6 var(--font-body);color:#9fb6c9}
+.cpc-footer-cols{display:flex;gap:60px}
+.cpc-footer-coltitle{font:700 13px/1 var(--font-body);color:#fff;letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px}
+.cpc-footer-links{display:flex;flex-direction:column;gap:10px;font:500 14px/1 var(--font-body)}
+.cpc-footer-links a{color:#cdddeb;text-decoration:none}
+.cpc-footer-base{border-top:1px solid #ffffff1f;margin-top:32px;padding-top:20px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font:400 12px/1.5 var(--font-body);color:#8aa3b8}
+
+/* ---- Single product (matches product.html) ---------------- */
+.cpc-breadcrumb{padding:22px var(--gutter) 0;font:500 13px/1 var(--font-body);color:#9a948a}
+.cpc-breadcrumb a{color:#9a948a;text-decoration:none}
+.cpc-breadcrumb .cpc-current{color:var(--c-ink-2)}
+.cpc-product{display:flex;gap:54px;padding:28px var(--gutter) 56px}
+.cpc-gallery{flex:0 0 50%}
+.cpc-gallery-main{border-radius:var(--r-band);overflow:hidden;background:var(--c-surface);aspect-ratio:1/1;box-shadow:0 14px 36px rgba(35,42,49,.12)}
+.cpc-gallery-main img{width:100%;height:100%;object-fit:cover;display:block}
+.cpc-thumbs{display:flex;gap:12px;margin-top:14px}
+.cpc-thumb{flex:1;border-radius:10px;overflow:hidden;aspect-ratio:1/1;border:2px solid transparent;cursor:pointer;background:var(--c-surface)}
+.cpc-thumb.cpc-thumb-active{border-color:var(--c-blue)}
+.cpc-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.cpc-pinfo{flex:1;padding-top:4px}
+.cpc-pinfo h1{margin:0;font:700 38px/1.08 var(--font-head);color:var(--c-ink);letter-spacing:-.01em}
+.cpc-pprice-row{display:flex;align-items:center;gap:14px;margin-top:14px}
+.cpc-pprice{font:700 28px/1 var(--font-head);color:var(--c-blue-deep)}
+.cpc-pprice-meta{font:500 13px/1.3 var(--font-body);color:var(--c-muted)}
+.cpc-pdesc{margin:20px 0 0;font:400 16px/1.65 var(--font-body);color:var(--c-body);max-width:440px}
+.cpc-pstory{margin:14px 0 0;font:400 13.5px/1.65 var(--font-body);color:var(--c-muted);max-width:440px}
+.cpc-features{display:flex;flex-direction:column;gap:9px;margin-top:22px;font:500 14px/1.4 var(--font-body);color:#3f4954}
+.cpc-feature{display:flex;align-items:center;gap:10px}
+.cpc-buyrow{display:flex;align-items:center;gap:14px;margin-top:28px}
+.cpc-qty{display:flex;align-items:center;border:1.5px solid #d7dde3;border-radius:var(--r-pill);overflow:hidden}
+.cpc-qty button{padding:12px 16px;font:700 17px/1 var(--font-body);color:#5b6670;cursor:pointer;background:none;border:0}
+.cpc-qty input{width:40px;padding:12px 0;font:700 16px/1 var(--font-body);color:var(--c-ink);text-align:center;border:0;background:none;-moz-appearance:textfield}
+.cpc-qty input::-webkit-outer-spin-button,.cpc-qty input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.cpc-addtocart{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:9px;background:var(--c-blue);color:#fff;font:700 16px/1 var(--font-body);padding:17px;border-radius:var(--r-pill);text-decoration:none;box-shadow:var(--sh-cta);border:0;cursor:pointer}
+.cpc-support-note{display:flex;align-items:center;gap:11px;margin-top:22px;background:var(--c-blue-tint);border-radius:var(--r-card);padding:14px 16px}
+.cpc-support-note div{font:600 13px/1.45 var(--font-body);color:var(--c-blue-deep)}
+.cpc-prows{border-top:1px solid var(--c-line);margin-top:24px}
+.cpc-prow{display:flex;align-items:center;justify-content:space-between;padding:18px 0;font:700 15px/1 var(--font-body);color:var(--c-ink);cursor:pointer}
+.cpc-prow + .cpc-prow{border-top:1px solid var(--c-line)}
+.cpc-prow-sub{color:#9a948a;font-weight:400}
+.cpc-prow-detail{font:400 14px/1.6 var(--font-body);color:var(--c-body);padding:0 0 18px;display:none}
+.cpc-prow-detail.cpc-open{display:block}
+
+/* ---- Olive oil page --------------------------------------- */
+.cpc-olive-hero{display:flex;align-items:stretch;background:linear-gradient(120deg,var(--c-olive-1) 0%,var(--c-olive-2) 60%,var(--c-olive-3) 100%);color:#eef3e6;border-radius:var(--r-band);overflow:hidden}
+.cpc-olive-hero-copy{flex:1;padding:72px 32px 72px var(--gutter);display:flex;flex-direction:column;justify-content:center;max-width:560px}
+.cpc-olive-pill{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;background:#ffffff1f;color:#e7f0d6;font:700 12px/1 var(--font-body);letter-spacing:.12em;text-transform:uppercase;padding:8px 14px;border-radius:var(--r-pill);margin-bottom:22px}
+.cpc-olive-hero-copy h1{margin:0;font:700 48px/1.06 var(--font-head);letter-spacing:-.02em;color:#fff}
+.cpc-olive-lede{margin:22px 0 0;font:400 17px/1.6 var(--font-body);color:#d6e3c7;max-width:430px}
+.cpc-olive-form{display:flex;gap:10px;margin-top:32px;max-width:460px}
+.cpc-olive-form .cpc-input{flex:1;display:flex;align-items:center;background:#fff;border-radius:var(--r-pill);padding:5px 6px 5px 20px}
+.cpc-olive-form input[type=email],.cpc-olive-form input[type=text]{flex:1;font:400 15px/1 var(--font-body);color:#1a2026;border:0;background:none;padding:11px 0;outline:none}
+.cpc-olive-form button,.cpc-olive-form .cpc-olive-submit{display:inline-flex;align-items:center;background:#f4f0e4;color:var(--c-olive-band);font:700 15px/1 var(--font-body);padding:16px 26px;border-radius:var(--r-pill);text-decoration:none;border:0;cursor:pointer}
+.cpc-olive-formnote{font:500 13px/1.4 var(--font-body);color:#aec299;margin-top:14px}
+.cpc-olive-hero-art{flex:0 0 38%;position:relative;display:flex;align-items:center;justify-content:center;background:#243a20}
+.cpc-olive-hero-art span{position:absolute;bottom:22px;font:500 12px/1 var(--font-body);color:#cdd9b9;letter-spacing:.04em}
+.cpc-olive-features{padding:64px var(--gutter) 36px;background:#fff}
+.cpc-olive-features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.cpc-feature-icon{width:46px;height:46px;border-radius:12px;background:var(--c-green-tint);display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:22px;line-height:1}
+.cpc-feature-title{font:700 18px/1.2 var(--font-head);color:var(--c-ink)}
+.cpc-feature-text{margin:8px 0 0;font:400 14px/1.6 var(--font-body);color:#6b7680}
+.cpc-expect{padding:20px var(--gutter) 60px}
+.cpc-expect-inner{background:var(--c-page-tint);border:1px solid var(--c-line);border-radius:var(--r-band);padding:48px;display:flex;gap:54px;align-items:center}
+.cpc-expect-copy{flex:1}
+.cpc-expect-copy h2{margin:0;font:700 28px/1.15 var(--font-head);color:var(--c-ink);letter-spacing:-.01em}
+.cpc-expect-copy p{margin:14px 0 0;font:400 15px/1.65 var(--font-body);color:#5b6670;max-width:420px}
+.cpc-bottles{flex:0 0 46%;display:flex;gap:16px}
+.cpc-bottle{flex:1;border-radius:var(--r-img);padding:22px;text-align:center;border:1px solid var(--c-line);background:#fff}
+.cpc-bottle-dark{background:var(--c-olive-band);border-color:var(--c-olive-band)}
+.cpc-bottle-size{font:700 16px/1.1 var(--font-head);color:var(--c-ink)}
+.cpc-bottle-dark .cpc-bottle-size{color:#fff}
+.cpc-bottle-label{font:500 12px/1.3 var(--font-body);color:var(--c-muted);margin-top:6px}
+.cpc-bottle-dark .cpc-bottle-label{color:#cdd9b9}
+.cpc-bottle-price{font:700 15px/1 var(--font-body);color:#9a948a;margin-top:12px}
+.cpc-bottle-dark .cpc-bottle-price{color:#e7f0d6}
+
+/* ---- Olive: Our Story --------------------------------------- */
+.cpc-olive-story{padding:64px var(--gutter);display:flex;gap:54px;align-items:flex-start;background:#fff}
+.cpc-olive-story-photo{flex:0 0 40%;aspect-ratio:4/3;border-radius:var(--r-img);background:var(--c-page-tint);border:1px dashed var(--c-line);display:flex;align-items:center;justify-content:center;text-align:center}
+.cpc-olive-story-photo span{font:500 13px/1.4 var(--font-body);color:var(--c-muted);padding:0 24px}
+.cpc-olive-story-copy{flex:1;max-width:560px}
+.cpc-olive-story-copy h2{margin:0;font:700 30px/1.15 var(--font-head);color:var(--c-ink);letter-spacing:-.01em}
+.cpc-olive-story-kicker{font:600 15px/1.4 var(--font-body);color:var(--c-olive-2);margin:8px 0 18px}
+.cpc-olive-story-copy p{margin:12px 0 0;font:400 15.5px/1.65 var(--font-body);color:#5b6670}
+.cpc-olive-story-copy .cpc-cta-text{display:inline-block;margin-top:20px}
+
+/* ---- Olive: Collection & Delivery ---------------------------- */
+.cpc-olive-delivery{padding:20px var(--gutter) 60px;background:#fff}
+.cpc-olive-delivery h2{margin:0 0 24px;font:700 30px/1.15 var(--font-head);color:var(--c-ink);letter-spacing:-.01em}
+.cpc-olive-delivery-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.cpc-olive-delivery-card{background:var(--c-page-tint);border:1px solid var(--c-line);border-radius:var(--r-card);padding:28px}
+.cpc-olive-delivery-title{font:700 17px/1.2 var(--font-head);color:var(--c-ink);margin-bottom:10px}
+.cpc-olive-delivery-card p{margin:6px 0 0;font:400 15px/1.6 var(--font-body);color:#5b6670}
+.cpc-olive-suburbs{margin:10px 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px}
+.cpc-olive-suburbs li{background:#fff;border:1px solid var(--c-line);border-radius:var(--r-pill);padding:6px 14px;font:500 13px/1 var(--font-body);color:var(--c-ink)}
+
+/* ---- Olive: Thank you ---------------------------------------- */
+.cpc-olive-thanks{padding:64px var(--gutter);background:linear-gradient(120deg,var(--c-olive-1) 0%,var(--c-olive-2) 60%,var(--c-olive-3) 100%);border-radius:var(--r-band);overflow:hidden}
+.cpc-olive-thanks-inner{max-width:640px;margin:0 auto;text-align:center;color:#eef3e6}
+.cpc-olive-thanks-inner h2{margin:0;font:700 30px/1.15 var(--font-head);color:#fff;letter-spacing:-.01em}
+.cpc-olive-thanks-kicker{font:600 16px/1.4 var(--font-body);color:#d6e3c7;margin:10px 0 18px}
+.cpc-olive-thanks-inner p{margin:10px 0 0;font:400 15.5px/1.65 var(--font-body);color:#d6e3c7}
+
+/* ---- Olive: FAQ ------------------------------------------------ */
+.cpc-olive-faq{padding:64px var(--gutter);background:#fff;max-width:820px;margin:0 auto}
+.cpc-olive-faq h2{margin:0 0 20px;font:700 30px/1.15 var(--font-head);color:var(--c-ink);letter-spacing:-.01em}
+.cpc-faq-list{display:flex;flex-direction:column;gap:10px}
+.cpc-faq-item{border:1px solid var(--c-line);border-radius:var(--r-card);padding:18px 22px;background:var(--c-page-tint)}
+.cpc-faq-item summary{cursor:pointer;font:600 16px/1.4 var(--font-head);color:var(--c-ink);list-style:none}
+.cpc-faq-item summary::-webkit-details-marker{display:none}
+.cpc-faq-item summary::after{content:'+';float:right;font:400 20px/1 var(--font-body);color:var(--c-muted)}
+.cpc-faq-item[open] summary::after{content:'\2212'}
+.cpc-faq-item p{margin:14px 0 0;font:400 15px/1.6 var(--font-body);color:#5b6670}
+
+/* ---- Olive: mailing list -------------------------------------- */
+.cpc-olive-signup{padding:20px var(--gutter) 72px;background:#fff}
+.cpc-olive-signup-inner{max-width:520px;margin:0 auto;text-align:center;background:linear-gradient(120deg,var(--c-olive-1) 0%,var(--c-olive-2) 60%,var(--c-olive-3) 100%);border-radius:var(--r-band);padding:44px}
+.cpc-olive-signup-inner h2{margin:0;font:700 26px/1.15 var(--font-head);color:#fff;letter-spacing:-.01em}
+.cpc-olive-signup-inner p{margin:10px 0 22px;font:400 15px/1.6 var(--font-body);color:#d6e3c7}
+.cpc-olive-signup-inner .cpc-olive-form-wrap{text-align:left}
+
+/* ============================================================
+   Responsive — matches reference/home-mobile.html
+   ============================================================ */
+@media (max-width:860px){
+  :root{--gutter:22px}
+  /* header → hamburger · centred logo · cart */
+  .cpc-header{padding:14px 18px}
+  .cpc-hamburger{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px}
+  .cpc-nav{position:fixed;inset:0 0 0 auto;width:78%;max-width:320px;flex-direction:column;align-items:flex-start;gap:6px;background:#fff;padding:80px 24px 24px;box-shadow:-12px 0 40px rgba(0,0,0,.18);transform:translateX(100%);transition:transform .25s ease;z-index:60}
+  .cpc-nav.cpc-open{transform:translateX(0)}
+  .cpc-nav a{padding:14px 0;width:100%;min-height:44px;display:flex;align-items:center}
+  .cpc-right{display:contents}
+  .cpc-cart-label{display:none}
+  .cpc-cart{background:none;padding:10px;min-width:44px;min-height:44px;justify-content:center;color:var(--c-blue-deep)}
+  .cpc-brand-text{display:none}
+  .cpc-mobile-logo{display:flex;align-items:center;gap:8px}
+  .cpc-mobile-logo span{font:800 15px/1 var(--font-head);color:var(--c-blue-deep)}
+  .cpc-brand{position:absolute;left:50%;transform:translateX(-50%)}
+  .cpc-header{position:relative}
+  .cpc-nav-backdrop{position:fixed;inset:0;background:rgba(16,50,79,.4);opacity:0;visibility:hidden;transition:opacity .25s ease;z-index:55}
+  .cpc-nav-backdrop.cpc-open{opacity:1;visibility:visible}
+
+  /* hero → single column, art then price then CTA */
+  .cpc-hero{flex-direction:column;align-items:stretch;gap:0;padding:26px 22px 28px}
+  .cpc-hero-copy{max-width:none}
+  .cpc-h1{font:700 32px/1.08 var(--font-head)}
+  .cpc-hero-lede{font-size:15px;margin-top:14px;max-width:none}
+  .cpc-hero-art{flex:none;margin-top:20px;order:2}
+  .cpc-hero-art-frame{aspect-ratio:5/4}
+  .cpc-price-row{margin-top:20px;order:3}
+  .cpc-cta-row{order:4;flex-direction:column;align-items:stretch;gap:14px}
+  .cpc-cta{display:block;text-align:center}
+  .cpc-cta-text{align-self:center;text-align:center}
+  .cpc-cta{flex:1;text-align:center}
+  /* keep DOM order; price/cta already after art in source for mobile */
+
+  .cpc-story{margin:0;border-radius:0;flex-direction:column;align-items:flex-start;gap:14px;padding:30px 22px}
+  .cpc-story h2{flex:none;font:700 22px/1.2 var(--font-head)}
+  .cpc-story-cols{flex-direction:column;gap:12px}
+  .cpc-story-cols p{max-width:none}
+
+  .cpc-collection{padding:28px 22px 8px}
+  .cpc-collection-head{margin-bottom:16px}
+  .cpc-collection-head h2{font:700 22px/1.1 var(--font-head)}
+  .cpc-collection-note{display:none}
+  .cpc-grid3{grid-template-columns:1fr;gap:16px}
+  .cpc-card-img{aspect-ratio:16/10}
+
+  .cpc-trust{grid-template-columns:1fr;text-align:left;gap:14px;padding:24px 22px}
+
+  .cpc-olive-teaser{padding:8px 22px 26px}
+  .cpc-olive-teaser-inner{flex-direction:column;align-items:stretch;padding:24px 22px}
+  .cpc-olive-btn{text-align:center}
+
+  .cpc-footer{padding:26px 22px}
+  .cpc-footer-top{flex-direction:column;gap:24px}
+  .cpc-footer-cols{gap:40px}
+
+  /* single product → stacked */
+  .cpc-product{flex-direction:column;gap:28px;padding:22px 22px 48px}
+  .cpc-gallery{flex:none}
+  .cpc-pinfo h1{font-size:30px}
+  .cpc-pdesc,.cpc-pstory{max-width:none}
+
+  /* olive page → stacked */
+  .cpc-olive-hero{flex-direction:column}
+  .cpc-olive-hero-copy{max-width:none;padding:48px 22px}
+  .cpc-olive-hero-copy h1{font-size:34px}
+  .cpc-olive-hero-art{flex:none;min-height:220px}
+  .cpc-olive-features{padding:36px 22px}
+  .cpc-olive-features-grid{grid-template-columns:1fr;gap:24px}
+  .cpc-expect{padding:8px 22px 48px}
+  .cpc-expect-inner{flex-direction:column;align-items:stretch;gap:24px;padding:28px 22px}
+  .cpc-bottles{flex:none}
+
+  .cpc-olive-story{flex-direction:column;padding:36px 22px;gap:28px}
+  .cpc-olive-story-photo{flex:none;width:100%}
+  .cpc-olive-story-copy{max-width:none}
+  .cpc-olive-delivery{padding:8px 22px 40px}
+  .cpc-olive-delivery-grid{grid-template-columns:1fr}
+  .cpc-olive-thanks{padding:40px 22px}
+  .cpc-olive-hero,.cpc-olive-thanks{border-radius:0}
+  .cpc-olive-faq{padding:40px 22px}
+  .cpc-collection-intro h1{font-size:28px}
+}
+
+/* ============================================================
+   Fixes (v2.0.2): cart pill colour, generic/Woo pages,
+   cart & checkout buttons, olive signup form.
+   ============================================================ */
+.cpc-nav a.cpc-cart{color:var(--c-blue-deep)}
+
+/* ---- Generic page + Woo (cart/checkout/account) shell ----- */
+.cpc-page{padding:44px var(--gutter) 80px}
+.cpc-page-title{margin:0 0 24px;font:700 38px/1.08 var(--font-head);color:var(--c-ink);letter-spacing:-.01em}
+.cpc-page-content{font:400 16px/1.7 var(--font-body);color:var(--c-body)}
+.cpc-page-content a{color:var(--c-blue);text-decoration:none}
+.cpc-page-content a:hover{text-decoration:underline}
+.cpc-page-content h2{font:700 24px/1.2 var(--font-head);color:var(--c-ink);margin:28px 0 12px}
+
+/* Brand WooCommerce cart/checkout action buttons (block + classic) */
+.cpc-page .wp-block-button__link,
+.cpc-page .wc-block-components-button:not(.is-link),
+.cpc-page .wc-block-cart__submit-button,
+.cpc-page button.wc-block-components-checkout-place-order-button,
+.cpc-page .checkout-button,
+.cpc-page .button,
+.cpc-page button[type="submit"],
+.cpc-page .components-button.is-primary{
+	background:var(--c-blue)!important;color:#fff!important;border:0!important;
+	border-radius:var(--r-pill)!important;box-shadow:var(--sh-cta)!important;
+	font:700 15px/1.2 var(--font-body)!important;padding:15px 26px!important;transition:filter .2s ease;
+}
+.cpc-page .wp-block-button__link:hover,
+.cpc-page .wc-block-components-button:not(.is-link):hover,
+.cpc-page .wc-block-cart__submit-button:hover,
+.cpc-page button.wc-block-components-checkout-place-order-button:hover,
+.cpc-page .checkout-button:hover,
+.cpc-page .button:hover,
+.cpc-page button[type="submit"]:hover{filter:brightness(1.06)}
+.cpc-page a.remove,
+.cpc-page .wc-block-components-button.is-link,
+.cpc-page .wc-block-cart-item__remove-link{
+	background:none!important;color:var(--c-blue)!important;box-shadow:none!important;
+	border-radius:0!important;padding:0!important;font-weight:600!important;
+}
+.cpc-page .wc-block-formatted-money-amount,
+.cpc-page .order-total .amount{color:var(--c-blue-deep)}
+
+/* ---- Olive-oil signup (Fluent Forms) → match the design ---- */
+.cpc-olive-form-wrap .ff-el-group{margin-bottom:10px}
+.cpc-olive-form-wrap input[type="email"],
+.cpc-olive-form-wrap input[type="text"],
+.cpc-olive-form-wrap .ff-el-form-control{
+	border:0!important;border-radius:var(--r-pill)!important;padding:15px 20px!important;
+	font:400 15px/1 var(--font-body)!important;background:#fff!important;color:var(--c-ink)!important;box-shadow:none!important;
+}
+.cpc-olive-form-wrap .ff-btn-submit,
+.cpc-olive-form-wrap button[type="submit"]{
+	background:#f4f0e4!important;color:var(--c-olive-band)!important;border:0!important;
+	border-radius:var(--r-pill)!important;padding:16px 26px!important;font:700 15px/1 var(--font-body)!important;
+	box-shadow:none!important;cursor:pointer;transition:filter .2s ease;
+}
+.cpc-olive-form-wrap .ff-btn-submit:hover,
+.cpc-olive-form-wrap button[type="submit"]:hover{filter:brightness(1.04)}
+.cpc-olive-form-wrap .ff-el-group label{color:#eef3e6!important}
+
+/* round Woo cart/checkout/order product thumbnails to match the rest of the site */
+.cpc-page .wc-block-cart-item__image,.cpc-page .wc-block-cart-item__image img,.cpc-page .wc-block-components-order-summary-item__image,.cpc-page .wc-block-components-order-summary-item__image img,.cpc-page td.product-thumbnail img{border-radius:8px;overflow:hidden}
+
+/* 404 page */
+.cpc-404{text-align:center;padding:72px var(--gutter) 96px}
+.cpc-404-text{font:400 17px/1.65 var(--font-body);color:var(--c-body);max-width:460px;margin:0 auto 28px}
+.cpc-404-actions{display:flex;gap:18px;align-items:center;justify-content:center}
+
+/* ============================================================
+   v2.1 IMPROVEMENTS — accessibility, mobile UX, polish.
+   Appended last so these deltas win the cascade.
+   ============================================================ */
+:root{
+  --c-muted:#6e675c;                 /* was #8a8378 (~3.4:1) → 4.7:1 on white */
+  --focus:0 0 0 3px #fff, 0 0 0 6px var(--c-blue);
+}
+
+/* --- Accessibility: visible keyboard focus --- */
+.cpc-theme a:focus-visible,
+.cpc-theme button:focus-visible,
+.cpc-theme input:focus-visible,
+.cpc-theme [tabindex]:focus-visible{outline:none;box-shadow:var(--focus);border-radius:8px}
+.cpc-story a:focus-visible,.cpc-footer a:focus-visible,
+.cpc-olive-teaser-inner a:focus-visible,.cpc-olive-hero a:focus-visible,
+.cpc-olive-hero input:focus-visible,.cpc-olive-hero button:focus-visible{
+  box-shadow:0 0 0 3px rgba(16,50,79,.9),0 0 0 6px #fff}
+
+@media (prefers-reduced-motion:reduce){
+  .cpc-theme *{transition:none!important;animation:none!important}
+  .cpc-lift:hover{transform:none}
+}
+
+/* --- Contrast corrections --- */
+.cpc-announce{color:#d4e6f7}
+.cpc-brand-sub{color:var(--c-green-deep)}
+.cpc-eyebrow{color:var(--c-green-deep)}
+.cpc-story-cols p{color:#c4d4e2}
+.cpc-footer-blurb{color:#a9bfd1}
+.cpc-footer-base{color:#9fb6c9}
+.cpc-olive-teaser-text{color:#dce8cd}
+.cpc-pill-soon{background:#ffffff2b;color:#f1f6e8}
+.cpc-olive-lede{color:#dce8cd}
+.cpc-olive-formnote{color:#ccdcb5}
+.cpc-feature-text{color:#5b6670}
+.cpc-breadcrumb,.cpc-breadcrumb a{color:var(--c-muted)}
+.cpc-breadcrumb a:hover{color:var(--c-blue)}
+
+/* --- Cart count badge --- */
+.cpc-cart{position:relative}
+.cpc-cart-badge{display:none;position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--c-blue);color:#fff;font:700 11px/18px var(--font-body);text-align:center;box-shadow:0 0 0 2px #fff}
+.cpc-cart.cpc-has-items .cpc-cart-badge{display:block}
+
+/* --- 44px tap targets --- */
+.cpc-card-add{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px}
+.cpc-qty button{min-width:44px;min-height:44px;padding:0 14px}
+.cpc-addtocart{min-height:54px}
+.cpc-prow{min-height:44px}
+
+/* --- Trust strip icons (desktop + mobile) --- */
+.cpc-trust{padding:34px var(--gutter)}
+.cpc-trust-item{display:flex;flex-direction:column;align-items:center}
+.cpc-trust-ico{width:40px;height:40px;border-radius:11px;background:var(--c-blue-tint);color:var(--c-blue);display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+
+/* --- Sticky mobile Add-to-cart bar --- */
+.cpc-buybar{position:fixed;left:0;right:0;bottom:0;z-index:70;display:none;align-items:center;gap:14px;
+  padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--c-line);
+  box-shadow:0 -8px 24px rgba(16,50,79,.12);transform:translateY(110%);transition:transform .25s ease}
+.cpc-buybar.cpc-show{transform:translateY(0)}
+.cpc-buybar-info{flex:none}
+.cpc-buybar-price{font:700 18px/1 var(--font-head);color:var(--c-blue-deep)}
+.cpc-buybar-meta{font:500 11px/1.2 var(--font-body);color:var(--c-muted);margin-top:3px}
+.cpc-buybar-btn{flex:1;display:inline-flex;align-items:center;justify-content:center;min-height:48px;background:var(--c-blue);color:#fff;font:700 15px/1 var(--font-body);border:0;border-radius:var(--r-pill);text-decoration:none;box-shadow:var(--sh-cta);cursor:pointer}
+
+/* --- Branded empty cart --- */
+.wc-block-cart__empty-cart__title.with-empty-cart-icon::before{display:none!important}
+.wp-block-woocommerce-empty-cart-block.cpc-emptied > :not(.cpc-empty){display:none}
+.cpc-empty{max-width:520px;margin:8px auto 12px;text-align:center;padding:24px 22px 8px}
+.cpc-empty-art{width:148px;height:148px;margin:0 auto 26px;display:block}
+.cpc-empty h2{margin:0;font:700 26px/1.15 var(--font-head);color:var(--c-ink);letter-spacing:-.01em}
+.cpc-empty p{margin:12px auto 0;max-width:380px;font:400 15px/1.6 var(--font-body);color:var(--c-body)}
+.cpc-empty-actions{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:26px}
+.cpc-empty-cta{display:inline-flex;align-items:center;justify-content:center;min-height:48px;background:var(--c-blue);color:#fff;font:700 15px/1 var(--font-body);padding:0 26px;border-radius:var(--r-pill);text-decoration:none;box-shadow:var(--sh-cta)}
+.cpc-empty-link{display:inline-flex;align-items:center;min-height:44px;font:700 15px/1 var(--font-body);color:var(--c-ink);text-decoration:none;border-bottom:2px solid var(--c-green);padding-bottom:2px}
+.cpc-empty-note{display:inline-flex;align-items:center;gap:8px;justify-content:center;margin-top:22px;font:600 12.5px/1.4 var(--font-body);color:var(--c-green-deep)}
+
+@media (max-width:860px){
+  /* hero: product image after the headline, before price/CTA */
+  .cpc-hero{flex-direction:column;align-items:stretch;gap:0}
+  .cpc-hero-copy{display:contents}
+  .cpc-eyebrow{order:1;margin-bottom:12px}
+  .cpc-h1{order:2}
+  .cpc-hero-lede{order:3}
+  .cpc-hero-art{order:4;flex:none;margin-top:20px}
+  .cpc-hero-art-frame{aspect-ratio:4/3}
+  .cpc-price-row{order:5;margin-top:20px}
+  .cpc-cta-row{order:6;margin-top:18px}
+  .cpc-cta-text{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+  .cpc-fund{order:7;justify-content:center;margin-top:14px}
+
+  /* trust: icon-left rows */
+  .cpc-trust{gap:18px;padding:26px 22px}
+  .cpc-trust-item{flex-direction:row;align-items:flex-start;gap:13px}
+  .cpc-trust-ico{margin-bottom:0;flex:none;width:38px;height:38px}
+
+  /* product: enable sticky bar + clear the footer */
+  .cpc-buybar{display:flex}
+  body.cpc-has-buybar{padding-bottom:76px}
+
+  /* olive signup stacks full-width */
+  .cpc-olive-form{flex-direction:column}
+  .cpc-olive-form button,.cpc-olive-form .cpc-olive-submit{justify-content:center;min-height:48px}
+
+  .cpc-empty-art{width:124px;height:124px}
+  .cpc-empty-actions{flex-direction:column}
+  .cpc-empty-cta{width:100%}
+}
+
+/* empty-cart link specificity (beats .cpc-page-content a) */
+.cpc-empty .cpc-empty-cta{color:#fff;text-decoration:none}
+.cpc-empty .cpc-empty-cta:hover{color:#fff;text-decoration:none}
+.cpc-empty .cpc-empty-link{color:var(--c-ink);text-decoration:none}
+.cpc-empty .cpc-empty-link:hover{color:var(--c-blue)}
+
+/* ============================================================
+   v2.5 — EDITABLE BLOCK PAGES (Full-width canvas template)
+   Home / Shop / Olive oil / Cards are now built from core blocks
+   carrying the .cpc-* classes above, so their text is editable in
+   the block editor while the design is preserved.
+   ============================================================ */
+.cpc-canvas{width:100%}
+.cpc-canvas > .wp-block-group,
+.cpc-canvas > .wp-block-columns,
+.cpc-canvas > *{margin-top:0;margin-bottom:0}
+
+/* --- Shop "by category" tiles --- */
+.cpc-cats{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+.cpc-cat{display:block;border:1px solid var(--c-line);border-radius:var(--r-card);overflow:hidden;background:#fff;box-shadow:var(--sh-card);text-decoration:none}
+.cpc-cat-img{aspect-ratio:4/3;background:var(--c-surface)}
+.cpc-cat-img img{width:100%;height:100%;object-fit:cover;display:block}
+.cpc-cat-body{padding:24px}
+.cpc-cat-title{display:block;font:700 24px/1.15 var(--font-head);color:var(--c-ink);letter-spacing:-.01em}
+.cpc-cat-sub{display:block;font:500 14.5px/1.5 var(--font-body);color:var(--c-muted);margin-top:8px}
+.cpc-cat:hover .cpc-cat-title{color:var(--c-blue)}
+@media (max-width:860px){.cpc-cats{grid-template-columns:1fr;gap:16px}}
+
+/* ============================================================
+   v2.5.1 — block-editor CTA buttons, hero images, home title.
+   Core Button blocks put the custom class on the wrapper, so we
+   style the inner link. Also make hero images fill their frames.
+   ============================================================ */
+.cpc-canvas .wp-block-button{margin:0}
+.cpc-canvas .wp-block-buttons{align-items:center;margin:0;gap:16px}
+.cpc-canvas .wp-block-button.cpc-cta > .wp-block-button__link{
+	background:var(--c-blue);color:#fff;border:0;border-radius:var(--r-pill);
+	box-shadow:var(--sh-cta);font:700 16px/1 var(--font-body);padding:16px 28px;text-decoration:none;display:inline-block}
+.cpc-canvas .wp-block-button.cpc-cta > .wp-block-button__link:hover{filter:brightness(1.06)}
+.cpc-canvas .cpc-olive-hero .wp-block-button.cpc-cta > .wp-block-button__link{background:#f4f0e4;color:var(--c-olive-band)}
+/* text-style link CTA (cpc-cta-text on the button wrapper) */
+.cpc-canvas .wp-block-button.cpc-cta-text > .wp-block-button__link{
+	background:none;color:var(--c-ink);border:0;box-shadow:none;border-radius:0;padding:0 0 3px;
+	border-bottom:2px solid var(--c-green);font:700 15px/1 var(--font-body);text-decoration:none}
+
+/* hero art images fill their frames (card hero) */
+.cpc-canvas .cpc-hero-art{align-self:stretch}
+.cpc-canvas .cpc-hero-art .wp-block-image,
+.cpc-canvas .cpc-hero-art-frame .wp-block-image,
+.cpc-canvas .cpc-hero-art-frame figure{margin:0;height:100%}
+.cpc-canvas .cpc-hero-art-frame img{width:100%;height:100%;object-fit:cover;display:block;border-radius:0}
+
+/* olive hero art image fills its dark panel */
+.cpc-canvas .cpc-olive-hero-art{min-height:340px}
+.cpc-canvas .cpc-olive-hero-art .wp-block-image,
+.cpc-canvas .cpc-olive-hero-art figure{margin:0;width:100%;height:100%}
+.cpc-canvas .cpc-olive-hero-art img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* olive story placeholder box paragraph */
+.cpc-olive-story-photo p{margin:0;font:500 13px/1.4 var(--font-body);color:var(--c-muted);padding:0 24px}
+
+/* hide the auto page title on the front page (Home renders via page.php) */
+.home .cpc-page-title{display:none}
+
+/* ============================================================
+   v2.6.1 — checkout & mobile UX fixes
+   ============================================================ */
+
+/* #9 — styled mobile nav (menu items were unstyled <li> with disc bullets) */
+.cpc-nav li.menu-item{list-style:none;margin:0;padding:0}
+@media (max-width:860px){
+  .cpc-nav{gap:0;padding-top:74px}
+  .cpc-nav li.menu-item{width:100%;border-bottom:1px solid var(--c-line)}
+  .cpc-nav li.menu-item:last-child{border-bottom:0}
+  .cpc-nav li.menu-item > a{display:flex;align-items:center;width:100%;min-height:52px;
+    padding:14px 2px;font:600 17px/1.2 var(--font-body);color:var(--c-ink);letter-spacing:-.01em}
+  .cpc-nav li.menu-item > a.cpc-active{color:var(--c-blue)}
+  .cpc-nav li.menu-item > a:hover{color:var(--c-blue)}
+}
+
+/* #2 — Square card field: reserve height + gentle loading hint so a slow
+   paint never looks like a broken empty box (JS adds .cpc-sq-ready once the
+   secure Square iframe has painted). */
+.cpc-woo .sq-card-wrapper{position:relative;min-height:52px}
+.cpc-woo .sq-card-wrapper::before{content:"Card details load securely below";
+  position:absolute;inset:0;display:flex;align-items:center;padding:0 12px;border-radius:10px;
+  background:#f4f6f8;font:500 13px/1.4 var(--font-body);color:var(--c-muted);z-index:0}
+.cpc-woo.cpc-sq-ready .sq-card-wrapper::before{display:none}
+.cpc-woo .sq-card-wrapper > *{position:relative;z-index:1}
+
+/* #5 — the sticky buy bar must never hide page content: clear its height. */
+:root{--cpc-buybar-h:78px}
+@media (max-width:860px){
+  body.cpc-has-buybar{padding-bottom:calc(var(--cpc-buybar-h) + env(safe-area-inset-bottom))}
+  body.cpc-has-buybar .cpc-pinfo,
+  body.cpc-has-buybar .cpc-prows{scroll-margin-bottom:var(--cpc-buybar-h)}
+}
+
+/* #10 — one-item cart: a low-key "Continue shopping" link fills the dead space */
+.cpc-cart-continue{margin:20px auto 0;display:flex;justify-content:center}
+.cpc-cart-continue a{display:inline-flex;align-items:center;gap:8px;min-height:44px;
+  font:700 15px/1 var(--font-body);color:var(--c-blue);text-decoration:none}
+.cpc-cart-continue a:hover{color:var(--c-blue-deep);text-decoration:underline}
+
+/* #8 — "Read the story" expander below the card grid */
+.cpc-cardstory{padding:8px var(--gutter) 60px}
+.cpc-cardstory details{border-top:1px solid var(--c-line);padding-top:22px;max-width:760px}
+.cpc-cardstory summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:8px;
+  min-height:44px;font:700 16px/1.3 var(--font-head);color:var(--c-ink);letter-spacing:-.01em}
+.cpc-cardstory summary::-webkit-details-marker{display:none}
+.cpc-cardstory summary::after{content:'+';font:400 20px/1 var(--font-body);color:var(--c-muted)}
+.cpc-cardstory details[open] summary::after{content:'\2212'}
+.cpc-cardstory p{margin:14px 0 0;font:400 15.5px/1.7 var(--font-body);color:var(--c-body);max-width:680px}
+@media (max-width:860px){.cpc-cardstory{padding:4px 22px 44px}}
+
+/* #4 — pickup orders only need name + email. Hide the billing ADDRESS fields
+   (kept: first/last name + phone) when the customer prefers collection
+   (body.cpc-pickup, toggled by JS, which also auto-sets the address to the
+   pickup location so card payment still validates). :has() degrades safely. */
+.cpc-pickup .wc-block-components-address-form > .wc-block-components-address-form__country,
+.cpc-pickup .wc-block-components-address-form > :has(#billing-address_1),
+.cpc-pickup .wc-block-components-address-form > :has(#billing-city),
+.cpc-pickup .wc-block-components-address-form > :has(#billing-state),
+.cpc-pickup .wc-block-components-address-form > :has(#billing-postcode),
+.cpc-pickup .wc-block-components-address-form__address_2-toggle{display:none!important}
+
+/* Category description on the shop / product-category archives — full content
+   width (was inheriting .cpc-hero-lede's 420px cap, which squashed it to a
+   third of the row). Sits directly below the category title. */
+.cpc-cat-desc{margin:16px 0 28px;font:400 17px/1.65 var(--font-body);color:var(--c-body)}
+.cpc-cat-desc p{margin:0 0 14px}
+.cpc-cat-desc p:last-child{margin-bottom:0}
+
+/* --- Front-page hero product card + auto-rotating carousel (v2.6.13) --- */
+.cpc-hero-card{max-width:360px;width:100%;margin:0 auto}
+.cpc-carousel{max-width:360px;width:100%;margin:0 auto;position:relative}
+.cpc-carousel-track{display:grid}
+.cpc-slide{grid-area:1 / 1;opacity:0;visibility:hidden;transition:opacity .5s ease;pointer-events:none}
+.cpc-slide.cpc-slide-active{opacity:1;visibility:visible;pointer-events:auto}
+.cpc-carousel-dots{display:flex;justify-content:center;gap:9px;margin-top:16px}
+.cpc-dot{width:9px;height:9px;padding:0;border:0;border-radius:999px;background:var(--c-line);cursor:pointer;transition:background .3s ease,transform .3s ease}
+.cpc-dot:hover{background:var(--c-muted)}
+.cpc-dot.cpc-dot-active{background:var(--c-blue);transform:scale(1.2)}
+@media (prefers-reduced-motion: reduce){.cpc-slide{transition:none}}
+
+/* --- Carousel swipe/drag affordance (v2.6.15) --- */
+.cpc-carousel{touch-action:pan-y;cursor:grab;-webkit-user-select:none;user-select:none}
+.cpc-carousel:active{cursor:grabbing}
