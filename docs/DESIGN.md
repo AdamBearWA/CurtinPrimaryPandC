@@ -57,8 +57,30 @@ These are deliberate constraints — the store should stay simple and story‑le
 
 Pills `999px` · cards `12px` · images `14px` · bands `16px`. Card hover
 `translateY(-4px)` + `0 18px 40px rgba(35,42,49,.14)`. CTA shadow
-`0 10px 22px rgba(29,111,184,.28)`. Content max‑width `1200px`, centred; section padding
-`48px` desktop / `22px` mobile.
+`0 10px 22px rgba(29,111,184,.28)`. Content max‑width `1200px`, centred. Horizontal gutter
+(`--gutter`) `48px` desktop / `22px` mobile.
+
+### Vertical rhythm
+
+On the bespoke stacked‑section pages (Home, Shop, Art cards, Olive oil) the vertical spacing
+between header and footer is driven by one token, **`--cpc-flow`** (`40px` desktop / `28px`
+mobile), not by per‑section padding. The `<main>` wrapper carries a **`.cpc-flow`** class —
+added in `header.php` for those pages only — which applies `--cpc-flow` identically as: the
+gap **below the header**, the gap **between every top‑level component**, and the gap **above
+the footer**. So the same single gap appears everywhere, with no section sitting flush
+against the header.
+
+How it works: background‑less sections (hero, product grid, features, delivery, FAQ, signup)
+have their vertical padding zeroed, so the flow token is the *only* source of vertical space;
+coloured bands (story, trust, olive hero/thanks) keep their internal padding and are
+separated from their neighbours by the same flow gap. Empty scroll‑anchor `<div>`s
+(`#cpc-shop`, `#cpc-cards`) are excluded so they never add a double gap.
+
+Single‑product, cart, checkout, account and other WooCommerce/generic pages are deliberately
+**not** given `.cpc-flow`; their spacing stays owned by their own templates. When adding a
+new bespoke section page, wire it into `$cpc_is_flow` in `header.php` and let the flow handle
+spacing — avoid re‑introducing ad‑hoc top/bottom padding or inline `margin-bottom` hacks
+between sections.
 
 ## Pages
 

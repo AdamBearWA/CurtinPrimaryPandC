@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CPC_VERSION', '2.6.17' );
+define( 'CPC_VERSION', '2.6.18' );
 
 /* -----------------------------------------------------------------
  * 1. Theme supports
@@ -63,21 +63,21 @@ add_action( 'wp_enqueue_scripts', function () {
 		null
 	);
 
-	// NOTE: the CSS/JS filenames carry the version (curtin-267.*) because the
+	// NOTE: the CSS/JS filenames carry the version (curtin-268.*) because the
 	// SWAG/nginx proxy caches these static assets by PATH and ignores the ?ver
 	// query string — a plain version bump does NOT bust it (see
 	// Theme-Deployment-Notes.md §8). Renaming the file on every CSS/JS change is
 	// the reliable cache-bust. Bump both the filename and CPC_VERSION together.
 	wp_enqueue_style(
 		'cpc-main',
-		get_stylesheet_directory_uri() . '/assets/css/curtin-267.css',
+		get_stylesheet_directory_uri() . '/assets/css/curtin-268.css',
 		array( 'cpc-fonts' ),
 		CPC_VERSION
 	);
 
 	wp_enqueue_script(
 		'cpc-ui',
-		get_stylesheet_directory_uri() . '/assets/js/curtin-267.js',
+		get_stylesheet_directory_uri() . '/assets/js/curtin-268.js',
 		array(),
 		CPC_VERSION,
 		true

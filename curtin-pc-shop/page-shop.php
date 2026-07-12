@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 get_header();
 ?>
 
-<section class="cpc-collection cpc-container" style="padding-bottom:8px">
+<section class="cpc-collection cpc-container">
 	<div class="cpc-collection-intro">
 		<h1><?php esc_html_e( 'Shop', 'curtin-pc-shop' ); ?></h1>
 		<p><?php esc_html_e( 'Two ranges, one cause. Everything we sell is created by our community, and 100% of profits support the Curtin Primary School P&C.', 'curtin-pc-shop' ); ?></p>

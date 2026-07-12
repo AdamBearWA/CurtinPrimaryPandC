@@ -33,7 +33,7 @@ get_header();
 <?php echo do_shortcode( '[cpc_products category="art-cards" heading="Art cards"]' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 
 <!-- THE STORY BEHIND THE CARDS (navy story band — reuses the olive-oil "Our Story" component) -->
-<section class="cpc-story cpc-container" style="margin-bottom:64px">
+<section class="cpc-story cpc-container">
 	<h2><?php esc_html_e( 'The story behind the cards', 'curtin-pc-shop' ); ?></h2>
 	<div class="cpc-story-cols">
 		<div>

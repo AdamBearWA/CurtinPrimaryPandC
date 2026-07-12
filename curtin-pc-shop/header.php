@@ -13,6 +13,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 $is_home  = is_front_page();
 $is_shop  = ( function_exists( 'is_shop' ) && is_shop() ) || is_product() || ( function_exists( 'is_product_category' ) && is_product_category() );
 $is_olive = is_page( 'olive-oil' );
+
+// Pages built from stacked bespoke sections (home, shop, art cards, olive oil)
+// opt into the consistent vertical rhythm (see curtin-268.css → .cpc-flow).
+// Deliberately excludes single-product, cart/checkout/account and other Woo
+// pages, whose spacing is handled by their own templates.
+$cpc_is_flow = is_front_page() || is_page( array( 'shop', 'olive-oil', 'art-cards', 'cards' ) );
 ?><!doctype html>
 <html <?php language_attributes(); ?>>
 <head>
@@ -83,4 +89,4 @@ $is_olive = is_page( 'olive-oil' );
 	</div>
 </header>
 
-<main id="cpc-content" class="cpc-content">
+<main id="cpc-content" class="cpc-content<?php echo $cpc_is_flow ? ' cpc-flow' : ''; ?>">
