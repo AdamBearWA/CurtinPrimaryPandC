@@ -1,7 +1,7 @@
 <?php
 /**
- * Art cards category page (slug "art-cards") — Butterfly Garden hero, story band,
- * and the greeting-card product grid. Mirrors the olive-oil page style.
+ * Art cards category page (slug "art-cards") — story band and the greeting-card
+ * product grid. Mirrors the olive-oil page style.
  *
  * @package curtin-pc-shop
  */
@@ -11,46 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 get_header();
-
-/* ---- Hero image: the Butterfly Garden set (falls back gracefully) --- */
-$card_hero = function_exists( 'cpc_hero_product' ) ? cpc_hero_product() : null;
-$card_img  = '';
-$card_alt  = __( 'The Butterfly Garden card set', 'curtin-pc-shop' );
-if ( $card_hero && $card_hero->get_image_id() ) {
-	$src = wp_get_attachment_image_url( $card_hero->get_image_id(), 'large' );
-	if ( $src ) {
-		$card_img = $src;
-	}
-	$card_alt = $card_hero->get_name();
-}
-if ( ! $card_img && function_exists( 'wc_placeholder_img_src' ) ) {
-	$card_img = wc_placeholder_img_src( 'large' );
-}
 ?>
-
-<!-- HERO -->
-<section class="cpc-hero cpc-container">
-	<div class="cpc-hero-copy">
-		<div class="cpc-eyebrow"><?php esc_html_e( 'The Butterfly Garden', 'curtin-pc-shop' ); ?></div>
-		<h1 class="cpc-h1"><?php esc_html_e( 'Cards our whole school painted together', 'curtin-pc-shop' ); ?></h1>
-		<p class="cpc-hero-lede"><?php esc_html_e( 'One big community artwork, turned into sets of four greeting cards. Blank inside, ready to send — and every set funds our classrooms.', 'curtin-pc-shop' ); ?></p>
-		<div class="cpc-price-row">
-			<div class="cpc-price"><?php esc_html_e( '$10.00', 'curtin-pc-shop' ); ?></div>
-		</div>
-		<div class="cpc-cta-row">
-			<a class="cpc-btn cpc-cta" href="#cpc-cards"><?php esc_html_e( 'Shop the cards', 'curtin-pc-shop' ); ?></a>
-		</div>
-	</div>
-	<div class="cpc-hero-art">
-		<?php if ( $card_img ) : ?>
-			<div class="cpc-hero-art-frame"><img src="<?php echo esc_url( $card_img ); ?>" alt="<?php echo esc_attr( $card_alt ); ?>"></div>
-		<?php endif; ?>
-		<div class="cpc-credit">
-			<div class="cpc-credit-title"><?php esc_html_e( '"Butterfly Garden", 2023', 'curtin-pc-shop' ); ?></div>
-			<div class="cpc-credit-sub"><?php esc_html_e( 'School community × Kelly Muller', 'curtin-pc-shop' ); ?></div>
-		</div>
-	</div>
-</section>
 
 <!-- STORY BAND -->
 <section id="cpc-story" class="cpc-story cpc-container">

@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CPC_VERSION', '2.6.16' );
+define( 'CPC_VERSION', '2.6.17' );
 
 /* -----------------------------------------------------------------
  * 1. Theme supports
