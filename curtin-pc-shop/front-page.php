@@ -1,7 +1,8 @@
 <?php
 /**
- * Home (static front page) — story-led hero, navy story band,
- * "The collection" 3-up, trust strip.
+ * Home (static front page) — olive-oil hero (product card),
+ * art-cards hero (3 auto-rotating product cards), navy story band,
+ * trust strip.
  *
  * @package curtin-pc-shop
  */
@@ -12,29 +13,52 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 get_header();
 
+/**
+ * Render one product in the shared collection-card format
+ * (image, title, short-description meta, price, add-to-cart) — the same
+ * markup the product grids use, so the hero cards match the rest of the site.
+ */
+if ( ! function_exists( 'cpc_fp_render_card' ) ) {
+	function cpc_fp_render_card( $p ) {
+		if ( ! $p ) {
+			return;
+		}
+		$img  = $p->get_image_id() ? wp_get_attachment_image_url( $p->get_image_id(), 'large' ) : wc_placeholder_img_src( 'large' );
+		$meta = wp_strip_all_tags( $p->get_short_description() );
+		?>
+		<div class="cpc-card cpc-lift">
+			<a class="cpc-card-imglink" href="<?php echo esc_url( get_permalink( $p->get_id() ) ); ?>">
+				<div class="cpc-card-img"><img src="<?php echo esc_url( $img ); ?>" alt="<?php echo esc_attr( $p->get_name() ); ?>"></div>
+			</a>
+			<div class="cpc-card-body">
+				<a class="cpc-card-titlelink" href="<?php echo esc_url( get_permalink( $p->get_id() ) ); ?>"><span class="cpc-card-title"><?php echo esc_html( $p->get_name() ); ?></span></a>
+				<?php if ( '' !== $meta ) : ?><div class="cpc-card-meta"><?php echo esc_html( $meta ); ?></div><?php endif; ?>
+				<div class="cpc-card-foot">
+					<div class="cpc-card-price"><?php echo wp_kses_post( $p->get_price_html() ); ?></div>
+					<?php if ( $p->is_purchasable() && $p->is_in_stock() ) : ?>
+						<a href="<?php echo esc_url( $p->add_to_cart_url() ); ?>" data-quantity="1" data-product_id="<?php echo esc_attr( $p->get_id() ); ?>" class="cpc-add cpc-card-add add_to_cart_button ajax_add_to_cart" rel="nofollow"><?php esc_html_e( 'Add to cart', 'curtin-pc-shop' ); ?></a>
+					<?php else : ?>
+						<a class="cpc-add cpc-card-add" href="<?php echo esc_url( get_permalink( $p->get_id() ) ); ?>"><?php esc_html_e( 'View', 'curtin-pc-shop' ); ?></a>
+					<?php endif; ?>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
+}
+
 /* ---- Hero product: Curtin Gold olive oil (falls back gracefully) --- */
 $olive_product = function_exists( 'cpc_olive_product' ) ? cpc_olive_product() : null;
-$hero_img   = '';
 $hero_alt   = __( 'Curtin Gold extra virgin olive oil', 'curtin-pc-shop' );
 $hero_url   = cpc_olive_url();
 $hero_price = '$18.00';
-$hero_has_image = false;
 if ( $olive_product ) {
-	$pid = $olive_product->get_image_id();
-	if ( $pid ) {
-		$src = wp_get_attachment_image_url( $pid, 'large' );
-		if ( $src ) {
-			$hero_img       = $src;
-			$hero_has_image = true;
-		}
-	}
-	$hero_alt   = $olive_product->get_name();
 	$price_html = wc_price( wc_get_price_to_display( $olive_product ) );
 	$hero_price = wp_strip_all_tags( $price_html );
 }
 ?>
 
-<!-- HERO (Curtin Gold olive oil — available now) -->
+<!-- HERO (Curtin Gold olive oil — shown as a product card) -->
 <section class="cpc-hero cpc-container">
 	<div class="cpc-hero-copy">
 		<div class="cpc-eyebrow"><?php esc_html_e( 'Curtin Gold Olive Oil · Available Now!', 'curtin-pc-shop' ); ?></div>
@@ -48,8 +72,8 @@ if ( $olive_product ) {
 		</div>
 	</div>
 	<div class="cpc-hero-art">
-		<?php if ( $hero_has_image ) : ?>
-			<div class="cpc-hero-art-frame"><img src="<?php echo esc_url( $hero_img ); ?>" alt="<?php echo esc_attr( $hero_alt ); ?>"></div>
+		<?php if ( $olive_product ) : ?>
+			<div class="cpc-hero-card"><?php cpc_fp_render_card( $olive_product ); ?></div>
 		<?php else : ?>
 			<div class="cpc-hero-art-frame cpc-olive-hero-art">
 				<svg width="150" height="250" viewBox="0 0 120 200" fill="none" aria-hidden="true">
@@ -69,50 +93,57 @@ if ( $olive_product ) {
 </section>
 
 <?php
-/* ---- Card hero: the Butterfly Garden set (falls back gracefully) --- */
-$card_hero  = function_exists( 'cpc_hero_product' ) ? cpc_hero_product() : null;
-$card_img   = '';
-$card_alt   = __( 'The Butterfly Garden card set', 'curtin-pc-shop' );
-$card_url   = $card_hero ? $card_hero->add_to_cart_url() : cpc_shop_url();
-$card_price = '$10.00';
-if ( $card_hero ) {
-	$pid = $card_hero->get_image_id();
-	if ( $pid ) {
-		$src = wp_get_attachment_image_url( $pid, 'large' );
-		if ( $src ) {
-			$card_img = $src;
-		}
-	}
-	$card_alt   = $card_hero->get_name();
-	$price_html = wc_price( wc_get_price_to_display( $card_hero ) );
-	$card_price = wp_strip_all_tags( $price_html );
-}
-if ( ! $card_img && function_exists( 'wc_placeholder_img_src' ) ) {
-	$card_img = wc_placeholder_img_src( 'large' );
-}
+/* ---- Art cards: 3 products shown as auto-rotating product cards --- */
+$card_products = function_exists( 'wc_get_products' )
+	? wc_get_products( array(
+		'status'    => 'publish',
+		'limit'     => 3,
+		'orderby'   => 'menu_order',
+		'order'     => 'ASC',
+		'tax_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+			array(
+				'taxonomy' => 'product_cat',
+				'field'    => 'slug',
+				'terms'    => array( 'olive-oil' ),
+				'operator' => 'NOT IN',
+			),
+		),
+	) )
+	: array();
 ?>
 
-<!-- HERO (The collection — Butterfly Garden cards) -->
+<!-- HERO (Art cards — 3 auto-rotating product cards) -->
 <section class="cpc-hero cpc-container">
 	<div class="cpc-hero-copy">
-		<div class="cpc-eyebrow"><?php esc_html_e( 'The Butterfly Garden', 'curtin-pc-shop' ); ?></div>
+		<div class="cpc-eyebrow"><?php esc_html_e( 'Our Art Cards', 'curtin-pc-shop' ); ?></div>
 		<h2 class="cpc-h1"><?php esc_html_e( 'Cards our whole school painted together', 'curtin-pc-shop' ); ?></h2>
-		<p class="cpc-hero-lede"><?php esc_html_e( 'One big community artwork, turned into a set of four greeting cards. Blank inside, ready to send — and every set funds our classrooms.', 'curtin-pc-shop' ); ?></p>
+		<p class="cpc-hero-lede"><?php esc_html_e( 'Three big community artworks, turned into a set of four greeting cards. Blank inside, ready to send — and every set funds our classrooms.', 'curtin-pc-shop' ); ?></p>
 		<div class="cpc-price-row">
-			<div class="cpc-price"><?php echo esc_html( $card_price ); ?></div>
+			<div class="cpc-price"><?php echo esc_html( '$10.00' ); ?></div>
 		</div>
 		<div class="cpc-cta-row">
 			<a class="cpc-btn cpc-cta" href="<?php echo esc_url( home_url( '/art-cards/' ) ); ?>"><?php esc_html_e( 'Shop the cards', 'curtin-pc-shop' ); ?></a>
 		</div>
 	</div>
 	<div class="cpc-hero-art">
-		<?php if ( $card_img ) : ?>
-			<div class="cpc-hero-art-frame"><img src="<?php echo esc_url( $card_img ); ?>" alt="<?php echo esc_attr( $card_alt ); ?>"></div>
+		<?php if ( ! empty( $card_products ) ) : ?>
+			<div class="cpc-carousel" data-cpc-carousel data-interval="4500">
+				<div class="cpc-carousel-track">
+					<?php foreach ( $card_products as $idx => $p ) : ?>
+						<div class="cpc-slide<?php echo 0 === $idx ? ' cpc-slide-active' : ''; ?>">
+							<div class="cpc-hero-card"><?php cpc_fp_render_card( $p ); ?></div>
+						</div>
+					<?php endforeach; ?>
+				</div>
+				<?php if ( count( $card_products ) > 1 ) : ?>
+					<div class="cpc-carousel-dots">
+						<?php foreach ( $card_products as $idx => $p ) : ?>
+							<button type="button" class="cpc-dot<?php echo 0 === $idx ? ' cpc-dot-active' : ''; ?>" aria-label="<?php echo esc_attr( sprintf( __( 'Show %s', 'curtin-pc-shop' ), $p->get_name() ) ); ?>"></button>
+						<?php endforeach; ?>
+					</div>
+				<?php endif; ?>
+			</div>
 		<?php endif; ?>
-		<div class="cpc-credit">
-			<div class="cpc-credit-title"><?php esc_html_e( '"Butterfly Garden", 2023', 'curtin-pc-shop' ); ?></div>
-			<div class="cpc-credit-sub"><?php esc_html_e( 'School community × Kelly Muller', 'curtin-pc-shop' ); ?></div>
-		</div>
 	</div>
 </section>
 
@@ -128,68 +159,6 @@ if ( ! $card_img && function_exists( 'wc_placeholder_img_src' ) ) {
 			);
 		?></p>
 		<p><?php esc_html_e( 'In 2024 we drew four images from it for our first set of cards. The collection has been growing ever since.', 'curtin-pc-shop' ); ?></p>
-	</div>
-</section>
-
-<!-- THE COLLECTION -->
-<?php
-/* Heading comes from the card product category name, not hard-coded copy. */
-$cards_term    = get_term_by( 'slug', 'art-cards', 'product_cat' );
-$cards_heading = ( $cards_term && ! is_wp_error( $cards_term ) ) ? $cards_term->name : __( 'Art cards', 'curtin-pc-shop' );
-?>
-<section id="cpc-cards" class="cpc-collection cpc-container">
-	<div class="cpc-collection-head">
-		<h2><?php echo esc_html( $cards_heading ); ?></h2>
-	</div>
-	<div class="cpc-grid3">
-		<?php
-		$products = function_exists( 'wc_get_products' )
-			? wc_get_products( array(
-				'status'    => 'publish',
-				'limit'     => 3,
-				'orderby'   => 'menu_order',
-				'order'     => 'ASC',
-				'tax_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
-					array(
-						'taxonomy' => 'product_cat',
-						'field'    => 'slug',
-						'terms'    => array( 'olive-oil' ),
-						'operator' => 'NOT IN',
-					),
-				),
-			) )
-			: array();
-
-		if ( ! empty( $products ) ) :
-			foreach ( $products as $p ) :
-				$img = $p->get_image_id() ? wp_get_attachment_image_url( $p->get_image_id(), 'large' ) : wc_placeholder_img_src( 'large' );
-				$meta = wp_strip_all_tags( $p->get_short_description() );
-				?>
-				<div class="cpc-card cpc-lift">
-					<a class="cpc-card-imglink" href="<?php echo esc_url( get_permalink( $p->get_id() ) ); ?>">
-						<div class="cpc-card-img"><img src="<?php echo esc_url( $img ); ?>" alt="<?php echo esc_attr( $p->get_name() ); ?>"></div>
-					</a>
-					<div class="cpc-card-body">
-						<a class="cpc-card-titlelink" href="<?php echo esc_url( get_permalink( $p->get_id() ) ); ?>"><span class="cpc-card-title"><?php echo esc_html( $p->get_name() ); ?></span></a>
-						<?php if ( '' !== $meta ) : ?><div class="cpc-card-meta"><?php echo esc_html( $meta ); ?></div><?php endif; ?>
-						<div class="cpc-card-foot">
-							<div class="cpc-card-price"><?php echo wp_kses_post( $p->get_price_html() ); ?></div>
-							<?php if ( $p->is_purchasable() && $p->is_in_stock() ) : ?>
-								<a href="<?php echo esc_url( $p->add_to_cart_url() ); ?>" data-quantity="1" data-product_id="<?php echo esc_attr( $p->get_id() ); ?>" class="cpc-add cpc-card-add add_to_cart_button ajax_add_to_cart" rel="nofollow"><?php esc_html_e( 'Add to cart', 'curtin-pc-shop' ); ?></a>
-							<?php else : ?>
-								<a class="cpc-add cpc-card-add" href="<?php echo esc_url( get_permalink( $p->get_id() ) ); ?>"><?php esc_html_e( 'View', 'curtin-pc-shop' ); ?></a>
-							<?php endif; ?>
-						</div>
-					</div>
-				</div>
-				<?php
-			endforeach;
-		else :
-			?>
-			<p class="cpc-hero-lede"><?php esc_html_e( 'Our cards will appear here soon. Check back shortly.', 'curtin-pc-shop' ); ?></p>
-			<?php
-		endif;
-		?>
 	</div>
 </section>
 
