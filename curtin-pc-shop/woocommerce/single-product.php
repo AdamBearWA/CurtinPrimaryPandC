@@ -64,7 +64,7 @@ while ( have_posts() ) :
 		<?php if ( $is_olive ) : ?>
 			&nbsp;&nbsp;/&nbsp;&nbsp;<a href="<?php echo esc_url( cpc_olive_url() ); ?>"><?php esc_html_e( 'Olive oil', 'curtin-pc-shop' ); ?></a>
 		<?php else : ?>
-			&nbsp;&nbsp;/&nbsp;&nbsp;<a href="<?php echo esc_url( cpc_shop_url() ); ?>"><?php esc_html_e( 'Cards', 'curtin-pc-shop' ); ?></a>
+			&nbsp;&nbsp;/&nbsp;&nbsp;<a href="<?php echo esc_url( cpc_shop_url() ); ?>"><?php esc_html_e( 'Art cards', 'curtin-pc-shop' ); ?></a>
 		<?php endif; ?>
 		&nbsp;&nbsp;/&nbsp;&nbsp;<span class="cpc-current"><?php echo esc_html( $product->get_name() ); ?></span>
 	</div>

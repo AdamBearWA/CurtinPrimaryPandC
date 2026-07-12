@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CPC_VERSION', '2.6.26' );
+define( 'CPC_VERSION', '2.6.27' );
 
 /* -----------------------------------------------------------------
  * 1. Theme supports
@@ -211,10 +211,16 @@ function cpc_cart_url() {
 	return function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : home_url( '/cart/' );
 }
 
-/** Shop (Cards) URL. */
+/**
+ * Art cards page URL by slug, with a path fallback.
+ *
+ * Points at the dedicated /art-cards/ Page (not the WooCommerce shop base,
+ * which is repointed to the hidden "All products" archive). Used by the
+ * product-page breadcrumb, the footer "Art cards" link and the 404 page.
+ */
 function cpc_shop_url() {
-	$id = function_exists( 'wc_get_page_id' ) ? wc_get_page_id( 'shop' ) : 0;
-	return $id ? get_permalink( $id ) : home_url( '/shop/' );
+	$page = get_page_by_path( 'art-cards' );
+	return $page ? get_permalink( $page ) : home_url( '/art-cards/' );
 }
 
 /** Olive-oil page URL by slug, with a hash fallback. */
