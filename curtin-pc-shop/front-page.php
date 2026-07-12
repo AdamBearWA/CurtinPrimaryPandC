@@ -64,12 +64,6 @@ if ( $olive_product ) {
 		<div class="cpc-eyebrow"><?php esc_html_e( 'Curtin Gold Olive Oil · Available Now!', 'curtin-pc-shop' ); ?></div>
 		<h1 class="cpc-h1"><?php esc_html_e( "From our neighbourhood's olive trees to your kitchen.", 'curtin-pc-shop' ); ?></h1>
 		<p class="cpc-hero-lede"><?php esc_html_e( 'Curtin Primary volunteers harvested local Karawara olives to be professionally cold pressed into premium extra virgin olive oil. The result is a fresh, flavourful oil you\'ll love using every day.', 'curtin-pc-shop' ); ?></p>
-		<div class="cpc-price-row">
-			<div class="cpc-price"><?php echo esc_html( $hero_price ); ?></div>
-		</div>
-		<div class="cpc-cta-row">
-			<a class="cpc-btn cpc-cta" href="<?php echo esc_url( $hero_url ); ?>"><?php esc_html_e( 'Shop Curtin Gold', 'curtin-pc-shop' ); ?></a>
-		</div>
 	</div>
 	<div class="cpc-hero-art">
 		<?php if ( $olive_product ) : ?>
@@ -118,12 +112,6 @@ $card_products = function_exists( 'wc_get_products' )
 		<div class="cpc-eyebrow"><?php esc_html_e( 'Our Art Cards', 'curtin-pc-shop' ); ?></div>
 		<h2 class="cpc-h1"><?php esc_html_e( 'Cards our whole school painted together', 'curtin-pc-shop' ); ?></h2>
 		<p class="cpc-hero-lede"><?php esc_html_e( 'Three big community artworks, turned into a set of four greeting cards. Blank inside, ready to send — and every set funds our classrooms.', 'curtin-pc-shop' ); ?></p>
-		<div class="cpc-price-row">
-			<div class="cpc-price"><?php echo esc_html( '$10.00' ); ?></div>
-		</div>
-		<div class="cpc-cta-row">
-			<a class="cpc-btn cpc-cta" href="<?php echo esc_url( home_url( '/art-cards/' ) ); ?>"><?php esc_html_e( 'Shop the cards', 'curtin-pc-shop' ); ?></a>
-		</div>
 	</div>
 	<div class="cpc-hero-art">
 		<?php if ( ! empty( $card_products ) ) : ?>
