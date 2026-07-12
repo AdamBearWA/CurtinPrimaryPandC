@@ -98,7 +98,7 @@ if ( ! function_exists( 'cpc_render_category_block' ) ) {
 			<?php else : ?>
 				<div class="cpc-collection-head"><h2><?php echo esc_html( $term->name ); ?></h2></div>
 				<?php if ( $has_desc ) : ?>
-					<div class="cpc-cat-desc cpc-hero-lede"><?php echo wp_kses_post( $desc_raw ); ?></div>
+					<div class="cpc-cat-desc"><?php echo wp_kses_post( $desc_raw ); ?></div>
 				<?php endif; ?>
 			<?php endif; ?>
 
