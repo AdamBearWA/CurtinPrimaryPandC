@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CPC_VERSION', '2.6.19' );
+define( 'CPC_VERSION', '2.6.20' );
 
 /* -----------------------------------------------------------------
  * 1. Theme supports
@@ -63,21 +63,21 @@ add_action( 'wp_enqueue_scripts', function () {
 		null
 	);
 
-	// NOTE: the CSS/JS filenames carry the version (curtin-269.*) because the
+	// NOTE: the CSS/JS filenames carry the version (curtin-2610.*) because the
 	// SWAG/nginx proxy caches these static assets by PATH and ignores the ?ver
 	// query string — a plain version bump does NOT bust it (see
 	// Theme-Deployment-Notes.md §8). Renaming the file on every CSS/JS change is
 	// the reliable cache-bust. Bump both the filename and CPC_VERSION together.
 	wp_enqueue_style(
 		'cpc-main',
-		get_stylesheet_directory_uri() . '/assets/css/curtin-269.css',
+		get_stylesheet_directory_uri() . '/assets/css/curtin-2610.css',
 		array( 'cpc-fonts' ),
 		CPC_VERSION
 	);
 
 	wp_enqueue_script(
 		'cpc-ui',
-		get_stylesheet_directory_uri() . '/assets/js/curtin-269.js',
+		get_stylesheet_directory_uri() . '/assets/js/curtin-2610.js',
 		array(),
 		CPC_VERSION,
 		true
@@ -85,8 +85,14 @@ add_action( 'wp_enqueue_scripts', function () {
 }, 100 ); // after everything else
 
 // Add a body class so all our CSS can be tightly scoped under .cpc-theme.
+// Also flag the olive-oil story page so its banded sections (Our Story, hero,
+// thank-you, FAQ) can be styled green without affecting the same components on
+// the front page or cards page, which keep the default blue.
 add_filter( 'body_class', function ( $classes ) {
 	$classes[] = 'cpc-theme';
+	if ( function_exists( 'is_page' ) && is_page( 'olive-oil' ) ) {
+		$classes[] = 'cpc-olive-page';
+	}
 	return $classes;
 } );
 
@@ -349,6 +355,8 @@ function cpc_products_shortcode( $atts ) {
 					$link = get_permalink( $p->get_id() );
 					$img  = $p->get_image_id() ? wp_get_attachment_image_url( $p->get_image_id(), 'large' ) : wc_placeholder_img_src( 'large' );
 					$meta = '' !== $atts['meta'] ? $atts['meta'] : cpc_card_meta_text( $p );
+					// Olive-oil products get a green Add-to-cart button; everything else stays blue.
+					$add_olive = has_term( 'olive-oil', 'product_cat', $p->get_id() ) ? ' cpc-add--olive' : '';
 					?>
 					<div class="cpc-card cpc-lift">
 						<a class="cpc-card-imglink" href="<?php echo esc_url( $link ); ?>">
@@ -360,9 +368,9 @@ function cpc_products_shortcode( $atts ) {
 							<div class="cpc-card-foot">
 								<div class="cpc-card-price"><?php echo wp_kses_post( $p->get_price_html() ); ?></div>
 								<?php if ( $p->is_purchasable() && $p->is_in_stock() ) : ?>
-									<a href="<?php echo esc_url( $p->add_to_cart_url() ); ?>" data-quantity="1" data-product_id="<?php echo esc_attr( $p->get_id() ); ?>" class="cpc-add cpc-card-add add_to_cart_button ajax_add_to_cart" rel="nofollow"><?php esc_html_e( 'Add to cart', 'curtin-pc-shop' ); ?></a>
+									<a href="<?php echo esc_url( $p->add_to_cart_url() ); ?>" data-quantity="1" data-product_id="<?php echo esc_attr( $p->get_id() ); ?>" class="cpc-add cpc-card-add<?php echo esc_attr( $add_olive ); ?> add_to_cart_button ajax_add_to_cart" rel="nofollow"><?php esc_html_e( 'Add to cart', 'curtin-pc-shop' ); ?></a>
 								<?php else : ?>
-									<a class="cpc-add cpc-card-add" href="<?php echo esc_url( $link ); ?>"><?php esc_html_e( 'View', 'curtin-pc-shop' ); ?></a>
+									<a class="cpc-add cpc-card-add<?php echo esc_attr( $add_olive ); ?>" href="<?php echo esc_url( $link ); ?>"><?php esc_html_e( 'View', 'curtin-pc-shop' ); ?></a>
 								<?php endif; ?>
 							</div>
 						</div>
@@ -393,6 +401,8 @@ if ( ! function_exists( 'cpc_render_product_card' ) ) {
 		$link = get_permalink( $p->get_id() );
 		$img  = $p->get_image_id() ? wp_get_attachment_image_url( $p->get_image_id(), 'large' ) : wc_placeholder_img_src( 'large' );
 		$meta = cpc_card_meta_text( $p );
+		// Olive-oil products get a green Add-to-cart button; everything else stays blue.
+		$add_olive = has_term( 'olive-oil', 'product_cat', $p->get_id() ) ? ' cpc-add--olive' : '';
 		?>
 		<div class="cpc-card cpc-lift">
 			<a class="cpc-card-imglink" href="<?php echo esc_url( $link ); ?>">
@@ -404,9 +414,9 @@ if ( ! function_exists( 'cpc_render_product_card' ) ) {
 				<div class="cpc-card-foot">
 					<div class="cpc-card-price"><?php echo wp_kses_post( $p->get_price_html() ); ?></div>
 					<?php if ( $p->is_purchasable() && $p->is_in_stock() ) : ?>
-						<a href="<?php echo esc_url( $p->add_to_cart_url() ); ?>" data-quantity="1" data-product_id="<?php echo esc_attr( $p->get_id() ); ?>" class="cpc-add cpc-card-add add_to_cart_button ajax_add_to_cart" rel="nofollow"><?php esc_html_e( 'Add to cart', 'curtin-pc-shop' ); ?></a>
+						<a href="<?php echo esc_url( $p->add_to_cart_url() ); ?>" data-quantity="1" data-product_id="<?php echo esc_attr( $p->get_id() ); ?>" class="cpc-add cpc-card-add<?php echo esc_attr( $add_olive ); ?> add_to_cart_button ajax_add_to_cart" rel="nofollow"><?php esc_html_e( 'Add to cart', 'curtin-pc-shop' ); ?></a>
 					<?php else : ?>
-						<a class="cpc-add cpc-card-add" href="<?php echo esc_url( $link ); ?>"><?php esc_html_e( 'View', 'curtin-pc-shop' ); ?></a>
+						<a class="cpc-add cpc-card-add<?php echo esc_attr( $add_olive ); ?>" href="<?php echo esc_url( $link ); ?>"><?php esc_html_e( 'View', 'curtin-pc-shop' ); ?></a>
 					<?php endif; ?>
 				</div>
 			</div>
