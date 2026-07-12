@@ -1,7 +1,7 @@
 # Curtin Primary P&C Shop — `curtin-pc-shop` theme
 
 The custom WordPress theme powering the **Curtin Primary P&C** fundraising
-store, live at **https://store.curtinprimarypandc.com.au**.
+store, live at **https://www.curtinprimarypandc.com.au**.
 
 It is a child theme of **Storefront** (WooCommerce) for a small, story‑led shop that
 sells greeting‑card sets ($10, set of four) drawn from the school community's 2023

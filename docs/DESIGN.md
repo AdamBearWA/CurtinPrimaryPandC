@@ -1,7 +1,7 @@
 # Curtin Primary School P&C Shop — Design Guidelines
 
 The design system for the Curtin Primary School P&C shop
-(**https://store.curtinprimarypandc.com.au**). It defines the brand look, the product
+(**https://www.curtinprimarypandc.com.au**). It defines the brand look, the product
 model the store is built around, the design tokens (colour, type, spacing, radii,
 shadows), and the anatomy and behaviour of each page. Treat it as the source of truth when
 adding or changing anything visual; when in doubt, the **live store** is the final word.
