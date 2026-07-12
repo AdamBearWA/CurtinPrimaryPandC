@@ -41,7 +41,7 @@ if ( ! function_exists( 'cpc_render_product_card' ) ) {
 		// Olive-oil products get a green Add-to-cart button; everything else stays blue.
 		$add_olive = has_term( 'olive-oil', 'product_cat', $p->get_id() ) ? ' cpc-add--olive' : '';
 		?>
-		<div class="cpc-card cpc-lift">
+		<div class="cpc-card cpc-lift<?php echo '' !== $add_olive ? ' cpc-card--olive' : ''; ?>">
 			<a class="cpc-card-imglink" href="<?php echo esc_url( $link ); ?>">
 				<div class="cpc-card-img"><img src="<?php echo esc_url( $img ); ?>" alt="<?php echo esc_attr( $p->get_name() ); ?>"></div>
 			</a>
