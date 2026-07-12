@@ -254,7 +254,7 @@
   if (!document.querySelector('.wp-block-woocommerce-checkout')) { return; }
 
   var PICKUP_ADDR = { country: 'AU', address_1: '20 Goss Avenue', address_2: '', city: 'Manning', state: 'WA', postcode: '6152' };
-  var DELIVERY_MSG = 'Curtin Gold olive oil can only be delivered within postcode 6152 (Como, Karawara, Manning, Salter Point, Waterford). Please choose “Pickup” above, or use an address within 6152 — greeting cards can be posted anywhere in Australia.';
+  var DELIVERY_MSG = 'Curtin Gold olive oil can only be delivered within postcode 6152 (Como, Karawara, Manning, Salter Point, Waterford). Please choose “Pickup” below, or use an address within 6152 — greeting cards can be posted anywhere in Australia.';
 
   function sel(store){ try { return (window.wp && wp.data) ? wp.data.select(store) : null; } catch (e) { return null; } }
   function prefersCollection(){ try { var s = sel('wc/store/checkout'); return !!(s && s.prefersCollection && s.prefersCollection()); } catch (e) { return false; } }
@@ -387,7 +387,7 @@
     catch (e) { return false; }
   }
 
-  var OIL_NOTICE_MSG = 'Curtin Gold olive oil can only be delivered within postcode 6152 (Como, Karawara, Manning, Salter Point, Waterford). Please choose \u201CPickup\u201D above, or use an address within 6152 \u2014 greeting cards can be posted anywhere in Australia.';
+  var OIL_NOTICE_MSG = 'Curtin Gold olive oil can only be delivered within postcode 6152 (Como, Karawara, Manning, Salter Point, Waterford). Please choose \u201CPickup\u201D ' + (isCart ? 'during checkout' : 'below') + ', or use an address within 6152 \u2014 greeting cards can be posted anywhere in Australia.';
   var OIL_ICON = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="#e0a200"/><circle cx="12" cy="7.6" r="1.35" fill="#fff"/><rect x="11" y="10.5" width="2" height="7" rx="1" fill="#fff"/></svg>';
   function ensureInfoNotice(show){
     var existing = document.querySelector('.cpc-oil-notice');
