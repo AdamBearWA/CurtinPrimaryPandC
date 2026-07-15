@@ -18,7 +18,7 @@ $is_olive = is_page( 'olive-oil' );
 // opt into the consistent vertical rhythm (see curtin-269.css → .cpc-flow).
 // Deliberately excludes single-product, cart/checkout/account and other Woo
 // pages, whose spacing is handled by their own templates.
-$cpc_is_flow = is_front_page() || is_page( array( 'shop', 'olive-oil', 'art-cards', 'cards' ) );
+$cpc_is_flow = is_front_page() || is_page( array( 'shop', 'olive-oil', 'art-cards', 'cards', 'donate' ) );
 ?><!doctype html>
 <html <?php language_attributes(); ?>>
 <head>
