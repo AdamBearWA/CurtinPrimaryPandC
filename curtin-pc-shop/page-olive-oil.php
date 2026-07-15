@@ -46,9 +46,36 @@ if ( $olive_product ) {
 	</div>
 </section>
 
-<!-- SHOP CURTIN GOLD (product grid) -->
+<!-- SHOP CURTIN GOLD - product card beside the harvest-photo carousel -->
 <div id="cpc-shop"></div>
-<?php echo do_shortcode( '[cpc_products category="olive-oil" heading="Shop Curtin Gold"]' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+<?php
+$cpc_olive_carousel = function_exists( 'cpc_photo_carousel' )
+	? cpc_photo_carousel( array( 'interval' => 5000, 'label' => __( 'Olive harvest photos', 'curtin-pc-shop' ) ) )
+	: '';
+if ( $cpc_olive_carousel ) : ?>
+<section class="cpc-olive-showcase cpc-container">
+	<div class="cpc-collection-head">
+		<h2><?php esc_html_e( 'Shop Curtin Gold', 'curtin-pc-shop' ); ?></h2>
+	</div>
+	<div class="cpc-olive-showcase-grid">
+		<div class="cpc-olive-showcase-product">
+			<?php
+			$cpc_olive_products = function_exists( 'wc_get_products' )
+				? wc_get_products( array( 'status' => 'publish', 'category' => array( 'olive-oil' ), 'orderby' => 'menu_order', 'order' => 'ASC', 'limit' => -1 ) )
+				: array();
+			foreach ( $cpc_olive_products as $cpc_op ) {
+				cpc_render_product_card( $cpc_op );
+			}
+			?>
+		</div>
+		<div class="cpc-olive-showcase-media">
+			<?php echo $cpc_olive_carousel; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+		</div>
+	</div>
+</section>
+<?php else :
+	echo do_shortcode( '[cpc_products category="olive-oil" heading="Shop Curtin Gold"]' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+endif; ?>
 
 <!-- SECTION 3: THREE FEATURES -->
 <section class="cpc-olive-features cpc-container">

@@ -314,6 +314,12 @@
       dots.forEach(function (d, x) {
         d.addEventListener('click', function () { show(x); start(); });
       });
+      /* Optional prev/next arrows (v2.9.0 photo carousel). Guarded so the
+         front-page hero carousel, which has no arrow elements, is unaffected. */
+      var prevBtn = car.querySelector('.cpc-carousel-prev');
+      var nextBtn = car.querySelector('.cpc-carousel-next');
+      if (prevBtn) { prevBtn.addEventListener('click', function () { prev(); start(); }); }
+      if (nextBtn) { nextBtn.addEventListener('click', function () { next(); start(); }); }
       car.addEventListener('mouseenter', stop);
       car.addEventListener('mouseleave', start);
       document.addEventListener('visibilitychange', function () {
