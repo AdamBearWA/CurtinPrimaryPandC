@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CPC_VERSION', '2.8.1' );
+define( 'CPC_VERSION', '2.9.0' );
 
 /* -----------------------------------------------------------------
  * 1. Theme supports
@@ -63,21 +63,21 @@ add_action( 'wp_enqueue_scripts', function () {
 		null
 	);
 
-	// NOTE: the CSS/JS filenames carry the version (curtin-2620.*) because the
+	// NOTE: the CSS/JS filenames carry the version (curtin-2621.*) because the
 	// SWAG/nginx proxy caches these static assets by PATH and ignores the ?ver
 	// query string — a plain version bump does NOT bust it (see
 	// Theme-Deployment-Notes.md §8). Renaming the file on every CSS/JS change is
 	// the reliable cache-bust. Bump both the filename and CPC_VERSION together.
 	wp_enqueue_style(
 		'cpc-main',
-		get_stylesheet_directory_uri() . '/assets/css/curtin-2620.css',
+		get_stylesheet_directory_uri() . '/assets/css/curtin-2621.css',
 		array( 'cpc-fonts' ),
 		CPC_VERSION
 	);
 
 	wp_enqueue_script(
 		'cpc-ui',
-		get_stylesheet_directory_uri() . '/assets/js/curtin-2620.js',
+		get_stylesheet_directory_uri() . '/assets/js/curtin-2621.js',
 		array(),
 		CPC_VERSION,
 		true
@@ -439,6 +439,96 @@ if ( ! function_exists( 'cpc_render_product_card' ) ) {
 		</div>
 		<?php
 	}
+}
+
+/* -----------------------------------------------------------------
+ * cpc_page_photo_ids() / cpc_photo_carousel() — v2.9.0
+ *
+ * Auto-rotating, swipeable photo carousel built from the images
+ * ATTACHED to a Page (Media Library -> attach to this page). Reuses
+ * the existing [data-cpc-carousel] engine (assets/js) and the
+ * .cpc-slide / .cpc-dot markup, so no new engine is needed - just the
+ * .cpc-photo-carousel styling and the prev/next arrow wiring. Returns
+ * empty string when the page has no attached images, so callers can
+ * fall back to placeholder art.
+ *
+ * Used on the Olive oil page (beside the product) and the Donate page
+ * (hero art). To change the photos or their order, (re)attach images
+ * to the Page in the Media Library - no code change required.
+ * --------------------------------------------------------------- */
+function cpc_page_photo_ids( $post_id = 0 ) {
+	$post_id = $post_id ? (int) $post_id : (int) get_the_ID();
+	if ( ! $post_id ) {
+		return array();
+	}
+	$children = get_children( array(
+		'post_parent'    => $post_id,
+		'post_type'      => 'attachment',
+		'post_mime_type' => 'image',
+		'post_status'    => 'inherit',
+		'orderby'        => 'menu_order ID',
+		'order'          => 'ASC',
+		'numberposts'    => -1,
+	) );
+	return $children ? array_keys( $children ) : array();
+}
+
+function cpc_photo_carousel( $args = array() ) {
+	$args = wp_parse_args( $args, array(
+		'post_id'  => 0,
+		'interval' => 5000,
+		'size'     => 'large',
+		'class'    => '',
+		'label'    => __( 'Photo gallery', 'curtin-pc-shop' ),
+		'sizes'    => '(max-width:860px) 92vw, 620px',
+	) );
+
+	$ids = cpc_page_photo_ids( $args['post_id'] );
+	if ( empty( $ids ) ) {
+		return '';
+	}
+	$total = count( $ids );
+
+	ob_start();
+	?>
+	<div class="cpc-carousel cpc-photo-carousel<?php echo '' !== $args['class'] ? ' ' . esc_attr( $args['class'] ) : ''; ?>" data-cpc-carousel data-interval="<?php echo esc_attr( (int) $args['interval'] ); ?>" role="group" aria-roledescription="carousel" aria-label="<?php echo esc_attr( $args['label'] ); ?>">
+		<div class="cpc-carousel-track">
+			<?php foreach ( $ids as $n => $id ) :
+				$caption = wp_get_attachment_caption( $id );
+				?>
+				<div class="cpc-slide<?php echo 0 === $n ? ' cpc-slide-active' : ''; ?>">
+					<figure class="cpc-photo-frame">
+						<?php
+						echo wp_get_attachment_image(
+							$id,
+							$args['size'],
+							false,
+							array(
+								'class'   => 'cpc-photo-img',
+								'loading' => 0 === $n ? 'eager' : 'lazy',
+								'sizes'   => $args['sizes'],
+							)
+						);
+						?>
+						<?php if ( $caption ) : ?>
+							<figcaption class="cpc-photo-cap"><?php echo esc_html( $caption ); ?></figcaption>
+						<?php endif; ?>
+					</figure>
+				</div>
+			<?php endforeach; ?>
+		</div>
+		<?php if ( $total > 1 ) : ?>
+			<button type="button" class="cpc-carousel-arrow cpc-carousel-prev" aria-label="<?php esc_attr_e( 'Previous photo', 'curtin-pc-shop' ); ?>">&#8249;</button>
+			<button type="button" class="cpc-carousel-arrow cpc-carousel-next" aria-label="<?php esc_attr_e( 'Next photo', 'curtin-pc-shop' ); ?>">&#8250;</button>
+			<div class="cpc-carousel-dots">
+				<?php for ( $n = 0; $n < $total; $n++ ) : ?>
+					<button type="button" class="cpc-dot<?php echo 0 === $n ? ' cpc-dot-active' : ''; ?>" aria-label="<?php echo esc_attr( sprintf( __( 'Show photo %d', 'curtin-pc-shop' ), $n + 1 ) ); ?>"></button>
+				<?php endfor; ?>
+			</div>
+		<?php endif; ?>
+	</div>
+	<?php
+	return ob_get_clean();
 }
 
 /* -----------------------------------------------------------------

@@ -37,8 +37,16 @@ $cpc_donate_url = $cpc_donation ? get_permalink( $cpc_donation ) : home_url( '/s
 		</div>
 	</div>
 	<div class="cpc-hero-art">
+<?php
+		$cpc_donate_carousel = function_exists( 'cpc_photo_carousel' )
+			? cpc_photo_carousel( array( 'interval' => 5000, 'class' => 'cpc-photo-carousel--hero', 'label' => __( 'Photos from our community projects', 'curtin-pc-shop' ) ) )
+			: '';
+		if ( $cpc_donate_carousel ) :
+			echo $cpc_donate_carousel; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		else :
+?>
 		<div class="cpc-hero-art-frame">
-			<?php /* Placeholder art — the P&C will supply a photo. Keeps the 5/4 frame filled meanwhile. */ ?>
+			<?php /* Placeholder art - shown until photos are attached to the Donate page in the Media Library. Keeps the 5/4 frame filled. */ ?>
 			<svg width="100%" height="100%" viewBox="0 0 500 400" preserveAspectRatio="xMidYMid slice" role="img" aria-label="<?php esc_attr_e( 'A growing seedling — image to come', 'curtin-pc-shop' ); ?>">
 				<rect width="500" height="400" fill="#eaf6ef"/>
 				<circle cx="250" cy="205" r="120" fill="#dceee2"/>
@@ -49,6 +57,7 @@ $cpc_donate_url = $cpc_donation ? get_permalink( $cpc_donation ) : home_url( '/s
 				<rect x="205" y="300" width="90" height="46" rx="8" fill="#a9805a"/>
 			</svg>
 		</div>
+<?php endif; ?>
 	</div>
 </section>
 

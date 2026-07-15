@@ -757,3 +757,59 @@ body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(-
 .cpc-oil-blocked .wp-block-woocommerce-cart-express-payment-block,
 .cpc-oil-blocked .wc-block-components-express-payment{
   pointer-events:none!important;opacity:.4;filter:grayscale(1)}
+
+/* ============================================================
+   v2.9.0 - attached-photo carousel (olive harvest / community
+   photos) + the olive-oil "product beside photos" showcase.
+   Reuses the existing [data-cpc-carousel] engine (assets/js):
+   auto-rotate, touch-swipe, mouse-drag, dots, reduced-motion.
+   Adds a full-width photo variant, overlaid dots, prev/next
+   arrows, and the two-column olive showcase (stacks on mobile).
+   ============================================================ */
+
+/* Photo variant: not capped at the 360px hero-card width. */
+.cpc-photo-carousel{max-width:none;width:100%;margin:0}
+.cpc-photo-carousel .cpc-photo-frame{position:relative;margin:0;border-radius:var(--r-img);overflow:hidden;aspect-ratio:4/3;box-shadow:var(--sh-art);background:var(--c-page-tint)}
+.cpc-photo-carousel .cpc-photo-frame img{width:100%;height:100%;object-fit:cover;display:block}
+.cpc-photo-cap{position:absolute;left:0;right:0;bottom:0;margin:0;padding:34px 16px 12px;
+  font:500 13px/1.4 var(--font-body);color:#fff;
+  background:linear-gradient(to top,rgba(0,0,0,.55),rgba(0,0,0,0))}
+
+/* Dots overlaid on the photo so the carousel height is just the frame
+   (lets the arrows centre on the image). */
+.cpc-photo-carousel .cpc-carousel-dots{position:absolute;left:0;right:0;bottom:12px;margin:0;z-index:3}
+.cpc-photo-carousel .cpc-dot{background:rgba(255,255,255,.55);box-shadow:0 1px 2px rgba(0,0,0,.4)}
+.cpc-photo-carousel .cpc-dot:hover{background:rgba(255,255,255,.85)}
+.cpc-photo-carousel .cpc-dot.cpc-dot-active{background:#fff;transform:scale(1.25)}
+
+/* Prev / next arrows (progressive - wired in assets/js; the front-page
+   hero carousel has no arrow elements, so it is unaffected). */
+.cpc-carousel-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:3;
+  width:40px;height:40px;padding:0;border:0;border-radius:999px;cursor:pointer;
+  background:rgba(255,255,255,.86);color:var(--c-ink);
+  font:400 26px/1 var(--font-body);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 10px rgba(0,0,0,.2);transition:background .2s ease,transform .2s ease}
+.cpc-carousel-arrow:hover{background:#fff}
+.cpc-carousel-arrow:active{transform:translateY(-50%) scale(.94)}
+.cpc-carousel-prev{left:12px}
+.cpc-carousel-next{right:12px}
+
+/* Donate hero variant - match the 5/4 hero-art frame. */
+.cpc-photo-carousel--hero .cpc-photo-frame{aspect-ratio:5/4}
+
+/* Olive-oil "Shop Curtin Gold": product card on the left, harvest photo
+   carousel filling the white space on the right. Stacks on mobile. */
+.cpc-olive-showcase{padding:0 var(--gutter)}
+.cpc-olive-showcase .cpc-collection-head{margin-bottom:24px}
+.cpc-olive-showcase-grid{display:grid;grid-template-columns:minmax(260px,340px) 1fr;gap:44px;align-items:center}
+.cpc-olive-showcase-product{display:flex;flex-direction:column;gap:22px}
+.cpc-olive-showcase-product .cpc-card{max-width:340px;width:100%}
+.cpc-olive-showcase-media{min-width:0}
+
+@media (max-width:860px){
+  .cpc-olive-showcase-grid{grid-template-columns:1fr;gap:26px}
+  .cpc-olive-showcase-product{align-items:stretch}
+  .cpc-olive-showcase-product .cpc-card{max-width:none}
+  .cpc-carousel-arrow{width:34px;height:34px;font-size:22px}
+}
