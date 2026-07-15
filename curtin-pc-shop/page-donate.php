@@ -2,11 +2,12 @@
 /**
  * Donate page (slug "donate") — "Help Good Ideas Grow".
  *
- * Story-led fundraising appeal built from the shared bespoke-section
- * classes (hero, navy story band, trust grid). The "Donate Now" button
- * points at the WooCommerce "donation" product (slug "donation") so
- * payment runs through the existing Square checkout; if that product
- * doesn't exist yet it falls back to the shop so the button is never dead.
+ * Story-led fundraising appeal that presents the fixed donation tiers
+ * from the "donations" product category as a live product grid
+ * (via [cpc_products category="donations"]), mirroring the Olive oil
+ * and Art cards category pages. Supporters pick a tier — or several, or
+ * bump the quantity in the cart — and pay through the existing Square
+ * checkout. The hero "Donate Now" button scrolls to the tier grid.
  *
  * Used automatically for the Page with slug "donate".
  *
@@ -18,10 +19,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 get_header();
-
-/* Resolve the Donate Now target: the "donation" product if present, else the shop. */
-$cpc_donation   = get_page_by_path( 'donation', OBJECT, 'product' );
-$cpc_donate_url = $cpc_donation ? get_permalink( $cpc_donation ) : home_url( '/shop/' );
 ?>
 
 <!-- HERO — appeal + Donate Now -->
@@ -32,7 +29,7 @@ $cpc_donate_url = $cpc_donation ? get_permalink( $cpc_donation ) : home_url( '/s
 		<p class="cpc-hero-lede"><?php esc_html_e( 'The Curtin Primary School P&C is made up of local people who care about our community. Some volunteer their time. Some donate olives. Some share their creativity. Others lend their professional skills. Together, we create projects that bring people together and make our community stronger.', 'curtin-pc-shop' ); ?></p>
 		<p class="cpc-hero-lede"><?php esc_html_e( "Many of those ideas simply wouldn't happen without financial support. Donations provide the seed funding that helps turn community ideas into reality. If you'd like to help us grow the next great idea, we'd be grateful for your donation.", 'curtin-pc-shop' ); ?></p>
 		<div class="cpc-cta-row">
-			<a class="cpc-cta" href="<?php echo esc_url( $cpc_donate_url ); ?>"><?php esc_html_e( 'Donate Now', 'curtin-pc-shop' ); ?></a>
+			<a class="cpc-cta" href="#cpc-donate-tiers"><?php esc_html_e( 'Donate Now', 'curtin-pc-shop' ); ?></a>
 			<a class="cpc-cta-text" href="#cpc-ideas"><?php esc_html_e( 'See what you help grow', 'curtin-pc-shop' ); ?></a>
 		</div>
 	</div>
@@ -65,6 +62,10 @@ $cpc_donate_url = $cpc_donation ? get_permalink( $cpc_donation ) : home_url( '/s
 <section class="cpc-story cpc-container">
 	<h2><?php esc_html_e( 'Every donation plants the seed for our next community project.', 'curtin-pc-shop' ); ?></h2>
 </section>
+
+<!-- DONATION TIERS — live product grid from the "donations" category -->
+<div id="cpc-donate-tiers"></div>
+<?php echo do_shortcode( '[cpc_products category="donations" heading="Choose your donation" note="Add more than one — or adjust quantity in your cart — to give any total."]' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 
 <!-- THE IDEAS YOU HELP GROW -->
 <section id="cpc-ideas" class="cpc-container cpc-collection cpc-page-content">
