@@ -58,7 +58,7 @@ $cpc_donate_url = $cpc_donation ? get_permalink( $cpc_donation ) : home_url( '/s
 </section>
 
 <!-- THE IDEAS YOU HELP GROW -->
-<section id="cpc-ideas" class="cpc-container cpc-page-content">
+<section id="cpc-ideas" class="cpc-container cpc-collection cpc-page-content">
 	<h2><?php esc_html_e( 'The Ideas You Help Grow', 'curtin-pc-shop' ); ?></h2>
 	<p><?php esc_html_e( 'Every donation helps create opportunities for our community to connect, create and belong. Your support could help bring to life:', 'curtin-pc-shop' ); ?></p>
 
