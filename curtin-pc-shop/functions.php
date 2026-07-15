@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CPC_VERSION', '2.9.1' );
+define( 'CPC_VERSION', '2.9.2' );
 
 /* -----------------------------------------------------------------
  * 1. Theme supports
@@ -452,7 +452,7 @@ if ( ! function_exists( 'cpc_render_product_card' ) ) {
  * empty string when the page has no attached images, so callers can
  * fall back to placeholder art.
  *
- * Used on the Olive oil page (beside the product) and the Donate page
+ * Used on the Olive oil page (beside the product) and the Donations page
  * (hero art). To change the photos or their order, (re)attach images
  * to the Page in the Media Library - no code change required.
  * --------------------------------------------------------------- */

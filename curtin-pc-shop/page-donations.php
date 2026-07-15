@@ -1,6 +1,6 @@
 <?php
 /**
- * Donate page (slug "donate") — "Help Good Ideas Grow".
+ * Donations page (slug "donations") — "Help Good Ideas Grow".
  *
  * Story-led fundraising appeal that presents the fixed donation tiers
  * from the "donations" product category as a live product grid
@@ -9,7 +9,7 @@
  * bump the quantity in the cart — and pay through the existing Square
  * checkout. The hero "Donate Now" button scrolls to the tier grid.
  *
- * Used automatically for the Page with slug "donate".
+ * Used automatically for the Page with slug "donations".
  *
  * @package curtin-pc-shop
  */
