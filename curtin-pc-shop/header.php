@@ -24,6 +24,8 @@ $cpc_is_flow = is_front_page() || is_page( array( 'shop', 'olive-oil', 'art-card
 <head>
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="color-scheme" content="light">
+	<meta name="supported-color-schemes" content="light">
 	<link rel="profile" href="https://gmpg.org/xfn/11">
 	<?php wp_head(); ?>
 </head>
