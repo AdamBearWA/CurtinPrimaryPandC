@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CPC_VERSION', '2.9.2' );
+define( 'CPC_VERSION', '2.9.3' );
 
 /* -----------------------------------------------------------------
  * 1. Theme supports
@@ -63,21 +63,21 @@ add_action( 'wp_enqueue_scripts', function () {
 		null
 	);
 
-	// NOTE: the CSS/JS filenames carry the version (curtin-2621.*) because the
+	// NOTE: the CSS/JS filenames carry the version (curtin-2622.*) because the
 	// SWAG/nginx proxy caches these static assets by PATH and ignores the ?ver
 	// query string — a plain version bump does NOT bust it (see
 	// Theme-Deployment-Notes.md §8). Renaming the file on every CSS/JS change is
 	// the reliable cache-bust. Bump both the filename and CPC_VERSION together.
 	wp_enqueue_style(
 		'cpc-main',
-		get_stylesheet_directory_uri() . '/assets/css/curtin-2621.css',
+		get_stylesheet_directory_uri() . '/assets/css/curtin-2622.css',
 		array( 'cpc-fonts' ),
 		CPC_VERSION
 	);
 
 	wp_enqueue_script(
 		'cpc-ui',
-		get_stylesheet_directory_uri() . '/assets/js/curtin-2621.js',
+		get_stylesheet_directory_uri() . '/assets/js/curtin-2622.js',
 		array(),
 		CPC_VERSION,
 		true
@@ -475,23 +475,39 @@ function cpc_page_photo_ids( $post_id = 0 ) {
 
 function cpc_photo_carousel( $args = array() ) {
 	$args = wp_parse_args( $args, array(
-		'post_id'  => 0,
-		'interval' => 5000,
-		'size'     => 'large',
-		'class'    => '',
-		'label'    => __( 'Photo gallery', 'curtin-pc-shop' ),
-		'sizes'    => '(max-width:860px) 92vw, 620px',
+		'post_id'    => 0,
+		'interval'   => 5000,
+		'size'       => 'large',
+		'class'      => '',
+		'label'      => __( 'Photo gallery', 'curtin-pc-shop' ),
+		'sizes'      => '(max-width:860px) 92vw, 620px',
+		// 'counter' (default) renders a compact "n / total" badge; 'dots' renders
+		// the overlaid dot row. The counter is the default for every photo gallery
+		// built by this function (olive harvest, Donations hero) — it reads better
+		// than dots and never overflows, even with ~20 photos. (The front-page
+		// product-card carousel is separate markup in front-page.php and keeps its
+		// dots.) With a single photo, neither the counter nor the arrows render
+		// (the $total > 1 guard below).
+		'pagination' => 'counter',
 	) );
 
 	$ids = cpc_page_photo_ids( $args['post_id'] );
 	if ( empty( $ids ) ) {
 		return '';
 	}
-	$total = count( $ids );
+	$total       = count( $ids );
+	$is_counter  = ( 'counter' === $args['pagination'] );
+	$root_class  = 'cpc-carousel cpc-photo-carousel';
+	if ( $is_counter ) {
+		$root_class .= ' cpc-carousel--counter';
+	}
+	if ( '' !== $args['class'] ) {
+		$root_class .= ' ' . $args['class'];
+	}
 
 	ob_start();
 	?>
-	<div class="cpc-carousel cpc-photo-carousel<?php echo '' !== $args['class'] ? ' ' . esc_attr( $args['class'] ) : ''; ?>" data-cpc-carousel data-interval="<?php echo esc_attr( (int) $args['interval'] ); ?>" role="group" aria-roledescription="carousel" aria-label="<?php echo esc_attr( $args['label'] ); ?>">
+	<div class="<?php echo esc_attr( $root_class ); ?>" data-cpc-carousel data-interval="<?php echo esc_attr( (int) $args['interval'] ); ?>" role="group" aria-roledescription="carousel" aria-label="<?php echo esc_attr( $args['label'] ); ?>">
 		<div class="cpc-carousel-track">
 			<?php foreach ( $ids as $n => $id ) :
 				$caption = wp_get_attachment_caption( $id );
@@ -520,11 +536,15 @@ function cpc_photo_carousel( $args = array() ) {
 		<?php if ( $total > 1 ) : ?>
 			<button type="button" class="cpc-carousel-arrow cpc-carousel-prev" aria-label="<?php esc_attr_e( 'Previous photo', 'curtin-pc-shop' ); ?>">&#8249;</button>
 			<button type="button" class="cpc-carousel-arrow cpc-carousel-next" aria-label="<?php esc_attr_e( 'Next photo', 'curtin-pc-shop' ); ?>">&#8250;</button>
-			<div class="cpc-carousel-dots">
-				<?php for ( $n = 0; $n < $total; $n++ ) : ?>
-					<button type="button" class="cpc-dot<?php echo 0 === $n ? ' cpc-dot-active' : ''; ?>" aria-label="<?php echo esc_attr( sprintf( __( 'Show photo %d', 'curtin-pc-shop' ), $n + 1 ) ); ?>"></button>
-				<?php endfor; ?>
-			</div>
+			<?php if ( $is_counter ) : ?>
+				<div class="cpc-carousel-counter" aria-hidden="true"><span class="cpc-carousel-current">1</span>&nbsp;/&nbsp;<span class="cpc-carousel-total"><?php echo (int) $total; ?></span></div>
+			<?php else : ?>
+				<div class="cpc-carousel-dots">
+					<?php for ( $n = 0; $n < $total; $n++ ) : ?>
+						<button type="button" class="cpc-dot<?php echo 0 === $n ? ' cpc-dot-active' : ''; ?>" aria-label="<?php echo esc_attr( sprintf( __( 'Show photo %d', 'curtin-pc-shop' ), $n + 1 ) ); ?>"></button>
+					<?php endfor; ?>
+				</div>
+			<?php endif; ?>
 		<?php endif; ?>
 	</div>
 	<?php

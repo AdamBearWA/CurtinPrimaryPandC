@@ -5,6 +5,11 @@
    All selectors are scoped under .cpc-* to avoid collateral damage.
    ============================================================ */
 :root{
+  /* The site has one light theme only. Pin color-scheme so visitors on a
+     dark-mode OS/browser still get light native controls (form autofill,
+     <select>, scrollbars) and a light Square payment iframe at checkout —
+     without this (color-scheme:normal) those render dark on our white pages. */
+  color-scheme:light;
   --c-blue:#1d6fb8; --c-blue-deep:#134e7e; --c-blue-night:#10324f;
   --c-blue-tint:#eaf3fb; --c-green:#2f8f5b; --c-green-deep:#1f6b41;
   --c-green-tint:#eaf6ef; --c-olive-1:#2c4527; --c-olive-2:#3f6135;
@@ -782,6 +787,18 @@ body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(-
 .cpc-photo-carousel .cpc-dot:hover{background:rgba(255,255,255,.85)}
 .cpc-photo-carousel .cpc-dot.cpc-dot-active{background:#fff;transform:scale(1.25)}
 
+/* v2.9.3 — "n / total" counter pagination (opt-in via pagination="counter").
+   Used on the olive harvest gallery (~19 photos), where a dot per slide
+   overflowed into a cramped edge-to-edge row. A compact pill badge, overlaid
+   bottom-centre between the prev/next arrows, shows position without the
+   overflow. JS updates .cpc-carousel-current on each slide change. Scoped to
+   .cpc-carousel--counter, so dot-paginated carousels are unaffected. */
+.cpc-carousel--counter .cpc-carousel-counter{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:3;
+  display:inline-flex;align-items:center;padding:5px 13px;border-radius:999px;
+  background:rgba(20,26,32,.6);color:#fff;font:600 13px/1 var(--font-body);
+  letter-spacing:.02em;pointer-events:none;-webkit-font-smoothing:antialiased}
+.cpc-carousel--counter .cpc-carousel-total{opacity:.85}
+
 /* Prev / next arrows (progressive - wired in assets/js; the front-page
    hero carousel has no arrow elements, so it is unaffected). */
 .cpc-carousel-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:3;
@@ -812,4 +829,44 @@ body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(-
   .cpc-olive-showcase-product{align-items:stretch}
   .cpc-olive-showcase-product .cpc-card{max-width:none}
   .cpc-carousel-arrow{width:34px;height:34px;font-size:22px}
+}
+
+/* ============================================================
+   v2.9.3 — Contact form (Fluent Forms) styled to the brand.
+   Default plugin inputs (7px radius, #dadbdd border, #606266 text,
+   system font) clashed with the rounded-pill buttons. Scoped to
+   Fluent Forms embedded in generic Page content — i.e. the Contact
+   page. The olive-oil mailing-list form uses .cpc-olive-form-wrap
+   (its own dark-green treatment) and the cart/checkout Woo blocks
+   carry no .fluentform, so neither is affected. The submit button
+   already inherits the blue pill from the .cpc-page button[type=submit]
+   rule above, so it is intentionally left alone here.
+   ============================================================ */
+.cpc-page-content .fluentform .ff-el-group{margin-bottom:18px}
+.cpc-page-content .fluentform .ff-el-input--label label,
+.cpc-page-content .fluentform label{font:600 15px/1.4 var(--font-body);color:var(--c-ink-2)}
+.cpc-page-content .fluentform .ff-el-is-required .ff-el-is-asterisk,
+.cpc-page-content .fluentform .ff_t_asterisk{color:#c0392b}
+.cpc-page-content .fluentform input[type="text"],
+.cpc-page-content .fluentform input[type="email"],
+.cpc-page-content .fluentform input[type="tel"],
+.cpc-page-content .fluentform input[type="url"],
+.cpc-page-content .fluentform input[type="number"],
+.cpc-page-content .fluentform select.ff-el-form-control,
+.cpc-page-content .fluentform textarea.ff-el-form-control,
+.cpc-page-content .fluentform .ff-el-form-control{
+  border:1px solid #cbd3db!important;background:#fff!important;color:var(--c-ink)!important;
+  font:400 16px/1.5 var(--font-body)!important;padding:12px 20px!important;
+  border-radius:var(--r-pill)!important;box-shadow:none!important;
+  transition:border-color .18s ease,box-shadow .18s ease;
+}
+/* Multi-line message field: a rounded rectangle reads better than a pill. */
+.cpc-page-content .fluentform textarea.ff-el-form-control{
+  border-radius:16px!important;padding:14px 20px!important;min-height:132px;line-height:1.55!important;
+}
+.cpc-page-content .fluentform .ff-el-form-control::placeholder{color:#9aa2ab;opacity:1}
+.cpc-page-content .fluentform .ff-el-form-control:focus,
+.cpc-page-content .fluentform .ff-el-form-control:focus-visible{
+  border-color:var(--c-blue)!important;
+  box-shadow:0 0 0 3px rgba(29,111,184,.18)!important;outline:none!important;
 }

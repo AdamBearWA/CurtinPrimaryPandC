@@ -295,6 +295,9 @@
     document.querySelectorAll('[data-cpc-carousel]').forEach(function (car) {
       var slides = car.querySelectorAll('.cpc-slide');
       var dots = car.querySelectorAll('.cpc-dot');
+      // Optional "n / total" counter (v2.9.3 galleries with many photos use this
+      // instead of a dot per slide). Null on dot-paginated carousels.
+      var counterCurrent = car.querySelector('.cpc-carousel-current');
       if (slides.length < 2) { return; }
       var interval = parseInt(car.getAttribute('data-interval'), 10) || 4500;
       var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -306,6 +309,7 @@
           d.classList.toggle('cpc-dot-active', x === i);
           d.setAttribute('aria-current', x === i ? 'true' : 'false');
         });
+        if (counterCurrent) { counterCurrent.textContent = i + 1; }
       }
       function next() { show(i + 1); }
       function prev() { show(i - 1); }
