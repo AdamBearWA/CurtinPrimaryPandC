@@ -115,8 +115,8 @@ $card_products = function_exists( 'wc_get_products' )
 			array(
 				'taxonomy' => 'product_cat',
 				'field'    => 'slug',
-				'terms'    => array( 'olive-oil' ),
-				'operator' => 'NOT IN',
+				'terms'    => array( 'art-cards' ),
+				'operator' => 'IN',
 			),
 		),
 	) )
