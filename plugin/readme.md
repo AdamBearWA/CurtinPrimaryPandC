@@ -6,8 +6,8 @@ whether it's being collected or delivered — in both admin order views and in t
 Analytics CSV download.
 
 Kept as a **plugin, not part of the theme**, so it has its own version line and
-survives theme releases: tag `order-columns-vX.Y.Z`, Release title
-`Order Columns vX.Y.Z`, commit prefix `Order Columns vX.Y.Z:`.
+survives theme releases: tag `plugin-vX.Y.Z`, Release title `Plugin vX.Y.Z`,
+commit prefix `Plugin vX.Y.Z:` (the theme uses `theme-vX.Y.Z` / `Theme vX.Y.Z`).
 
 > **The folder is `plugin/`, but the plugin slug is `curtin-order-columns`.**
 > Like `theme/`, don't zip this folder directly — copy it to a staging folder

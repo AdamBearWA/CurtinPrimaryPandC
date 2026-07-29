@@ -22,21 +22,23 @@ theme/              The theme source (zipped as curtin-pc-shop/ and deployed)
   ├─ header.php / footer.php / page.php / 404.php / template-canvas.php
   ├─ woocommerce/            Template overrides (archive-product.php, single-product.php)
   └─ assets/css|js|img       Versioned stylesheets/scripts (curtin-26x.*)
-plugins/            Companion WordPress plugins, each with its own version line
-  └─ curtin-order-columns/   Admin order-list columns / reporting (order-columns-vX.Y.Z)
+plugin/             The Order Columns plugin source (zipped as curtin-order-columns/)
+  ├─ curtin-order-columns.php  Admin order-list + Analytics columns (plugin-vX.Y.Z)
+  └─ readme.md                 What it adds, how pickup vs delivery is detected, changelog
 docs/               Project docs (handoff brief, deployment notes, Square setup)
 .gitignore
 LICENSE             GPL‑3.0
 ```
 
-> **The folder is `theme/`, but the theme slug is `curtin-pc-shop`.** WordPress
-> identifies the active theme by its directory name, so the release zip must contain a
-> single top‑level folder named **`curtin-pc-shop/`** — build it by copying `theme/` to a
-> staging folder of that name and zipping that. Zipping `theme/` directly installs a
-> second, inactive theme and leaves the site on the old files.
+> **The folders are `theme/` and `plugin/`, but the slugs are `curtin-pc-shop` and
+> `curtin-order-columns`.** WordPress identifies the active theme by its directory name,
+> so each release zip must contain a single top‑level folder with the *slug* name — build
+> it by copying `theme/` (or `plugin/`) to a staging folder of that name and zipping that.
+> Zipping `theme/` directly installs a second, inactive theme and leaves the site on the
+> old files.
 
-Admin-only order and reporting tweaks belong in `plugins/`, not in the theme's
-`functions.php`, so they survive theme releases. Theme and plugins version independently:
+Admin-only order and reporting tweaks belong in `plugin/`, not in the theme's
+`functions.php`, so they survive theme releases. Theme and plugin version independently:
 never bump one to match the other.
 
 ## Versioning
@@ -61,8 +63,14 @@ Because theme and plugins share this repo, tags and Release titles are namespace
 
 | | Tag | Release title | Commit prefix |
 |---|---|---|---|
-| Theme | `vX.Y.Z` | `Theme vX.Y.Z` | `Theme vX.Y.Z: …` |
-| Order Columns plugin | `order-columns-vX.Y.Z` | `Order Columns vX.Y.Z` | `Order Columns vX.Y.Z: …` |
+| Theme | `theme-vX.Y.Z` | `Theme vX.Y.Z` | `Theme vX.Y.Z: …` |
+| Plugin (Order Columns) | `plugin-vX.Y.Z` | `Plugin vX.Y.Z` | `Plugin vX.Y.Z: …` |
+
+Tags were renamed on 2026‑07‑29 so both lines read the same way: the theme's `vX.Y.Z`
+tags became `theme-vX.Y.Z`, and the plugin's first two tags (`order-columns-v1.0.0`,
+`order-columns-v1.1.0`) became `plugin-v1.0.0` / `plugin-v1.1.0`. Old tag names no
+longer exist — clone URLs and Release links use the new ones. Commits made before the
+rename still carry the `Order Columns vX.Y.Z:` prefix; new ones use `Plugin vX.Y.Z:`.
 
 Per‑release notes live in the GitHub Release body, **not** in `docs/` — the old
 `docs/RELEASE-*.md` files were removed from the repo and its history on 2026‑07‑29. Read
