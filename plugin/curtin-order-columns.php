@@ -3,8 +3,9 @@
  * Plugin Name:       Curtin P&C Order Columns
  * Plugin URI:        https://github.com/AdamBearWA/CurtinPrimaryPandC
  * Description:       Adds Fulfilment (pickup vs delivery), Email, Phone and Shipping address columns to the WooCommerce Orders list (with a Pickup/Delivery filter) and to Analytics &rarr; Orders, including its CSV Download.
- * Version:           1.1.0
- * Author:            Curtin Primary P&C
+ * Version:           1.1.1
+ * Author:            Adam Niedzwiedz
+ * Author URI:        https://github.com/AdamBearWA
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * WC requires at least: 8.0
@@ -28,7 +29,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CPC_OC_VERSION', '1.1.0' );
+define( 'CPC_OC_VERSION', '1.1.1' );
 define( 'CPC_OC_META', '_cpc_fulfilment' );
 
 /* -----------------------------------------------------------------

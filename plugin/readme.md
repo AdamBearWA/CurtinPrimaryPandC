@@ -58,6 +58,11 @@ Activate. Activation runs the backfill over existing orders.
 
 ## Changelog
 
+### 1.1.1
+
+- Plugin header: Author is now Adam Niedzwiedz (was Curtin Primary P&C), with an
+  Author URI. No functional change.
+
 ### 1.1.0
 
 - Analytics → Orders: added Fulfilment, Email, Phone and Ship to columns to the
