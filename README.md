@@ -1,4 +1,4 @@
-# Curtin Primary P&C Shop — `curtin-pc-shop` theme
+# Curtin Primary P&C Shop — WordPress theme + plugins
 
 The custom WordPress theme powering the **Curtin Primary P&C** fundraising
 store, live at **https://www.curtinprimarypandc.com.au**.
@@ -12,7 +12,7 @@ a **home → shop → category → product** structure built from polished PHP t
 ## Repository layout
 
 ```
-curtin-pc-shop/     The theme itself (this is what gets zipped and deployed)
+theme/              The theme source (zipped as curtin-pc-shop/ and deployed)
   ├─ style.css               Theme header + Version (kept in sync with CPC_VERSION)
   ├─ functions.php           Setup, asset enqueues, WooCommerce hooks
   ├─ front-page.php          Home (hero + art‑cards carousel + olive teaser)
@@ -22,15 +22,27 @@ curtin-pc-shop/     The theme itself (this is what gets zipped and deployed)
   ├─ header.php / footer.php / page.php / 404.php / template-canvas.php
   ├─ woocommerce/            Template overrides (archive-product.php, single-product.php)
   └─ assets/css|js|img       Versioned stylesheets/scripts (curtin-26x.*)
+plugins/            Companion WordPress plugins, each with its own version line
+  └─ curtin-order-columns/   Admin order-list columns / reporting (order-columns-vX.Y.Z)
 docs/               Project docs (handoff brief, deployment notes, Square setup)
 .gitignore
 LICENSE             GPL‑3.0
 ```
 
+> **The folder is `theme/`, but the theme slug is `curtin-pc-shop`.** WordPress
+> identifies the active theme by its directory name, so the release zip must contain a
+> single top‑level folder named **`curtin-pc-shop/`** — build it by copying `theme/` to a
+> staging folder of that name and zipping that. Zipping `theme/` directly installs a
+> second, inactive theme and leaves the site on the old files.
+
+Admin-only order and reporting tweaks belong in `plugins/`, not in the theme's
+`functions.php`, so they survive theme releases. Theme and plugins version independently:
+never bump one to match the other.
+
 ## Versioning
 
 The theme version lives in **two places that must stay in sync**: `Version:` in
-`curtin-pc-shop/style.css` and `CPC_VERSION` in `curtin-pc-shop/functions.php`. Bump both
+`theme/style.css` and `CPC_VERSION` in `theme/functions.php`. Bump both
 on every change so cache‑busting and "what's actually live" checks stay meaningful.
 
 CSS/JS are shipped as **version‑renamed files** (`curtin-264.css`, `curtin-265.css`, …)
@@ -42,9 +54,25 @@ do **not** rename assets.
 The commit history reconstructs the build progression from **v2.5.3** (the original
 block‑based base) through the PHP‑template rewrite **v2.6.1 → v2.6.15**.
 
+## Releases
+
+Every version lands as a commit **and** a GitHub Release with the zip attached.
+Because theme and plugins share this repo, tags and Release titles are namespaced:
+
+| | Tag | Release title | Commit prefix |
+|---|---|---|---|
+| Theme | `vX.Y.Z` | `Theme vX.Y.Z` | `Theme vX.Y.Z: …` |
+| Order Columns plugin | `order-columns-vX.Y.Z` | `Order Columns vX.Y.Z` | `Order Columns vX.Y.Z: …` |
+
+Per‑release notes live in the GitHub Release body, **not** in `docs/` — the old
+`docs/RELEASE-*.md` files were removed from the repo and its history on 2026‑07‑29. Read
+`git log` and the [Releases page](https://github.com/AdamBearWA/CurtinPrimaryPandC/releases)
+for history.
+
 ## Building & deploying
 
-The deployable artifact is a zip of the `curtin-pc-shop/` folder, installed via
+The deployable artifact is a zip whose root folder is **`curtin-pc-shop/`** (built from
+`theme/` — see the layout note above), installed via
 **Appearance → Add Theme → Upload → "Replace installed with uploaded"**.
 
 **Read [`docs/Theme-Deployment-Notes.md`](docs/Theme-Deployment-Notes.md) before changing

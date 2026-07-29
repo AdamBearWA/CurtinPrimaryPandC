@@ -1,6 +1,12 @@
 # Theme Deployment Notes — curtin-pc-shop
 
-Read this before making any change to the `curtin-pc-shop` theme or deploying a new zip. These are hard-won lessons from real production incidents, not style preferences.
+Read this before making any change to the theme or deploying a new zip. These are hard-won lessons from real production incidents, not style preferences.
+
+**Repo layout (renamed 2026-07-29).** The theme source lives at `theme/` in the repo — it used to be `curtin-pc-shop/`. The **WordPress theme slug is still `curtin-pc-shop`**, so the release zip must contain a single top-level folder named `curtin-pc-shop/`, not `theme/`. Build by copying `theme/` to a staging folder named `curtin-pc-shop/` and zipping that (see the Release checklist). Getting this wrong installs a *second*, inactive theme called "theme" and leaves the live site on the old files.
+
+**Scope note — the repo also holds plugins with their own version lines.** `plugins/curtin-order-columns/` (Curtin P&C Order Columns) is *not* part of the theme: it releases as tag `order-columns-vX.Y.Z`, GitHub Release title `Order Columns vX.Y.Z`, commit prefix `Order Columns vX.Y.Z:`. The theme uses tag `vX.Y.Z`, Release title `Theme vX.Y.Z`, commit prefix `Theme vX.Y.Z:`. Never bump one to match the other. Admin-only order/reporting tweaks belong in a plugin rather than `functions.php`, so they survive theme releases.
+
+**Per-release notes are not kept in the repo.** `docs/RELEASE-*.md` was removed from the repo and from its history on 2026-07-29 — release notes live in **GitHub Releases** (plus the working copies in this project folder, which are not version-controlled). Don't re-add them to `docs/`.
 
 ## 1. Never add a `woocommerce.php` file to the theme root
 
@@ -37,7 +43,7 @@ The per-version changelog that used to live here has been removed — **the auth
 Every new version must land in Git and as a GitHub Release, not just as a zip handed to Adam. Follow the full "Release checklist" at the bottom of this file. The two things that matter most for traceability:
 
 - **Commit message**: `Theme vX.Y.Z: <one-line summary of the change>`, committed as Adam with no Claude co-author trailers (identity `Adam Niedzwiedz <AdamBearWA@users.noreply.github.com>`). The one-line summary is what replaces the old changelog, so make it specific (what changed and where), e.g. `Theme v2.6.17: remove top hero from Art cards page (page-art-cards.php)`.
-- **Release notes**: publish with `gh release create vX.Y.Z` and attach the built zip. The **release title must be the same as the tag** (`vX.Y.Z`, no "curtin-pc-shop" prefix). The `--notes` text should describe the change and call out whether assets were cache-bust renamed and whether it's been verified live yet.
+- **Release notes**: publish with `gh release create vX.Y.Z` and attach the built zip. The **release title is the tag with a `Theme ` prefix** — `Theme vX.Y.Z` (all historical theme releases were relabelled this way on 2026-07-29, so the Releases page reads unambiguously now that plugins release from the same repo). Plugin releases use their own prefix, e.g. `Order Columns v1.1.0`. The `--notes` text should describe the change and call out whether assets were cache-bust renamed and whether it's been verified live yet.
 
 **Never assume the source folder matches production.** Confirm the true `CPC_VERSION` via Appearance → Themes → Theme Details on the live site (see §1) before building on top of local files — a version may have been built and handed off but not yet uploaded, or uploaded and reverted.
 
@@ -80,14 +86,14 @@ export LD_LIBRARY_PATH=/tmp/root/usr/lib/x86_64-linux-gnu:/tmp/root/lib/x86_64-l
 
 ## Release checklist — run for EVERY new version (Git + GitHub Releases)
 
-The theme is version-controlled at **github.com/AdamBearWA/CurtinPrimaryPandC** (branch `main`); Adam's clone is at `...\Curtin Square Site\CurtinPrimaryPandC`. **From v2.6.15 on, every release must also land in Git and as a GitHub Release — not just as a zip.** Do all of this for each new version:
+The theme is version-controlled at **github.com/AdamBearWA/CurtinPrimaryPandC** (branch `main`); Adam's clone is at `...\Curtin Square Site\CurtinPrimaryPandC`, laid out as `theme/` + `plugins/` + `docs/`. **From v2.6.15 on, every release must also land in Git and as a GitHub Release — not just as a zip.** Do all of this for each new version:
 
 1. **Bump the version** — `CPC_VERSION` in `functions.php` and `Version:` in `style.css` must match and increment (see §6). If CSS/JS changed, rename the asset pair to the next `curtin-26x.*` and update both enqueues (see §8), then delete the superseded `curtin-26x.*` pair so only the current one ships (see §7). If the change is PHP-only, leave the asset pair untouched.
-2. **Build the zip** of `curtin-pc-shop/` on a fresh output folder / native fs, NUL-scan and strip (see §9), **`php -l` every `.php` file and re-lint after re-extracting the zip (see §10)**, confirm `assets/css` + `assets/js` hold only the one enqueued `curtin-26x.*` pair (§7), and confirm there is no root `woocommerce.php` (see §1, §2, §9).
-3. **Sync source into the repo** — copy the updated `curtin-pc-shop/` over the clone's `curtin-pc-shop/`. Keep the repo's `docs/` copies in sync with the project-folder docs when they change.
+2. **Build the zip** on a fresh output folder / native fs: copy the theme source to a staging folder **named `curtin-pc-shop/`** (the repo folder is `theme/`, but the zip's top-level folder must be the theme slug — see the layout note at the top) and zip that. NUL-scan and strip (see §9), **`php -l` every `.php` file and re-lint after re-extracting the zip (see §10)**, confirm `assets/css` + `assets/js` hold only the one enqueued `curtin-26x.*` pair (§7), and confirm there is no root `woocommerce.php` (see §1, §2, §9). Verify with `unzip -l` (or `Expand-Archive` to a temp dir) that the archive root is `curtin-pc-shop/`.
+3. **Sync source into the repo** — copy the updated theme source over the clone's `theme/`. Keep the repo's `docs/` copies in sync with the project-folder docs when they change; don't add per-release `RELEASE-*.md` files to `docs/`.
 4. **Commit as Adam, no Claude co-author trailers** (identity `Adam Niedzwiedz <AdamBearWA@users.noreply.github.com>`): `git add -A && git commit -m "Theme vX.Y.Z: <one-line summary>"`.
 5. **Push**: `git push origin main`.
-6. **Publish the GitHub Release** with the zip attached (tag `vX.Y.Z`, at the commit just pushed): `gh release create vX.Y.Z "curtin-pc-shop-vX.Y.Z.zip" --title "vX.Y.Z" --notes "<summary>"` (the Release **title must equal the tag** — just `vX.Y.Z`) (`gh auth login` once first). `create-github-releases.ps1` in the project folder did the historical backfill (v2.5.3 -> v2.6.15) and is the pattern to copy for a single new release.
+6. **Publish the GitHub Release** with the zip attached (tag `vX.Y.Z`, at the commit just pushed): `gh release create vX.Y.Z "curtin-pc-shop-vX.Y.Z.zip" --title "Theme vX.Y.Z" --notes "<summary>"` (`gh auth login` once first). The tag stays bare (`vX.Y.Z`); only the **title** carries the `Theme ` prefix. `create-github-releases.ps1` in the project folder did the historical backfill (v2.5.3 -> v2.6.15) and is the pattern to copy for a single new release — note its `--title` values predate the prefix.
 7. **Then deploy** to the live site and verify in an authenticated, cache-busted browser (see §3-§4).
 
 Reminder: the Cowork/Linux sandbox corrupts Git on the mounted project folder — do any Git work on native fs (e.g. `/tmp`) and hand off via a `git bundle`; Adam pushes from his Windows clone.
