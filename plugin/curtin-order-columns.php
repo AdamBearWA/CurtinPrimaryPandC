@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin Name:       Curtin P&C Order Columns
- * Plugin URI:        https://www.curtinprimarypandc.com.au
- * Description:       Adds Fulfilment (pickup vs delivery), Email, Phone and Shipping address columns — plus a Pickup/Delivery filter — to the WooCommerce Orders list.
- * Version:           1.0.0
+ * Plugin URI:        https://github.com/AdamBearWA/CurtinPrimaryPandC
+ * Description:       Adds Fulfilment (pickup vs delivery), Email, Phone and Shipping address columns to the WooCommerce Orders list (with a Pickup/Delivery filter) and to Analytics &rarr; Orders, including its CSV Download.
+ * Version:           1.1.0
  * Author:            Curtin Primary P&C
  * Requires at least: 6.4
  * Requires PHP:      7.4
@@ -15,11 +15,20 @@
  * shipping rules (curtin-pc-shop §7):
  *   pickup_location / local_pickup  -> Pickup  (label = which pickup location)
  *   flat_rate (or any other rate)   -> Delivery
- *   no shipping line                -> n/a    (e.g. donations, virtual items)
+ *   no shipping line                -> No shipping (e.g. donations, virtual items)
+ *
+ * Sections:
+ *   1. Fulfilment detection
+ *   2. Order meta (so the Orders list can be filtered by fulfilment)
+ *   3. Orders list columns
+ *   4. Orders list Pickup/Delivery filter
+ *   5. Admin CSS
+ *   6. Analytics -> Orders columns + CSV download
  */
 
 defined( 'ABSPATH' ) || exit;
 
+define( 'CPC_OC_VERSION', '1.1.0' );
 define( 'CPC_OC_META', '_cpc_fulfilment' );
 
 /* -----------------------------------------------------------------
@@ -116,7 +125,8 @@ function cpc_oc_sync_meta( $order ) {
 		return;
 	}
 
-	$type = cpc_oc_fulfilment( $order )['type'];
+	$fulfilment = cpc_oc_fulfilment( $order );
+	$type       = $fulfilment['type'];
 
 	if ( $order->get_meta( CPC_OC_META, true ) === $type ) {
 		return;
@@ -126,9 +136,9 @@ function cpc_oc_sync_meta( $order ) {
 	$order->save();
 }
 
-add_action( 'woocommerce_checkout_order_processed', 'cpc_oc_sync_meta', 20 );          // Classic checkout.
-add_action( 'woocommerce_store_api_checkout_order_processed', 'cpc_oc_sync_meta', 20 ); // Block checkout + express wallets.
-add_action( 'woocommerce_process_shop_order_meta', 'cpc_oc_sync_meta', 60 );            // Manual admin edits.
+add_action( 'woocommerce_checkout_order_processed', 'cpc_oc_sync_meta', 20 );            // Classic checkout.
+add_action( 'woocommerce_store_api_checkout_order_processed', 'cpc_oc_sync_meta', 20 );  // Block checkout + express wallets.
+add_action( 'woocommerce_process_shop_order_meta', 'cpc_oc_sync_meta', 60 );             // Manual admin edits.
 
 /** Backfill existing orders on activation (small store — one pass is fine). */
 function cpc_oc_backfill() {
@@ -197,7 +207,7 @@ add_filter( 'manage_edit-shop_order_columns', 'cpc_oc_columns', 20 );
  * Render a column's contents.
  *
  * @param string            $column Column key.
- * @param WC_Order|int|null $order  Order (HPOS) — absent on legacy.
+ * @param WC_Order|int|null $order  Order (HPOS) or post ID (legacy).
  */
 function cpc_oc_render_column( $column, $order = null ) {
 
@@ -218,17 +228,17 @@ function cpc_oc_render_column( $column, $order = null ) {
 	switch ( $column ) {
 
 		case 'cpc_fulfilment':
-			$f = cpc_oc_fulfilment( $order );
+			$fulfilment = cpc_oc_fulfilment( $order );
 			printf(
 				'<span class="cpc-pill cpc-pill--%1$s">%2$s</span>',
-				esc_attr( $f['type'] ),
-				esc_html( cpc_oc_type_label( $f['type'] ) )
+				esc_attr( $fulfilment['type'] ),
+				esc_html( cpc_oc_type_label( $fulfilment['type'] ) )
 			);
-			if ( '' !== $f['label'] ) {
-				echo '<br><small>' . esc_html( $f['label'] ) . '</small>';
+			if ( '' !== $fulfilment['label'] ) {
+				echo '<br><small>' . esc_html( $fulfilment['label'] ) . '</small>';
 			}
-			if ( 'pickup' === $f['type'] && '' !== $f['address'] ) {
-				echo '<br><small>' . esc_html( wp_strip_all_tags( $f['address'] ) ) . '</small>';
+			if ( 'pickup' === $fulfilment['type'] && '' !== $fulfilment['address'] ) {
+				echo '<br><small>' . esc_html( wp_strip_all_tags( $fulfilment['address'] ) ) . '</small>';
 			}
 			break;
 
@@ -240,10 +250,7 @@ function cpc_oc_render_column( $column, $order = null ) {
 			break;
 
 		case 'cpc_phone':
-			$phone = $order->get_billing_phone();
-			if ( ! $phone && is_callable( array( $order, 'get_shipping_phone' ) ) ) {
-				$phone = $order->get_shipping_phone();
-			}
+			$phone = cpc_oc_phone( $order );
 			echo $phone
 				? '<a href="' . esc_url( 'tel:' . preg_replace( '/\s+/', '', $phone ) ) . '">' . esc_html( $phone ) . '</a>'
 				: '&mdash;';
@@ -265,6 +272,23 @@ function cpc_oc_render_column( $column, $order = null ) {
 }
 add_action( 'manage_woocommerce_page_wc-orders_custom_column', 'cpc_oc_render_column', 20, 2 );
 add_action( 'manage_shop_order_posts_custom_column', 'cpc_oc_render_column', 20, 2 );
+
+/**
+ * Best available phone number for an order (block checkout writes billing_phone).
+ *
+ * @param WC_Order $order Order.
+ * @return string
+ */
+function cpc_oc_phone( $order ) {
+
+	$phone = $order->get_billing_phone();
+
+	if ( ! $phone && is_callable( array( $order, 'get_shipping_phone' ) ) ) {
+		$phone = $order->get_shipping_phone();
+	}
+
+	return (string) $phone;
+}
 
 /* -----------------------------------------------------------------
  * 4. Pickup / Delivery filter dropdown.
@@ -390,4 +414,200 @@ add_action(
 		</style>
 		<?php
 	}
+);
+
+/* -----------------------------------------------------------------
+ * 6. Analytics -> Orders: extra columns and CSV download.
+ *
+ *    Three paths have to be fed, all from the same helper:
+ *      a) the REST response  -> the on-screen table AND the CSV that the
+ *         browser builds when the result set fits on one page
+ *         (woocommerce_rest_prepare_report_orders)
+ *      b) the server-side CSV that WooCommerce emails when the result set
+ *         spans more than one page (woocommerce_report_orders_export_columns
+ *         + woocommerce_report_orders_prepare_export_item)
+ *      c) the React table itself, which needs a JS filter to render the
+ *         extra headers/cells (woocommerce_admin_report_table)
+ * --------------------------------------------------------------- */
+
+/** Column key => CSV/table header, in display order. */
+function cpc_oc_report_columns() {
+	return array(
+		'cpc_fulfilment' => __( 'Fulfilment', 'curtin-order-columns' ),
+		'cpc_email'      => __( 'Email', 'curtin-order-columns' ),
+		'cpc_phone'      => __( 'Phone', 'curtin-order-columns' ),
+		'cpc_ship_to'    => __( 'Ship to', 'curtin-order-columns' ),
+	);
+}
+
+/**
+ * Flat, single-line values for one order — used by the table and both CSVs.
+ *
+ * @param int $order_id Order ID.
+ * @return array<string,string>
+ */
+function cpc_oc_report_fields( $order_id ) {
+
+	static $cache = array();
+
+	$order_id = (int) $order_id;
+
+	if ( isset( $cache[ $order_id ] ) ) {
+		return $cache[ $order_id ];
+	}
+
+	$fields = array(
+		'cpc_fulfilment' => '',
+		'cpc_email'      => '',
+		'cpc_phone'      => '',
+		'cpc_ship_to'    => '',
+	);
+
+	$order = $order_id ? wc_get_order( $order_id ) : false;
+
+	if ( ! $order instanceof WC_Order ) {
+		$cache[ $order_id ] = $fields;
+		return $fields;
+	}
+
+	$fulfilment = cpc_oc_fulfilment( $order );
+	$label      = cpc_oc_type_label( $fulfilment['type'] );
+
+	if ( '' !== $fulfilment['label'] ) {
+		$label .= ' — ' . $fulfilment['label'];
+	}
+
+	// Block local pickup collects no shipping address, so fall back to billing.
+	$address = $order->get_formatted_shipping_address();
+	$suffix  = '';
+
+	if ( ! $address ) {
+		$address = $order->get_formatted_billing_address();
+		$suffix  = $address ? ' ' . __( '(billing)', 'curtin-order-columns' ) : '';
+	}
+
+	$fields['cpc_fulfilment'] = $label;
+	$fields['cpc_email']      = $order->get_billing_email();
+	$fields['cpc_phone']      = cpc_oc_phone( $order );
+	$fields['cpc_ship_to']    = $address ? cpc_oc_one_line( $address ) . $suffix : '';
+
+	$cache[ $order_id ] = $fields;
+
+	return $fields;
+}
+
+/**
+ * Collapse a WooCommerce formatted address (which uses <br/>) to one line.
+ *
+ * @param string $address Formatted address HTML.
+ * @return string
+ */
+function cpc_oc_one_line( $address ) {
+	$address = preg_replace( '#<br\s*/?>#i', ', ', (string) $address );
+	$address = wp_strip_all_tags( $address );
+	$address = preg_replace( '/\s+/', ' ', $address );
+	return trim( str_replace( ' ,', ',', $address ), " ,\t\n\r" );
+}
+
+/* 6a. REST response — feeds the on-screen table and the in-browser CSV. */
+add_filter(
+	'woocommerce_rest_prepare_report_orders',
+	static function ( $response, $report, $request ) {
+
+		if ( ! $response instanceof WP_REST_Response ) {
+			return $response;
+		}
+
+		$order_id = is_array( $report ) && isset( $report['order_id'] ) ? $report['order_id'] : 0;
+
+		if ( ! $order_id ) {
+			return $response;
+		}
+
+		$response->set_data( array_merge( (array) $response->get_data(), cpc_oc_report_fields( $order_id ) ) );
+
+		return $response;
+	},
+	20,
+	3
+);
+
+/* 6b. Server-generated CSV (emailed when the report spans several pages). */
+add_filter(
+	'woocommerce_report_orders_export_columns',
+	static function ( $columns ) {
+		return array_merge( (array) $columns, cpc_oc_report_columns() );
+	},
+	20
+);
+
+add_filter(
+	'woocommerce_report_orders_prepare_export_item',
+	static function ( $export_item, $item ) {
+
+		$order_id = is_array( $item ) && isset( $item['order_id'] ) ? $item['order_id'] : 0;
+
+		return array_merge( (array) $export_item, cpc_oc_report_fields( $order_id ) );
+	},
+	20,
+	2
+);
+
+/* 6c. The React table needs a JS filter to render the extra headers/cells.
+ *     Plain JS against the global wp.hooks — no build step required. */
+add_action(
+	'admin_enqueue_scripts',
+	static function ( $hook_suffix ) {
+
+		if ( false === strpos( (string) $hook_suffix, 'wc-admin' ) ) {
+			return;
+		}
+
+		$columns = array();
+
+		foreach ( cpc_oc_report_columns() as $key => $label ) {
+			$columns[] = array(
+				'key'   => $key,
+				'label' => $label,
+			);
+		}
+
+		$script = 'window.cpcOrderColumns = ' . wp_json_encode( $columns ) . ';
+( function ( hooks, columns ) {
+	if ( ! hooks || ! hooks.addFilter || ! columns ) {
+		return;
+	}
+	hooks.addFilter( "woocommerce_admin_report_table", "curtin-pc/order-columns", function ( tableData ) {
+		if ( ! tableData || "orders" !== tableData.endpoint ) {
+			return tableData;
+		}
+		if ( ! tableData.items || ! tableData.items.data || ! tableData.headers || ! tableData.rows ) {
+			return tableData;
+		}
+		if ( tableData.headers.some( function ( header ) { return header && header.key === columns[ 0 ].key; } ) ) {
+			return tableData; // Already added.
+		}
+		tableData.headers = tableData.headers.concat(
+			columns.map( function ( column ) {
+				return { label: column.label, key: column.key, isSortable: false, isNumeric: false };
+			} )
+		);
+		tableData.rows = tableData.rows.map( function ( row, index ) {
+			var item = tableData.items.data[ index ] || {};
+			return row.concat(
+				columns.map( function ( column ) {
+					var value = item[ column.key ] || "";
+					return { display: value, value: value };
+				} )
+			);
+		} );
+		return tableData;
+	} );
+} )( window.wp && window.wp.hooks, window.cpcOrderColumns );';
+
+		wp_register_script( 'cpc-order-columns-analytics', false, array( 'wp-hooks' ), CPC_OC_VERSION, false );
+		wp_enqueue_script( 'cpc-order-columns-analytics' );
+		wp_add_inline_script( 'cpc-order-columns-analytics', $script );
+	},
+	20
 );
