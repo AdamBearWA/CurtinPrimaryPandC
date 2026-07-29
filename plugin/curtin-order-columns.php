@@ -3,7 +3,7 @@
  * Plugin Name:       Curtin P&C Order Columns
  * Plugin URI:        https://github.com/AdamBearWA/CurtinPrimaryPandC
  * Description:       Adds Fulfilment (pickup vs delivery), Email, Phone and Shipping address columns to the WooCommerce Orders list (with a Pickup/Delivery filter) and to Analytics &rarr; Orders, including its CSV Download.
- * Version:           1.1.1
+ * Version:           1.1.2
  * Author:            Adam Niedzwiedz
  * Author URI:        https://github.com/AdamBearWA
  * Requires at least: 6.4
@@ -14,7 +14,8 @@
  *
  * Fulfilment is read from the order's shipping line, matching the theme's
  * shipping rules (curtin-pc-shop §7):
- *   pickup_location / local_pickup  -> Pickup  (label = which pickup location)
+ *   pickup_location / local_pickup  -> Pickup  (label = which pickup location;
+ *                                      Ship to left blank — nothing is shipped)
  *   flat_rate (or any other rate)   -> Delivery
  *   no shipping line                -> No shipping (e.g. donations, virtual items)
  *
@@ -29,7 +30,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CPC_OC_VERSION', '1.1.1' );
+define( 'CPC_OC_VERSION', '1.1.2' );
 define( 'CPC_OC_META', '_cpc_fulfilment' );
 
 /* -----------------------------------------------------------------
@@ -258,7 +259,16 @@ function cpc_oc_render_column( $column, $order = null ) {
 			break;
 
 		case 'cpc_address':
-			// Block local pickup collects no shipping address, so fall back to billing.
+			// Pickup orders aren't shipped anywhere, so leave Ship to blank rather
+			// than showing the billing address as if it were a delivery destination.
+			$fulfilment = cpc_oc_fulfilment( $order );
+
+			if ( 'pickup' === $fulfilment['type'] ) {
+				echo '&mdash;';
+				break;
+			}
+
+			// Otherwise fall back to billing if no shipping address was collected.
 			$address = $order->get_formatted_shipping_address();
 			$note    = '';
 
@@ -478,13 +488,18 @@ function cpc_oc_report_fields( $order_id ) {
 		$label .= ' — ' . $fulfilment['label'];
 	}
 
-	// Block local pickup collects no shipping address, so fall back to billing.
-	$address = $order->get_formatted_shipping_address();
+	// Pickup orders aren't shipped anywhere, so Ship to stays empty. For a
+	// delivery, fall back to billing if no shipping address was collected.
+	$address = '';
 	$suffix  = '';
 
-	if ( ! $address ) {
-		$address = $order->get_formatted_billing_address();
-		$suffix  = $address ? ' ' . __( '(billing)', 'curtin-order-columns' ) : '';
+	if ( 'pickup' !== $fulfilment['type'] ) {
+		$address = $order->get_formatted_shipping_address();
+
+		if ( ! $address ) {
+			$address = $order->get_formatted_billing_address();
+			$suffix  = $address ? ' ' . __( '(billing)', 'curtin-order-columns' ) : '';
+		}
 	}
 
 	$fields['cpc_fulfilment'] = $label;

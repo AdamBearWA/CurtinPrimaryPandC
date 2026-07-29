@@ -23,7 +23,7 @@ commit prefix `Plugin vX.Y.Z:` (the theme uses `theme-vX.Y.Z` / `Theme vX.Y.Z`).
 | Fulfilment | Pickup / Delivery pill, plus the shipping method name and (for pickup) the location address |
 | Email | `billing_email`, as a `mailto:` link |
 | Phone | `billing_phone`, falling back to `shipping_phone`, as a `tel:` link |
-| Ship to | Shipping address, falling back to the billing address (labelled) |
+| Ship to | Shipping address, falling back to the billing address (labelled). **Blank for pickup orders** — nothing is being shipped |
 
 Plus an **All fulfilment / Pickup / Delivery / No shipping** filter dropdown
 next to the status filters.
@@ -57,6 +57,13 @@ Plugins → Add New → Upload Plugin → the `curtin-order-columns-vX.Y.Z` zip 
 Activate. Activation runs the backfill over existing orders.
 
 ## Changelog
+
+### 1.1.2
+
+- Ship to is now blank for **Pickup** orders (both the WooCommerce → Orders
+  column and the Analytics → Orders table / CSV). Previously a pickup order
+  showed the customer's billing address, which read as a delivery destination.
+  Delivery orders are unchanged, including the billing-address fallback.
 
 ### 1.1.1
 
