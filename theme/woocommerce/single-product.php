@@ -96,10 +96,21 @@ while ( have_posts() ) :
 
 			<?php
 			// Real WooCommerce product description, shown up top (no hard-coded copy).
-			$desc = $product->get_description();
-			if ( $desc ) :
+			// For olive oil, the shared delivery & pickup text from
+			// WooCommerce → Settings → Curtin P&C is appended to the END of it
+			// (functions.php §7t). Art cards are never affected.
+			$desc         = $product->get_description();
+			$cpc_pickup   = ( $is_olive && function_exists( 'cpc_pickup_text_html' ) ) ? cpc_pickup_text_html() : '';
+			if ( $desc || $cpc_pickup ) :
 				?>
-				<div class="cpc-pdesc"><?php echo wp_kses_post( wpautop( $desc ) ); ?></div>
+				<div class="cpc-pdesc">
+					<?php
+					if ( $desc ) {
+						echo wp_kses_post( wpautop( $desc ) );
+					}
+					echo $cpc_pickup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already wp_kses_post filtered.
+					?>
+				</div>
 			<?php endif; ?>
 
 			<?php if ( $product->is_purchasable() && $product->is_in_stock() ) : ?>

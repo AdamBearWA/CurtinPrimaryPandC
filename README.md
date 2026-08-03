@@ -139,6 +139,35 @@ both modes.
 > as `window.cpcOilRules`, and all customer-facing wording is generated from them so
 > the message can't drift from the rule.
 
+### Editing delivery & pickup wording
+
+Same tab, **Delivery & pickup text** group.
+
+| Setting | Where it shows |
+|---|---|
+| **Shared delivery & pickup text** | A rich-text box. Appears at the **end of every olive oil product description**, **under the Olive oil page's "Free collection" card**, and on the **cart and checkout** whenever the cart holds oil. Blank = nothing shown. Art cards are never affected. |
+| **Olive oil page: collection card** | Body text of the "Free collection (preferred)" card. The shared text above is added underneath it. |
+
+Basic formatting and links are allowed; everything is run through `wp_kses_post`, so
+scripts and unsafe markup are stripped on save. The cart/checkout copy is injected by
+`curtin-3xx.js` rather than a PHP hook, because this store uses the **block** cart and
+checkout where `woocommerce_before_cart` / `woocommerce_before_checkout_form` never fire.
+
+### Editing the Olive oil page FAQ
+
+Same tab, **Olive oil page FAQ** group. Every entry has three settings: a **show/hide**
+checkbox, the **question**, and the **answer**. Hiding every entry removes the FAQ
+section from the page entirely; a blank question or answer skips that one entry.
+
+"What if I can't make the collection time?" has **two** answer fields — one for when
+delivery is on, one for pickup only — and the matching one is shown automatically.
+
+The canonical wording and the display order live in `cpc_faq_defaults()` in
+`functions.php` §7f, which is also what generates the settings fields. **To add, remove
+or reorder an FAQ entry, edit that array only** — the settings panel and the page both
+follow it. Bear in mind those are *defaults*: once the settings page has been saved, the
+stored values win, so improving the wording in code won't overwrite an admin edit.
+
 ### The rules as configured
 
 - **Art cards** — flat **$5 per order, any quantity, anywhere in Australia**.

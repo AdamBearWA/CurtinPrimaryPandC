@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CPC_VERSION', '3.0.0' );
+define( 'CPC_VERSION', '3.1.0' );
 
 /* -----------------------------------------------------------------
  * 1. Theme supports
@@ -63,21 +63,21 @@ add_action( 'wp_enqueue_scripts', function () {
 		null
 	);
 
-	// NOTE: the CSS/JS filenames carry the version (curtin-300.*) because the
+	// NOTE: the CSS/JS filenames carry the version (curtin-310.*) because the
 	// SWAG/nginx proxy caches these static assets by PATH and ignores the ?ver
 	// query string — a plain version bump does NOT bust it (see
 	// Theme-Deployment-Notes.md §8). Renaming the file on every CSS/JS change is
 	// the reliable cache-bust. Bump both the filename and CPC_VERSION together.
 	wp_enqueue_style(
 		'cpc-main',
-		get_stylesheet_directory_uri() . '/assets/css/curtin-300.css',
+		get_stylesheet_directory_uri() . '/assets/css/curtin-310.css',
 		array( 'cpc-fonts' ),
 		CPC_VERSION
 	);
 
 	wp_enqueue_script(
 		'cpc-ui',
-		get_stylesheet_directory_uri() . '/assets/js/curtin-300.js',
+		get_stylesheet_directory_uri() . '/assets/js/curtin-310.js',
 		array(),
 		CPC_VERSION,
 		true
@@ -693,15 +693,212 @@ add_filter( 'woocommerce_settings_tabs_array', function ( $tabs ) {
 
 add_action( 'woocommerce_settings_tabs_' . CPC_SETTINGS_TAB, function () {
 	if ( class_exists( 'WC_Admin_Settings' ) ) {
-		WC_Admin_Settings::output_fields( cpc_ship_settings_fields() );
+		WC_Admin_Settings::output_fields( cpc_settings_fields() );
 	}
 } );
 
 add_action( 'woocommerce_update_options_' . CPC_SETTINGS_TAB, function () {
 	if ( class_exists( 'WC_Admin_Settings' ) ) {
-		WC_Admin_Settings::save_fields( cpc_ship_settings_fields() );
+		WC_Admin_Settings::save_fields( cpc_settings_fields() );
 	}
 } );
+
+/* -----------------------------------------------------------------
+ * 7f. Olive oil page FAQ registry.
+ *
+ *     ONE place to add, remove or reword an FAQ entry. Each entry gets
+ *     three settings generated for it automatically (show/hide, the
+ *     question, the answer) — see cpc_settings_fields(). The array order
+ *     is the display order on the page.
+ *
+ *     'on'         — whether the entry ships enabled.
+ *     'a_delivery' — optional. Entries whose answer depends on the
+ *                    olive-oil delivery switch define this as the
+ *                    "delivery is on" wording; 'a' is then the
+ *                    pickup-only wording and the live one is chosen
+ *                    automatically.
+ *
+ *     Note: these are DEFAULTS. Once the settings page has been saved,
+ *     the stored values win, so improving the wording here won't
+ *     overwrite anything the P&C has edited.
+ * --------------------------------------------------------------- */
+function cpc_faq_defaults() {
+	return array(
+		'collection_day'    => array(
+			'on' => true,
+			'q'  => __( 'Can I buy oil on the collection day?', 'curtin-pc-shop' ),
+			'a'  => __( 'Absolutely! Our oil will be on sale on Sunday, 2 August from 2-4pm in Karawara. If you missed out, contact president@curtinprimarypandc.com.au', 'curtin-pc-shop' ),
+		),
+		'money'             => array(
+			'on' => true,
+			'q'  => __( 'Where does the money go?', 'curtin-pc-shop' ),
+			'a'  => __( 'All profits from the Curtin Primary P&C Store are invested back into projects, resources and experiences that benefit students at Curtin Primary School.', 'curtin-pc-shop' ),
+		),
+		'family'            => array(
+			'on' => true,
+			'q'  => __( 'Do I need to be a Curtin Primary family to purchase?', 'curtin-pc-shop' ),
+			'a'  => __( 'Not at all! Everyone is welcome to support our fundraising initiatives.', 'curtin-pc-shop' ),
+		),
+		'ready'             => array(
+			'on' => true,
+			'q'  => __( 'When will my order be ready?', 'curtin-pc-shop' ),
+			'a'  => __( 'Our oil will be ready for collection on Sunday, 2 August from 2-4pm in Karawara. If you missed out, contact president@curtinprimarypandc.com.au', 'curtin-pc-shop' ),
+		),
+		'how_pickup'        => array(
+			'on' => true,
+			'q'  => __( 'How do I pick up my oil?', 'curtin-pc-shop' ),
+			'a'  => __( 'Pick up your order by appointment: typically at P&C events held at the school, or during school drop off and pick up times. You will be contacted once you place your order to arrange a suitable day and time.', 'curtin-pc-shop' ),
+		),
+		'missed_collection' => array(
+			'on'         => true,
+			'q'          => __( "What if I can't make the collection time?", 'curtin-pc-shop' ),
+			'a_delivery' => __( 'If you order two bottles or more and live in our local delivery area, we will deliver it to you for free on the day of collection! We will leave your oil in a safe place if nobody is home. If you only wish to order one bottle, please contact us and we\'ll work it out together.', 'curtin-pc-shop' ),
+			'a'          => __( 'Local delivery is currently unavailable, so orders are pickup only. If you can\'t make the collection time, please contact president@curtinprimarypandc.com.au and we\'ll work it out together.', 'curtin-pc-shop' ),
+		),
+		'gifts'             => array(
+			'on' => true,
+			'q'  => __( 'Can I purchase gifts?', 'curtin-pc-shop' ),
+			'a'  => __( 'We would love that! Our olive oil and other fundraising products make wonderful gifts while supporting a great cause. So, thank you in advance!', 'curtin-pc-shop' ),
+		),
+		'who_runs'          => array(
+			'on' => true,
+			'q'  => __( 'Who runs the store?', 'curtin-pc-shop' ),
+			'a'  => __( 'The store is managed by volunteers from the Curtin Primary P&C.', 'curtin-pc-shop' ),
+		),
+		'again'             => array(
+			'on' => true,
+			'q'  => __( 'Will there be another opportunity to purchase olive oil?', 'curtin-pc-shop' ),
+			'a'  => __( "We hope to sell out, but if any bottles remain, we'll make them available later in the year. To be the first to know, join our mailing list below.", 'curtin-pc-shop' ),
+		),
+	);
+}
+
+/** Option name for one field of one FAQ entry, e.g. cpc_faq_how_pickup_a. */
+function cpc_faq_opt( $id, $field ) {
+	return 'cpc_faq_' . $id . '_' . $field;
+}
+
+/**
+ * The FAQ as it should render right now: enabled entries only, in registry
+ * order, with any admin edits applied and the delivery-dependent answer
+ * resolved against the current delivery setting.
+ *
+ * @return array List of array( 'q' => string, 'a' => string ).
+ */
+function cpc_faq_entries() {
+	$out = array();
+
+	foreach ( cpc_faq_defaults() as $id => $entry ) {
+		$default_on = ! empty( $entry['on'] ) ? 'yes' : 'no';
+		if ( 'yes' !== get_option( cpc_faq_opt( $id, 'on' ), $default_on ) ) {
+			continue;
+		}
+
+		// Delivery-dependent entries: pick the wording matching the mode.
+		if ( isset( $entry['a_delivery'] ) && cpc_oil_delivery_enabled() ) {
+			$answer = get_option( cpc_faq_opt( $id, 'a_delivery' ), $entry['a_delivery'] );
+		} else {
+			$answer = get_option( cpc_faq_opt( $id, 'a' ), $entry['a'] );
+		}
+
+		$question = get_option( cpc_faq_opt( $id, 'q' ), $entry['q'] );
+
+		// A blank question or answer would render an empty accordion row.
+		if ( '' === trim( (string) $question ) || '' === trim( (string) $answer ) ) {
+			continue;
+		}
+
+		$out[] = array(
+			'id' => $id,
+			'q'  => $question,
+			'a'  => $answer,
+		);
+	}
+
+	return $out;
+}
+
+/* -----------------------------------------------------------------
+ * 7t. Shared delivery & pickup text.
+ *
+ *     One admin-authored block of HTML, shown in three places: the end
+ *     of every olive-oil product description, under the Olive oil
+ *     page's collection card, and on the cart/checkout when the cart
+ *     holds oil (injected by the JS, since this store uses the BLOCK
+ *     cart/checkout where the classic PHP hooks never fire).
+ * --------------------------------------------------------------- */
+
+/** Raw shared pickup/delivery text as stored (may be empty). */
+function cpc_pickup_text_raw() {
+	return (string) get_option( 'cpc_pickup_text', '' );
+}
+
+/** The shared text as safe HTML ready to echo, or '' when unset. */
+function cpc_pickup_text_html() {
+	$raw = trim( cpc_pickup_text_raw() );
+	if ( '' === $raw ) {
+		return '';
+	}
+	return '<div class="cpc-pickup-text">' . wpautop( wp_kses_post( $raw ) ) . '</div>';
+}
+
+/** Body of the Olive oil page's "Free collection (preferred)" card. */
+function cpc_collection_card_text() {
+	return (string) get_option( 'cpc_collection_card_text', __( 'Collect your order from Karawara on our advertised collection day.', 'curtin-pc-shop' ) );
+}
+
+/* -----------------------------------------------------------------
+ * A rich-text ("cpc_editor") field type for the settings panel.
+ *
+ * WooCommerce has no wp_editor field type, but WC_Admin_Settings::
+ * output_fields() fires woocommerce_admin_field_{type} for any type it
+ * doesn't recognise, so we can render our own. On save, WooCommerce's
+ * default branch would run the value through wc_clean() and strip the
+ * markup, so the per-option sanitize filter is used to keep safe HTML
+ * (the same wp_kses_post treatment WooCommerce gives a textarea).
+ * --------------------------------------------------------------- */
+add_action( 'woocommerce_admin_field_cpc_editor', function ( $field ) {
+	$id    = isset( $field['id'] ) ? $field['id'] : '';
+	$value = get_option( $id, isset( $field['default'] ) ? $field['default'] : '' );
+	?>
+	<tr valign="top">
+		<th scope="row" class="titledesc">
+			<label for="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( isset( $field['title'] ) ? $field['title'] : '' ); ?></label>
+		</th>
+		<td class="forminp forminp-cpc_editor">
+			<?php
+			if ( function_exists( 'wp_editor' ) ) {
+				wp_editor(
+					$value,
+					$id,
+					array(
+						'textarea_name' => $id,
+						'textarea_rows' => 8,
+						'media_buttons' => false,
+						'teeny'         => true,
+					)
+				);
+			} else {
+				// No editor available (shouldn't happen in wp-admin) — plain textarea.
+				printf(
+					'<textarea name="%1$s" id="%1$s" rows="8" style="width:100%%;">%2$s</textarea>',
+					esc_attr( $id ),
+					esc_textarea( $value )
+				);
+			}
+			if ( ! empty( $field['desc'] ) ) {
+				echo '<p class="description">' . wp_kses_post( $field['desc'] ) . '</p>';
+			}
+			?>
+		</td>
+	</tr>
+	<?php
+} );
+
+// Keep safe HTML instead of WooCommerce's default wc_clean() tag-stripping.
+add_filter( 'woocommerce_admin_settings_sanitize_option_cpc_pickup_text', function ( $value, $option, $raw_value ) {
+	return wp_kses_post( trim( (string) $raw_value ) );
+}, 10, 3 );
 
 /** Field definitions for the panel (used for both output and save). */
 function cpc_ship_settings_fields() {
@@ -768,7 +965,106 @@ function cpc_ship_settings_fields() {
 			'type' => 'sectionend',
 			'id'   => 'cpc_ship_options',
 		),
+
+		/* ---- Delivery & pickup wording ---- */
+		array(
+			'title' => __( 'Delivery & pickup text', 'curtin-pc-shop' ),
+			'type'  => 'title',
+			'desc'  => __( 'Wording customers see about collecting or receiving their order. Basic formatting and links are allowed.', 'curtin-pc-shop' ),
+			'id'    => 'cpc_text_options',
+		),
+		array(
+			'title'    => __( 'Shared delivery & pickup text', 'curtin-pc-shop' ),
+			'desc'     => __( 'Added to the END of every olive oil product description, below the Olive oil page\'s "Free collection" card, and on the cart and checkout whenever the cart holds olive oil. Leave blank to show nothing. Art cards are not affected.', 'curtin-pc-shop' ),
+			'id'       => 'cpc_pickup_text',
+			'type'     => 'cpc_editor',
+			'default'  => '',
+		),
+		array(
+			'title'    => __( 'Olive oil page: collection card', 'curtin-pc-shop' ),
+			'desc_tip' => __( 'The body of the "Free collection (preferred)" card in the Collection & Delivery section. The shared text above is added underneath it.', 'curtin-pc-shop' ),
+			'id'       => 'cpc_collection_card_text',
+			'type'     => 'textarea',
+			'default'  => 'Collect your order from Karawara on our advertised collection day.',
+			'css'      => 'width:100%;height:70px;',
+		),
+		array(
+			'type' => 'sectionend',
+			'id'   => 'cpc_text_options',
+		),
+
+		/* ---- Olive oil page FAQ ---- */
+		array(
+			'title' => __( 'Olive oil page FAQ', 'curtin-pc-shop' ),
+			'type'  => 'title',
+			'desc'  => __( 'Untick an entry to hide it from the Olive oil page without deleting the wording. Questions and answers are editable — handy for the entries that name a specific collection date.', 'curtin-pc-shop' ),
+			'id'    => 'cpc_faq_options',
+		),
 	);
+}
+
+/**
+ * The full field list: the static fields above, then one group of fields per
+ * FAQ entry generated from the registry (so adding an entry only ever means
+ * editing cpc_faq_defaults()), then the closing sectionend.
+ */
+function cpc_settings_fields() {
+	$fields = cpc_ship_settings_fields();
+
+	foreach ( cpc_faq_defaults() as $id => $entry ) {
+		$fields[] = array(
+			/* translators: %s: the FAQ question. */
+			'title'   => sprintf( __( 'Show: %s', 'curtin-pc-shop' ), $entry['q'] ),
+			'desc'    => __( 'Show this FAQ entry', 'curtin-pc-shop' ),
+			'id'      => cpc_faq_opt( $id, 'on' ),
+			'type'    => 'checkbox',
+			'default' => ! empty( $entry['on'] ) ? 'yes' : 'no',
+		);
+		$fields[] = array(
+			'title'   => __( '— Question', 'curtin-pc-shop' ),
+			'id'      => cpc_faq_opt( $id, 'q' ),
+			'type'    => 'text',
+			'default' => $entry['q'],
+			'css'     => 'width:100%;',
+		);
+
+		if ( isset( $entry['a_delivery'] ) ) {
+			// This entry reads differently depending on whether delivery is on,
+			// so both versions are editable and the live one is picked
+			// automatically by the Olive oil delivery setting above.
+			$fields[] = array(
+				'title'    => __( '— Answer (when delivery is ON)', 'curtin-pc-shop' ),
+				'desc_tip' => __( 'Shown while "Olive oil delivery" is ticked.', 'curtin-pc-shop' ),
+				'id'       => cpc_faq_opt( $id, 'a_delivery' ),
+				'type'     => 'textarea',
+				'default'  => $entry['a_delivery'],
+				'css'      => 'width:100%;height:90px;',
+			);
+			$fields[] = array(
+				'title'    => __( '— Answer (when pickup only)', 'curtin-pc-shop' ),
+				'desc_tip' => __( 'Shown while "Olive oil delivery" is unticked.', 'curtin-pc-shop' ),
+				'id'       => cpc_faq_opt( $id, 'a' ),
+				'type'     => 'textarea',
+				'default'  => $entry['a'],
+				'css'      => 'width:100%;height:90px;',
+			);
+		} else {
+			$fields[] = array(
+				'title'   => __( '— Answer', 'curtin-pc-shop' ),
+				'id'      => cpc_faq_opt( $id, 'a' ),
+				'type'    => 'textarea',
+				'default' => $entry['a'],
+				'css'     => 'width:100%;height:90px;',
+			);
+		}
+	}
+
+	$fields[] = array(
+		'type' => 'sectionend',
+		'id'   => 'cpc_faq_options',
+	);
+
+	return $fields;
 }
 
 /* ---- Option getters (single source of truth for every rule below) ---- */
@@ -1075,9 +1371,14 @@ function cpc_oil_js_config() {
 	}
 
 	return array(
-		'enabled'   => $enabled ? '1' : '',
-		'postcodes' => $enabled ? cpc_oil_delivery_postcodes() : array(),
-		'notice'    => $notice,
+		'enabled'    => $enabled ? '1' : '',
+		'postcodes'  => $enabled ? cpc_oil_delivery_postcodes() : array(),
+		'notice'     => $notice,
+		// Shared pickup/delivery text for the block cart + checkout (§7t). The
+		// classic woocommerce_before_cart / before_checkout_form hooks never fire
+		// on the block cart/checkout, so the JS injects this instead. Already
+		// wp_kses_post-filtered, so it is safe to set as innerHTML.
+		'pickupText' => cpc_pickup_text_html(),
 	);
 }
 

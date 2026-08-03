@@ -104,7 +104,17 @@ endif; ?>
 	<div class="cpc-olive-delivery-grid">
 		<div class="cpc-olive-delivery-card">
 			<div class="cpc-olive-delivery-title"><?php esc_html_e( 'Free collection (preferred)', 'curtin-pc-shop' ); ?></div>
-			<p><?php esc_html_e( 'Collect your order from Karawara on our advertised collection day.', 'curtin-pc-shop' ); ?></p>
+			<?php
+			// Card body and the shared pickup text are both editable in
+			// WooCommerce → Settings → Curtin P&C (functions.php §7t).
+			$cpc_card_text = function_exists( 'cpc_collection_card_text' ) ? trim( cpc_collection_card_text() ) : '';
+			if ( '' !== $cpc_card_text ) {
+				echo wp_kses_post( wpautop( $cpc_card_text ) );
+			}
+			if ( function_exists( 'cpc_pickup_text_html' ) ) {
+				echo cpc_pickup_text_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already wp_kses_post filtered.
+			}
+			?>
 		</div>
 		<?php
 		// Local delivery is driven entirely by WooCommerce → Settings → Curtin P&C
@@ -152,47 +162,25 @@ endif; ?>
 </section>
 
 <!-- FAQ -->
+<?php
+// Entries, their order, their wording and whether each one shows are all
+// driven by the FAQ registry + settings (functions.php §7f):
+// WooCommerce → Settings → Curtin P&C → Olive oil page FAQ.
+$cpc_faq = function_exists( 'cpc_faq_entries' ) ? cpc_faq_entries() : array();
+if ( ! empty( $cpc_faq ) ) :
+	?>
 <section class="cpc-olive-faq cpc-container">
 	<h2><?php esc_html_e( 'FAQ', 'curtin-pc-shop' ); ?></h2>
 	<div class="cpc-faq-list">
-		<details class="cpc-faq-item">
-			<summary><?php esc_html_e( 'Can I buy oil on the collection day?', 'curtin-pc-shop' ); ?></summary>
-			<p><?php esc_html_e( 'Absolutely! Our oil will be on sale on Sunday, 2 August from 2-4pm in Karawara. If you missed out, contact president@curtinprimarypandc.com.au', 'curtin-pc-shop' ); ?></p>
-		</details>
-		<details class="cpc-faq-item">
-			<summary><?php esc_html_e( 'Where does the money go?', 'curtin-pc-shop' ); ?></summary>
-			<p><?php esc_html_e( 'All profits from the Curtin Primary P&C Store are invested back into projects, resources and experiences that benefit students at Curtin Primary School.', 'curtin-pc-shop' ); ?></p>
-		</details>
-		<details class="cpc-faq-item">
-			<summary><?php esc_html_e( 'Do I need to be a Curtin Primary family to purchase?', 'curtin-pc-shop' ); ?></summary>
-			<p><?php esc_html_e( 'Not at all! Everyone is welcome to support our fundraising initiatives.', 'curtin-pc-shop' ); ?></p>
-		</details>
-		<details class="cpc-faq-item">
-			<summary><?php esc_html_e( 'When will my order be ready?', 'curtin-pc-shop' ); ?></summary>
-			<p><?php esc_html_e( 'Our oil will be ready for collection on Sunday, 2 August from 2-4pm in Karawara. If you missed out, contact president@curtinprimarypandc.com.au', 'curtin-pc-shop' ); ?></p>
-		</details>
-		<details class="cpc-faq-item">
-			<summary><?php esc_html_e( "What if I can't make the collection time?", 'curtin-pc-shop' ); ?></summary>
-			<?php if ( ! empty( $cpc_oil_delivery ) ) : ?>
-				<p><?php esc_html_e( 'If you order two bottles or more and live in our local delivery area, we will deliver it to you for free on the day of collection! We will leave your oil in a safe place if nobody is home. If you only wish to order one bottle, please contact us and we\'ll work it out together.', 'curtin-pc-shop' ); ?></p>
-			<?php else : ?>
-				<p><?php esc_html_e( 'Local delivery is currently unavailable, so orders are pickup only. If you can\'t make the collection time, please contact president@curtinprimarypandc.com.au and we\'ll work it out together.', 'curtin-pc-shop' ); ?></p>
-			<?php endif; ?>
-		</details>
-		<details class="cpc-faq-item">
-			<summary><?php esc_html_e( 'Can I purchase gifts?', 'curtin-pc-shop' ); ?></summary>
-			<p><?php esc_html_e( 'We would love that! Our olive oil and other fundraising products make wonderful gifts while supporting a great cause. So, thank you in advance!', 'curtin-pc-shop' ); ?></p>
-		</details>
-		<details class="cpc-faq-item">
-			<summary><?php esc_html_e( 'Who runs the store?', 'curtin-pc-shop' ); ?></summary>
-			<p><?php esc_html_e( 'The store is managed by volunteers from the Curtin Primary P&C.', 'curtin-pc-shop' ); ?></p>
-		</details>
-		<details class="cpc-faq-item">
-			<summary><?php esc_html_e( 'Will there be another opportunity to purchase olive oil?', 'curtin-pc-shop' ); ?></summary>
-			<p><?php esc_html_e( "We hope to sell out, but if any bottles remain, we'll make them available later in the year. To be the first to know, join our mailing list below.", 'curtin-pc-shop' ); ?></p>
-		</details>
+		<?php foreach ( $cpc_faq as $cpc_item ) : ?>
+			<details class="cpc-faq-item">
+				<summary><?php echo esc_html( $cpc_item['q'] ); ?></summary>
+				<?php echo wp_kses_post( wpautop( $cpc_item['a'] ) ); ?>
+			</details>
+		<?php endforeach; ?>
 	</div>
 </section>
+<?php endif; ?>
 
 <!-- MAILING LIST -->
 <section class="cpc-olive-signup cpc-container">

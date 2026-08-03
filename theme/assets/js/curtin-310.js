@@ -427,7 +427,26 @@
     block.parentNode.insertBefore(el, block);
   }
 
+  /* v3.1.0 — the shared delivery & pickup text (WooCommerce → Settings →
+     Curtin P&C). Injected here rather than with woocommerce_before_cart /
+     woocommerce_before_checkout_form because this store uses the BLOCK
+     cart/checkout, where those classic PHP hooks never fire. The markup is
+     already wp_kses_post-filtered server-side, hence innerHTML. */
+  function ensurePickupText(){
+    var html = OIL_RULES.pickupText || '';
+    var existing = document.querySelector('.cpc-pickup-note');
+    if (!html){ if (existing){ existing.remove(); } return; }
+    if (existing){ return; }
+    var block = document.querySelector('.wp-block-woocommerce-cart') || document.querySelector('.wp-block-woocommerce-checkout');
+    if (!block || !block.parentNode){ return; }
+    var el = document.createElement('div');
+    el.className = 'cpc-pickup-note';
+    el.innerHTML = html;
+    block.parentNode.insertBefore(el, block);
+  }
+
   function apply(){
+    ensurePickupText();
     var pc = shipPostcode();
     var blocked = !prefersCollection() && pc !== '' && OIL_POSTCODES.indexOf(pc) === -1;
     document.body.classList.toggle('cpc-oil-blocked', blocked);

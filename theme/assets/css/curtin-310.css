@@ -872,3 +872,17 @@ body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(-
   border-color:var(--c-blue)!important;
   box-shadow:0 0 0 3px rgba(29,111,184,.18)!important;outline:none!important;
 }
+
+/* v3.1.0 — shared delivery & pickup text (WooCommerce → Settings → Curtin P&C).
+   .cpc-pickup-text is the inner wrapper echoed by cpc_pickup_text_html(): it
+   appears at the end of an olive-oil product description and under the Olive
+   oil page's collection card. .cpc-pickup-note is the outer block the cart /
+   checkout JS injects, which gives it the soft panel treatment. */
+.cpc-pickup-text>*:first-child{margin-top:0}
+.cpc-pickup-text>*:last-child{margin-bottom:0}
+.cpc-pdesc .cpc-pickup-text{margin-top:14px;padding-top:14px;border-top:1px solid var(--c-line)}
+.cpc-olive-delivery-card .cpc-pickup-text{margin-top:10px}
+.cpc-pickup-note{margin:0 0 20px;padding:14px 16px;border:1px solid var(--c-line);
+  background:var(--c-page-tint);color:var(--c-body);border-radius:12px;
+  font:400 15px/1.6 var(--font-body)}
+.cpc-pickup-note .cpc-pickup-text>*:last-child{margin-bottom:0}
