@@ -254,7 +254,12 @@
   if (!document.querySelector('.wp-block-woocommerce-checkout')) { return; }
 
   var PICKUP_ADDR = { country: 'AU', address_1: '20 Goss Avenue', address_2: '', city: 'Manning', state: 'WA', postcode: '6152' };
-  var DELIVERY_MSG = 'Curtin Gold olive oil can only be delivered within postcode 6152 (Como, Karawara, Manning, Salter Point, Waterford). Please choose “Pickup” below, or use an address within 6152 — greeting cards can be posted anywhere in Australia.';
+  /* v3.0.0 — the olive-oil delivery rules come from WooCommerce → Settings →
+     Curtin P&C, handed over by wp_localize_script (functions.php §3).
+     Never hardcode the postcode or the message here again: the two would drift
+     the moment the setting changed. */
+  var RULES = window.cpcOilRules || {};
+  var DELIVERY_MSG = RULES.notice || '';
 
   function sel(store){ try { return (window.wp && wp.data) ? wp.data.select(store) : null; } catch (e) { return null; } }
   function prefersCollection(){ try { var s = sel('wc/store/checkout'); return !!(s && s.prefersCollection && s.prefersCollection()); } catch (e) { return false; } }
@@ -278,6 +283,7 @@
   // Out-of-region delivery: replace WooCommerce's generic "no shipping options"
   // notice with a message that names the delivery area.
   function applyDeliveryMsg(){
+    if (!DELIVERY_MSG) { return; }
     document.querySelectorAll('.wc-block-components-shipping-rates-control__no-results-notice .wc-block-components-notice-banner__content').forEach(function (el){
       if (el.textContent !== DELIVERY_MSG) { el.textContent = DELIVERY_MSG; }
     });
@@ -376,6 +382,12 @@
    matching alert on the checkout, and disables Place order while an
    out-of-area olive-oil delivery is selected. Runs only when the cart
    actually holds olive oil (body.cpc-has-oil).
+
+   v3.0.0 — the deliverable postcodes and the message now come from
+   window.cpcOilRules (WooCommerce → Settings → Curtin P&C).
+   With delivery switched off the postcode list is empty, so ANY shipping
+   address is treated as blocked and the notice says pickup only — which
+   matches cpc_oil_delivery_blocked() on the server.
    ============================================================ */
 (function () {
   'use strict';
@@ -397,11 +409,13 @@
     catch (e) { return false; }
   }
 
-  var OIL_NOTICE_MSG = 'Curtin Gold olive oil can only be delivered within postcode 6152 (Como, Karawara, Manning, Salter Point, Waterford). Please choose \u201CPickup\u201D ' + (isCart ? 'during checkout' : 'below') + ', or use an address within 6152 \u2014 greeting cards can be posted anywhere in Australia.';
+  var OIL_RULES = window.cpcOilRules || {};
+  var OIL_POSTCODES = (OIL_RULES.postcodes || []).map(function (pc){ return String(pc).toUpperCase().replace(/\s+/g, ''); });
+  var OIL_NOTICE_MSG = (OIL_RULES.notice || '').replace('\u201CPickup\u201D', '\u201CPickup\u201D ' + (isCart ? 'during checkout' : 'below'));
   var OIL_ICON = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="#e0a200"/><circle cx="12" cy="7.6" r="1.35" fill="#fff"/><rect x="11" y="10.5" width="2" height="7" rx="1" fill="#fff"/></svg>';
   function ensureInfoNotice(show){
     var existing = document.querySelector('.cpc-oil-notice');
-    if (!show){ if (existing){ existing.remove(); } return; }
+    if (!show || !OIL_NOTICE_MSG){ if (existing){ existing.remove(); } return; }
     if (existing){ return; }
     var block = document.querySelector('.wp-block-woocommerce-cart') || document.querySelector('.wp-block-woocommerce-checkout');
     if (!block || !block.parentNode){ return; }
@@ -415,7 +429,7 @@
 
   function apply(){
     var pc = shipPostcode();
-    var blocked = !prefersCollection() && pc !== '' && pc !== '6152';
+    var blocked = !prefersCollection() && pc !== '' && OIL_POSTCODES.indexOf(pc) === -1;
     document.body.classList.toggle('cpc-oil-blocked', blocked);
     // Cart: always show the amber notice — customers can express-checkout with
     // Google/Apple Pay straight from the cart, so they must see it there. Checkout:

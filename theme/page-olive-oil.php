@@ -106,17 +106,26 @@ endif; ?>
 			<div class="cpc-olive-delivery-title"><?php esc_html_e( 'Free collection (preferred)', 'curtin-pc-shop' ); ?></div>
 			<p><?php esc_html_e( 'Collect your order from Karawara on our advertised collection day.', 'curtin-pc-shop' ); ?></p>
 		</div>
+		<?php
+		// Local delivery is driven entirely by WooCommerce → Settings → Curtin P&C
+		// (functions.php §7s). When it's switched off we say so rather
+		// than advertising a delivery the checkout would refuse.
+		$cpc_oil_delivery = function_exists( 'cpc_oil_delivery_enabled' ) && cpc_oil_delivery_enabled();
+		$cpc_oil_suburbs  = function_exists( 'cpc_oil_delivery_suburbs' ) ? cpc_oil_delivery_suburbs() : array();
+		?>
 		<div class="cpc-olive-delivery-card">
 			<div class="cpc-olive-delivery-title"><?php esc_html_e( 'Local delivery', 'curtin-pc-shop' ); ?></div>
-			<p><?php esc_html_e( 'Local delivery is available to:', 'curtin-pc-shop' ); ?></p>
-			<ul class="cpc-olive-suburbs">
-				<li><?php esc_html_e( 'Como', 'curtin-pc-shop' ); ?></li>
-				<li><?php esc_html_e( 'Karawara', 'curtin-pc-shop' ); ?></li>
-				<li><?php esc_html_e( 'Manning', 'curtin-pc-shop' ); ?></li>
-				<li><?php esc_html_e( 'Salter Point', 'curtin-pc-shop' ); ?></li>
-				<li><?php esc_html_e( 'Waterford', 'curtin-pc-shop' ); ?></li>
-			</ul>
-			<p><?php esc_html_e( 'Delivery is $5, or free when you purchase two or more bottles.', 'curtin-pc-shop' ); ?></p>
+			<?php if ( $cpc_oil_delivery ) : ?>
+				<?php if ( ! empty( $cpc_oil_suburbs ) ) : ?>
+					<p><?php esc_html_e( 'Local delivery is available to:', 'curtin-pc-shop' ); ?></p>
+					<ul class="cpc-olive-suburbs">
+						<?php foreach ( $cpc_oil_suburbs as $cpc_suburb ) : ?>
+							<li><?php echo esc_html( $cpc_suburb ); ?></li>
+						<?php endforeach; ?>
+					</ul>
+				<?php endif; ?>
+			<?php endif; ?>
+			<p><?php echo esc_html( function_exists( 'cpc_oil_delivery_page_copy' ) ? cpc_oil_delivery_page_copy() : '' ); ?></p>
 		</div>
 	</div>
 </section>
@@ -164,7 +173,11 @@ endif; ?>
 		</details>
 		<details class="cpc-faq-item">
 			<summary><?php esc_html_e( "What if I can't make the collection time?", 'curtin-pc-shop' ); ?></summary>
-			<p><?php esc_html_e( 'If you order two bottles or more and live in Como, Karawara, Manning, Salter Point or Waterford, we will deliver it to you for free on the day of collection! We will leave your oil in a safe place if nobody is home. If you only wish to order one bottle, please contact us and we\'ll work it out together.', 'curtin-pc-shop' ); ?></p>
+			<?php if ( ! empty( $cpc_oil_delivery ) ) : ?>
+				<p><?php esc_html_e( 'If you order two bottles or more and live in our local delivery area, we will deliver it to you for free on the day of collection! We will leave your oil in a safe place if nobody is home. If you only wish to order one bottle, please contact us and we\'ll work it out together.', 'curtin-pc-shop' ); ?></p>
+			<?php else : ?>
+				<p><?php esc_html_e( 'Local delivery is currently unavailable, so orders are pickup only. If you can\'t make the collection time, please contact president@curtinprimarypandc.com.au and we\'ll work it out together.', 'curtin-pc-shop' ); ?></p>
+			<?php endif; ?>
 		</details>
 		<details class="cpc-faq-item">
 			<summary><?php esc_html_e( 'Can I purchase gifts?', 'curtin-pc-shop' ); ?></summary>

@@ -99,19 +99,67 @@ the theme or deploying.** The critical rules, learned from real production incid
 ## Shipping & delivery
 
 Shipping is calculated in code (`functions.php` §7) because the rules can't be
-expressed in native WooCommerce settings. WooCommerce → Shipping needs just **one
-Australia‑wide zone** with a **Flat rate** (cost 0 — the code sets the real amount)
-plus **Local Pickup**.
+expressed in native WooCommerce settings — but **since v3.0.0 every number and the
+olive-oil delivery on/off switch are editable in the admin**, so seasonal changes no
+longer need a theme release.
+
+WooCommerce → Shipping still needs just **one Australia-wide zone** with a **Flat
+rate** (cost 0 — the code sets the real amount) plus **Local Pickup**.
+
+### Turning olive oil delivery on and off
+
+**WooCommerce → Settings → Curtin P&C.**
+
+| Setting | What it does |
+|---|---|
+| **Olive oil delivery** | The master switch. **Unticked = pickup only.** Ticked = local delivery is offered to the postcodes below. |
+| **Olive oil delivery postcodes** | Comma-separated postcodes oil can be delivered to (default `6152`). Only used when the switch is on. |
+| **Olive oil delivery suburbs** | Suburb names shown to customers. **Display only** — the real restriction is the postcode list. |
+| **Olive oil delivery cost** | Charged when the cart is below the free-delivery threshold (default `5`). |
+| **Free olive oil delivery from** | Bottle count at which delivery becomes free (default `2`). Set to `0` to always charge. |
+| **Art cards postage** | Flat cost per order for any quantity of cards, anywhere in Australia (default `5`). |
+
+Save and the change is live immediately — cached shipping rates are invalidated
+automatically, so there is no need to clear anything or empty test carts.
+
+**Switching the master switch OFF** does all of this at once:
+
+- every zone delivery rate is withdrawn for any cart containing oil (only Local Pickup remains);
+- checkout is hard-blocked for a shipped (non-pickup) oil order, including Apple Pay / Google Pay;
+- the Olive oil page stops advertising delivery — the "Local delivery" card reads
+  *"Local delivery is currently unavailable — olive oil orders are pickup only"*, and the
+  "What if I can't make the collection time?" FAQ switches to a contact-us answer;
+- the cart/checkout notice changes to a pickup-only message.
+
+Art cards are never affected by the olive-oil switch — they post Australia-wide in
+both modes.
+
+> Don't reintroduce hardcoded postcodes or costs anywhere (PHP, JS, page copy). The
+> settings are the single source of truth; the JS gets them via `wp_localize_script`
+> as `window.cpcOilRules`, and all customer-facing wording is generated from them so
+> the message can't drift from the rule.
+
+### The rules as configured
 
 - **Art cards** — flat **$5 per order, any quantity, anywhere in Australia**.
-- **Curtin Gold olive oil** — **$5 for one bottle, free for two or more**; delivery is
-  **restricted to postcode 6152** (Como, Karawara, Manning, Salter Point, Waterford).
-  Local Pickup is available anywhere.
+- **Curtin Gold olive oil, delivery ON** — **$5 for one bottle, free for two or more**;
+  delivery **restricted to postcode 6152** (Como, Karawara, Manning, Salter Point,
+  Waterford). Local Pickup is available anywhere.
+- **Curtin Gold olive oil, delivery OFF** (the v3.0.0 shipped default) — **pickup only**.
 - **Combined carts** add the two together (cards + 1 oil = $10; cards + 2 oil = $5).
-- If the cart holds olive oil and the shipping address is outside 6152, delivery is
-  **blocked** server‑side across the block checkout and Apple Pay / Google Pay
+- If the cart holds olive oil and it can't be delivered to the address, delivery is
+  **blocked** server-side across the block checkout and Apple Pay / Google Pay
   (`woocommerce_store_api_cart_errors`) and classic checkout, with a clear notice; the
   block cart/checkout JS mirrors it (hides the Shipping row, disables Place order).
+
+### Pickup locations
+
+Pickup locations are managed entirely in WooCommerce (Shipping → Local pickup) —
+whatever is enabled is offered to every cart. Versions before v3.0.0 filtered them by
+matching the word "olive" in the location label; that broke the moment the "Olive Oil"
+location was disabled (oil carts matched nothing, so *every* pickup option vanished and
+the oil became unbuyable). Don't reintroduce label matching — if oil ever needs its own
+collection point, express it as a real WooCommerce shipping zone.
 
 ## Hosting
 

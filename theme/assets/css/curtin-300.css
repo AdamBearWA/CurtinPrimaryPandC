@@ -743,8 +743,10 @@ body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(-
 .cpc-page .wc-block-components-notice-banner__dismiss,
 .cpc-woo .wc-block-components-notice-banner__dismiss{display:none!important}
 
-/* Olive oil headed outside postcode 6152: hide the (misleading) Shipping
-   totals row — delivery is unavailable. JS toggles body.cpc-oil-blocked. */
+/* Olive oil headed somewhere it can't be delivered (outside the configured
+   postcodes, or delivery switched off entirely — WooCommerce → Settings →
+   Curtin P&C): hide the (misleading) Shipping totals row.
+   JS toggles body.cpc-oil-blocked. */
 .cpc-oil-blocked .wc-block-components-totals-shipping{display:none!important}
 
 /* v2.7.4 — always-on amber notice when the cart holds olive oil (hidden in the
@@ -755,7 +757,7 @@ body.cpc-theme{margin:0;background:#fff;font-family:var(--font-body);color:var(-
 .cpc-oil-notice svg{flex:0 0 auto;margin-top:1px}
 .cpc-oil-notice-text{flex:1 1 auto}
 
-/* v2.7.5 — when olive oil is headed outside 6152 (body.cpc-oil-blocked), make the
+/* v2.7.5 — when olive oil can't be delivered (body.cpc-oil-blocked), make the
    Express Checkout area (Apple Pay / Google Pay) non-interactive too, matching the
    disabled Place order button. Covers the cart and checkout express blocks. */
 .cpc-oil-blocked .wp-block-woocommerce-checkout-express-payment-block,

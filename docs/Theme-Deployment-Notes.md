@@ -36,7 +36,7 @@ The site is self-hosted on Unraid via Docker (SWAG reverse proxy) — not Ventra
 
 ## 6. Bump versions on every change, and record each release in Git + GitHub
 
-`CPC_VERSION` in `functions.php` and `Version:` in `style.css` must match and increment on every deploy, so cache-busting and "what's actually live" checks stay meaningful. If CSS/JS changed, also rename the asset pair to the next `curtin-26x.*` and update both enqueues (see §8).
+`CPC_VERSION` in `functions.php` and `Version:` in `style.css` must match and increment on every deploy, so cache-busting and "what's actually live" checks stay meaningful. If CSS/JS changed, also rename the asset pair to match the new version (currently `curtin-300.*`) and update both enqueues (see §8).
 
 The per-version changelog that used to live here has been removed — **the authoritative history is now the Git commit log and GitHub Releases** at github.com/AdamBearWA/CurtinPrimaryPandC. Don't reconstruct a changelog in this file; read `git log` / the Releases page instead.
 
@@ -47,17 +47,19 @@ Every new version must land in Git and as a GitHub Release, not just as a zip ha
 
 **Never assume the source folder matches production.** Confirm the true `CPC_VERSION` via Appearance → Themes → Theme Details on the live site (see §1) before building on top of local files — a version may have been built and handed off but not yet uploaded, or uploaded and reverted.
 
-## 7. Keep only the current `curtin-26x.*` asset pair — delete the superseded ones every release
+## 7. Keep only the current asset pair — delete the superseded ones every release
 
-The theme should carry exactly **one** CSS/JS pair: the `curtin-26x.*` files that `functions.php` actually enqueues. Because every CSS/JS change forces a filename bump (see §8), old files pile up fast — and since the whole `assets/` folder ships inside the theme zip, every stale pair bloats the download and gets deployed to the live server for no reason. When you bump the asset filename, **delete the previous `curtin-26x.css` and `curtin-26x.js`** in the same change so the theme (and therefore the release zip) contains only the live pair. Before zipping, confirm `assets/css/` and `assets/js/` each hold a single `curtin-26x.*` file and that it matches the enqueue in `functions.php`.
+**Naming (changed at v3.0.0).** The pair used to be `curtin-26x.*` while the theme was on 2.6.x; the digits are just a serial that tracks the version. At v3.0.0 it became **`curtin-300.*`** — keep naming it after the current version (`curtin-301.*`, `curtin-310.*`, ...) rather than continuing the old 26xx run. Everything below applies to whatever the current pair is called.
 
-If a change is PHP-only (no CSS/JS edit), do **not** bump or rename the asset pair — keep the existing `curtin-26x.*` files as-is; there is nothing to cache-bust.
+The theme should carry exactly **one** CSS/JS pair: the `curtin-300.*` files that `functions.php` actually enqueues. Because every CSS/JS change forces a filename bump (see §8), old files pile up fast — and since the whole `assets/` folder ships inside the theme zip, every stale pair bloats the download and gets deployed to the live server for no reason. When you bump the asset filename, **delete the previous pair** in the same change so the theme (and therefore the release zip) contains only the live pair. Before zipping, confirm `assets/css/` and `assets/js/` each hold a single `curtin-*` file and that it matches the enqueue in `functions.php`.
+
+If a change is PHP-only (no CSS/JS edit), do **not** bump or rename the asset pair — keep the existing `curtin-300.*` files as-is; there is nothing to cache-bust.
 
 The Cowork/Linux sandbox mount often refuses `rm` on theme files (`Operation not permitted`). When that happens, do the deletion the same way as the rest of the release: prune the old assets on the native-fs build copy before zipping, and `git rm` them from Adam's Windows clone as part of the release commit.
 
 ## 8. The SWAG/nginx proxy caches static assets by path — rename the file on every CSS/JS change
 
-`?ver=` query strings are ignored by the proxy cache, so a plain `CPC_VERSION` bump does **not** bust a changed `curtin-26x.css`/`.js` — the browser keeps serving the stale file. The reliable cache-bust is to **rename the asset to the next `curtin-26x.*`** and update both `wp_enqueue_style`/`wp_enqueue_script` calls (and any doc comments that name the file). Bump the filename and `CPC_VERSION` together. As a one-off hotfix you can instead paste overrides into Appearance → Customize → Additional CSS (served inline, not cached by path), but the durable fix is the rename. Renaming makes the old file superseded — delete it (§7).
+`?ver=` query strings are ignored by the proxy cache, so a plain `CPC_VERSION` bump does **not** bust a changed `curtin-300.css`/`.js` — the browser keeps serving the stale file. The reliable cache-bust is to **rename the asset to match the new version** (currently `curtin-300.*`) and update both `wp_enqueue_style`/`wp_enqueue_script` calls (and any doc comments that name the file). Bump the filename and `CPC_VERSION` together. As a one-off hotfix you can instead paste overrides into Appearance → Customize → Additional CSS (served inline, not cached by path), but the durable fix is the rename. Renaming makes the old file superseded — delete it (§7).
 
 ## 9. Scan for NUL corruption before zipping
 
@@ -88,8 +90,8 @@ export LD_LIBRARY_PATH=/tmp/root/usr/lib/x86_64-linux-gnu:/tmp/root/lib/x86_64-l
 
 The theme is version-controlled at **github.com/AdamBearWA/CurtinPrimaryPandC** (branch `main`); Adam's clone is at `...\Curtin Square Site\CurtinPrimaryPandC`, laid out as `theme/` + `plugin/` + `docs/` (plugin source sits directly in `plugin/`, no nested slug folder — the slug folder is created only when staging the zip). **From v2.6.15 on, every release must also land in Git and as a GitHub Release — not just as a zip.** Do all of this for each new version:
 
-1. **Bump the version** — `CPC_VERSION` in `functions.php` and `Version:` in `style.css` must match and increment (see §6). If CSS/JS changed, rename the asset pair to the next `curtin-26x.*` and update both enqueues (see §8), then delete the superseded `curtin-26x.*` pair so only the current one ships (see §7). If the change is PHP-only, leave the asset pair untouched.
-2. **Build the zip** on a fresh output folder / native fs: copy the theme source to a staging folder **named `curtin-pc-shop/`** (the repo folder is `theme/`, but the zip's top-level folder must be the theme slug — see the layout note at the top) and zip that. NUL-scan and strip (see §9), **`php -l` every `.php` file and re-lint after re-extracting the zip (see §10)**, confirm `assets/css` + `assets/js` hold only the one enqueued `curtin-26x.*` pair (§7), and confirm there is no root `woocommerce.php` (see §1, §2, §9). Verify with `unzip -l` (or `Expand-Archive` to a temp dir) that the archive root is `curtin-pc-shop/`.
+1. **Bump the version** — `CPC_VERSION` in `functions.php` and `Version:` in `style.css` must match and increment (see §6). If CSS/JS changed, rename the asset pair to match the new version (currently `curtin-300.*`) and update both enqueues (see §8), then delete the superseded pair so only the current one ships (see §7). If the change is PHP-only, leave the asset pair untouched.
+2. **Build the zip** on a fresh output folder / native fs: copy the theme source to a staging folder **named `curtin-pc-shop/`** (the repo folder is `theme/`, but the zip's top-level folder must be the theme slug — see the layout note at the top) and zip that. NUL-scan and strip (see §9), **`php -l` every `.php` file and re-lint after re-extracting the zip (see §10)**, confirm `assets/css` + `assets/js` hold only the one enqueued `curtin-*` pair (§7), and confirm there is no root `woocommerce.php` (see §1, §2, §9). Verify with `unzip -l` (or `Expand-Archive` to a temp dir) that the archive root is `curtin-pc-shop/`.
 3. **Sync source into the repo** — copy the updated theme source over the clone's `theme/`. Keep the repo's `docs/` copies in sync with the project-folder docs when they change; don't add per-release `RELEASE-*.md` files to `docs/`.
 4. **Commit as Adam, no Claude co-author trailers** (identity `Adam Niedzwiedz <AdamBearWA@users.noreply.github.com>`): `git add -A && git commit -m "Theme vX.Y.Z: <one-line summary>"`.
 5. **Push**: `git push origin main`.

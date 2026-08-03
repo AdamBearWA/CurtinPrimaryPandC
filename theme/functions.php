@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CPC_VERSION', '2.9.5' );
+define( 'CPC_VERSION', '3.0.0' );
 
 /* -----------------------------------------------------------------
  * 1. Theme supports
@@ -63,25 +63,30 @@ add_action( 'wp_enqueue_scripts', function () {
 		null
 	);
 
-	// NOTE: the CSS/JS filenames carry the version (curtin-2622.*) because the
+	// NOTE: the CSS/JS filenames carry the version (curtin-300.*) because the
 	// SWAG/nginx proxy caches these static assets by PATH and ignores the ?ver
 	// query string — a plain version bump does NOT bust it (see
 	// Theme-Deployment-Notes.md §8). Renaming the file on every CSS/JS change is
 	// the reliable cache-bust. Bump both the filename and CPC_VERSION together.
 	wp_enqueue_style(
 		'cpc-main',
-		get_stylesheet_directory_uri() . '/assets/css/curtin-2622.css',
+		get_stylesheet_directory_uri() . '/assets/css/curtin-300.css',
 		array( 'cpc-fonts' ),
 		CPC_VERSION
 	);
 
 	wp_enqueue_script(
 		'cpc-ui',
-		get_stylesheet_directory_uri() . '/assets/js/curtin-2622.js',
+		get_stylesheet_directory_uri() . '/assets/js/curtin-300.js',
 		array(),
 		CPC_VERSION,
 		true
 	);
+
+	// Hand the olive-oil delivery rules to the cart/checkout JS so it mirrors
+	// whatever is configured in WooCommerce → Settings → Curtin P&C
+	// instead of hardcoding the postcode and the message (see §7).
+	wp_localize_script( 'cpc-ui', 'cpcOilRules', cpc_oil_js_config() );
 }, 100 ); // after everything else
 
 // Add a body class so all our CSS can be tightly scoped under .cpc-theme.
@@ -192,7 +197,7 @@ add_filter( 'body_class', function ( $classes ) {
 		$classes[] = 'cpc-woo';
 	}
 	// Flag carts containing olive oil so the block cart/checkout JS + CSS can
-	// mirror the 6152 delivery rule in the UI (server-side block is §7b).
+	// mirror the configured delivery rule in the UI (server-side block is §7b).
 	if ( function_exists( 'WC' ) && WC()->cart ) {
 		foreach ( WC()->cart->get_cart() as $cpc_item ) {
 			if ( ! empty( $cpc_item['product_id'] ) && has_term( 'olive-oil', 'product_cat', $cpc_item['product_id'] ) ) {
@@ -633,20 +638,209 @@ add_action( 'wp_enqueue_scripts', function () {
  *    delivery?" checkout field was removed (it duplicated the toggle
  *    and could double-charge).
  *
- *    Rules:
+ *    From v3.0.0 the rules are NOT hardcoded — every number, postcode
+ *    and the olive-oil delivery on/off switch live in
+ *    WooCommerce → Settings → "Curtin P&C" (§7s below), so
+ *    the P&C can turn olive-oil delivery on and off between harvests
+ *    without a theme release. The defaults reproduce the old v2.9.x
+ *    behaviour EXCEPT that olive-oil delivery ships switched OFF
+ *    (pickup only), which is the state the store launched v3.0.0 in.
+ *
+ *    Rules as configured:
  *      - Art Cards: flat $5 per order, ANY quantity, delivered
- *        ANYWHERE in Australia.
- *      - Olive oil: $5 for a single bottle, FREE for 2+ bottles;
- *        delivery restricted to postcode 6152 (Como, Karawara,
- *        Manning, Salter Point, Waterford). Local Pickup stays available for oil
- *        going anywhere.
+ *        ANYWHERE in Australia. (Option: cpc_ship_cards_cost)
+ *      - Olive oil, delivery OFF: pickup only — every zone delivery
+ *        rate is withdrawn for any cart holding oil, and checkout is
+ *        hard-blocked for a shipped (non-pickup) oil order.
+ *      - Olive oil, delivery ON: $5 for a single bottle, FREE from 2
+ *        bottles up; delivery restricted to the configured postcodes
+ *        (default 6152 — Como, Karawara, Manning, Salter Point,
+ *        Waterford). Local Pickup stays available for oil going
+ *        anywhere, in both modes.
  *      - Combined cart: the two costs add together (cards + 1 oil =
  *        $10; cards + 2 oil = $5).
  *
- *    When the cart holds olive oil but the destination isn't 6152 the
+ *    When oil can't be delivered to the destination (either because
+ *    delivery is switched off, or the postcode is outside the area) the
  *    paid Flat rate is withdrawn (§7a) AND checkout is hard-blocked
  *    server-side (§7b) so Apple Pay / Google Pay can't slip through.
  * --------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------
+ * 7s. The settings themselves — WooCommerce → Settings → Curtin P&C.
+ *
+ *     Deliberately its OWN top-level settings tab rather than a section
+ *     inside the Shipping tab. A custom section depends on how
+ *     WC_Settings_Shipping happens to handle a section slug it doesn't
+ *     recognise (it first tries to match the slug to a shipping method) —
+ *     that's core internals, and if a WooCommerce update changed it the
+ *     panel would silently render blank or stop saving, taking the
+ *     delivery switch with it. The three hooks used here
+ *     (woocommerce_settings_tabs_array / woocommerce_settings_tabs_{tab}
+ *     / woocommerce_update_options_{tab}) are WooCommerce's documented,
+ *     long-stable extension points for a settings tab and only touch
+ *     WC_Admin_Settings::output_fields()/save_fields(). A top-level tab
+ *     is also easier for the P&C to find than a nested section.
+ * --------------------------------------------------------------- */
+
+/** Our settings tab slug (also forms the two hook names below). */
+const CPC_SETTINGS_TAB = 'curtin_pc';
+
+add_filter( 'woocommerce_settings_tabs_array', function ( $tabs ) {
+	$tabs[ CPC_SETTINGS_TAB ] = __( 'Curtin P&C', 'curtin-pc-shop' );
+	return $tabs;
+}, 50 );
+
+add_action( 'woocommerce_settings_tabs_' . CPC_SETTINGS_TAB, function () {
+	if ( class_exists( 'WC_Admin_Settings' ) ) {
+		WC_Admin_Settings::output_fields( cpc_ship_settings_fields() );
+	}
+} );
+
+add_action( 'woocommerce_update_options_' . CPC_SETTINGS_TAB, function () {
+	if ( class_exists( 'WC_Admin_Settings' ) ) {
+		WC_Admin_Settings::save_fields( cpc_ship_settings_fields() );
+	}
+} );
+
+/** Field definitions for the panel (used for both output and save). */
+function cpc_ship_settings_fields() {
+	return array(
+		array(
+			'title' => __( 'Curtin P&C delivery rules', 'curtin-pc-shop' ),
+			'type'  => 'title',
+			'desc'  => __( 'These settings drive the shipping costs, the delivery area, the checkout blocking and the customer-facing delivery copy on the Olive oil page — no theme update needed. Changes take effect immediately, including for shoppers with a cart already open. Note: WooCommerce → Shipping still needs one Australia-wide zone with a Flat rate (cost 0 — the real amount is set from these settings) plus Local Pickup.', 'curtin-pc-shop' ),
+			'id'    => 'cpc_ship_options',
+		),
+		array(
+			'title'   => __( 'Olive oil delivery', 'curtin-pc-shop' ),
+			'desc'    => __( 'Offer local delivery for Curtin Gold olive oil', 'curtin-pc-shop' ),
+			'desc_tip' => __( 'Unticked = olive oil is PICKUP ONLY. Delivery is withdrawn for any cart containing oil, checkout is blocked for shipped oil orders, and the Olive oil page says delivery is unavailable. Greeting cards are never affected.', 'curtin-pc-shop' ),
+			'id'      => 'cpc_ship_oil_delivery',
+			'type'    => 'checkbox',
+			'default' => 'no',
+		),
+		array(
+			'title'    => __( 'Olive oil delivery postcodes', 'curtin-pc-shop' ),
+			'desc_tip' => __( 'Comma-separated list of postcodes olive oil can be delivered to. Only used when olive oil delivery is switched on.', 'curtin-pc-shop' ),
+			'id'       => 'cpc_ship_oil_postcodes',
+			'type'     => 'text',
+			'default'  => '6152',
+			'css'      => 'width:320px;',
+		),
+		array(
+			'title'    => __( 'Olive oil delivery suburbs', 'curtin-pc-shop' ),
+			'desc_tip' => __( 'Suburb names shown to customers alongside the postcodes, comma-separated. Display only — the actual restriction is by postcode above.', 'curtin-pc-shop' ),
+			'id'       => 'cpc_ship_oil_suburbs',
+			'type'     => 'text',
+			'default'  => 'Como, Karawara, Manning, Salter Point, Waterford',
+			'css'      => 'width:420px;',
+		),
+		array(
+			'title'             => __( 'Olive oil delivery cost', 'curtin-pc-shop' ),
+			'desc_tip'          => __( 'Charged when the bottle count is below the free-delivery threshold.', 'curtin-pc-shop' ),
+			'id'                => 'cpc_ship_oil_cost',
+			'type'              => 'number',
+			'default'           => '5',
+			'css'               => 'width:90px;',
+			'custom_attributes' => array( 'min' => '0', 'step' => '0.01' ),
+		),
+		array(
+			'title'             => __( 'Free olive oil delivery from', 'curtin-pc-shop' ),
+			'desc'              => __( 'bottles', 'curtin-pc-shop' ),
+			'desc_tip'          => __( 'Delivery is free once the cart holds at least this many bottles. Set to 0 to always charge the cost above.', 'curtin-pc-shop' ),
+			'id'                => 'cpc_ship_oil_free_qty',
+			'type'              => 'number',
+			'default'           => '2',
+			'css'               => 'width:90px;',
+			'custom_attributes' => array( 'min' => '0', 'step' => '1' ),
+		),
+		array(
+			'title'             => __( 'Art cards postage', 'curtin-pc-shop' ),
+			'desc_tip'          => __( 'Flat cost per order for any quantity of art cards, anywhere in Australia.', 'curtin-pc-shop' ),
+			'id'                => 'cpc_ship_cards_cost',
+			'type'              => 'number',
+			'default'           => '5',
+			'css'               => 'width:90px;',
+			'custom_attributes' => array( 'min' => '0', 'step' => '0.01' ),
+		),
+		array(
+			'type' => 'sectionend',
+			'id'   => 'cpc_ship_options',
+		),
+	);
+}
+
+/* ---- Option getters (single source of truth for every rule below) ---- */
+
+/** True when olive oil may be delivered at all (unticked = pickup only). */
+function cpc_oil_delivery_enabled() {
+	return 'yes' === get_option( 'cpc_ship_oil_delivery', 'no' );
+}
+
+/** Normalised list of postcodes olive oil can be delivered to. */
+function cpc_oil_delivery_postcodes() {
+	$raw  = (string) get_option( 'cpc_ship_oil_postcodes', '6152' );
+	$list = array();
+	foreach ( explode( ',', $raw ) as $pc ) {
+		$pc = strtoupper( preg_replace( '/\s+/', '', $pc ) );
+		if ( '' !== $pc ) {
+			$list[] = $pc;
+		}
+	}
+	return array_values( array_unique( $list ) );
+}
+
+/** Suburb names for customer-facing copy, e.g. "Como, Karawara and Manning". */
+function cpc_oil_delivery_suburbs() {
+	$raw  = (string) get_option( 'cpc_ship_oil_suburbs', 'Como, Karawara, Manning, Salter Point, Waterford' );
+	$list = array_filter( array_map( 'trim', explode( ',', $raw ) ), 'strlen' );
+	return array_values( $list );
+}
+
+/** Cost of delivering olive oil below the free-delivery threshold. */
+function cpc_oil_delivery_cost() {
+	return (float) get_option( 'cpc_ship_oil_cost', 5 );
+}
+
+/** Bottle count at which olive-oil delivery becomes free (0 = never free). */
+function cpc_oil_free_qty() {
+	return max( 0, (int) get_option( 'cpc_ship_oil_free_qty', 2 ) );
+}
+
+/** Flat postage for any quantity of art cards. */
+function cpc_cards_shipping_cost() {
+	return (float) get_option( 'cpc_ship_cards_cost', 5 );
+}
+
+/** True when olive oil can be delivered to this postcode, per the settings. */
+function cpc_oil_postcode_deliverable( $postcode ) {
+	if ( ! cpc_oil_delivery_enabled() ) {
+		return false;
+	}
+	$postcode = strtoupper( preg_replace( '/\s+/', '', (string) $postcode ) );
+	return ( '' !== $postcode && in_array( $postcode, cpc_oil_delivery_postcodes(), true ) );
+}
+
+/**
+ * Shipping rates are cached in the session against a hash of the package, so a
+ * settings change would otherwise leave existing shoppers on stale rates until
+ * their cart changed. Fold the rules into the package so the hash moves with
+ * them and rates are recalculated the moment a setting is saved.
+ */
+add_filter( 'woocommerce_cart_shipping_packages', function ( $packages ) {
+	$fingerprint = md5( wp_json_encode( array(
+		cpc_oil_delivery_enabled(),
+		cpc_oil_delivery_postcodes(),
+		cpc_oil_delivery_cost(),
+		cpc_oil_free_qty(),
+		cpc_cards_shipping_cost(),
+	) ) );
+	foreach ( $packages as $key => $package ) {
+		$packages[ $key ]['cpc_rules'] = $fingerprint;
+	}
+	return $packages;
+}, 10, 1 );
 
 /** Quantity of a given product_cat slug within a shipping package. */
 function cpc_pkg_cat_qty( $package, $slug ) {
@@ -662,33 +856,30 @@ function cpc_pkg_cat_qty( $package, $slug ) {
 	return $qty;
 }
 
-/* 7a. Price the flat rate per the rules; withdraw it for oil outside 6152. */
+/* 7a. Price the flat rate per the rules; withdraw it when oil can't be delivered. */
 add_filter( 'woocommerce_package_rates', 'cpc_category_shipping_rates', 10, 2 );
 function cpc_category_shipping_rates( $rates, $package ) {
 
 	$card_qty = cpc_pkg_cat_qty( $package, 'art-cards' );
 	$oil_qty  = cpc_pkg_cat_qty( $package, 'olive-oil' );
 
-	// Show the correct block Local Pickup location for the cart: the "Olive Oil"
-	// location when the cart holds oil, the "Curtin Primary School" location
-	// otherwise (that location is marked "not for olive oil"). Matched by the
-	// pickup location's label; when only one remains the block auto-selects it.
-	foreach ( $rates as $cpc_rid => $cpc_rate ) {
-		if ( 'pickup_location' !== $cpc_rate->get_method_id() ) {
-			continue;
-		}
-		$cpc_is_olive_loc = ( false !== stripos( $cpc_rate->get_label(), 'olive' ) );
-		if ( ( $oil_qty > 0 ) !== $cpc_is_olive_loc ) {
-			unset( $rates[ $cpc_rid ] );
-		}
-	}
+	// NOTE (v3.0.0): earlier versions filtered the block Local Pickup locations
+	// here, keeping only the one whose label contained "olive" for oil carts and
+	// dropping it for everything else. That silently broke as soon as the "Olive
+	// Oil" pickup location was disabled in WooCommerce — an oil cart matched no
+	// location, so EVERY pickup option was removed and the oil became unbuyable.
+	// Pickup locations are now left entirely to WooCommerce: whatever locations
+	// are enabled are offered, for every cart. Don't reintroduce label matching;
+	// if oil ever needs its own collection point again, express it as a real
+	// WooCommerce shipping zone rather than by string-matching a label.
 
-	$postcode        = isset( $package['destination']['postcode'] ) ? strtoupper( preg_replace( '/\s+/', '', $package['destination']['postcode'] ) ) : '';
-	$oil_deliverable = ( '6152' === $postcode );
+	$postcode        = isset( $package['destination']['postcode'] ) ? $package['destination']['postcode'] : '';
+	$oil_deliverable = cpc_oil_postcode_deliverable( $postcode );
 
-	// Olive oil in the cart but destination outside the delivery area:
-	// withdraw paid delivery (can't be posted). Local Pickup / other
-	// methods are left untouched so the oil can still be collected.
+	// Olive oil in the cart but it can't be delivered here — either delivery is
+	// switched off entirely (pickup only) or the destination is outside the
+	// configured postcodes. Withdraw paid delivery. The block "Local pickup"
+	// toggle is untouched so the oil can still be collected.
 	if ( $oil_qty > 0 && ! $oil_deliverable ) {
 		// Remove every zone delivery/pickup rate (Flat rate and any legacy zone
 		// Local Pickup) so an express wallet (Apple Pay / Google Pay) can't
@@ -703,11 +894,16 @@ function cpc_category_shipping_rates( $rates, $package ) {
 		return $rates;
 	}
 
-	// Art cards: flat $5 if any are in the order, regardless of quantity.
-	$card_cost = ( $card_qty > 0 ) ? 5.00 : 0.00;
+	// Art cards: the configured flat cost if any are in the order, regardless of
+	// quantity.
+	$card_cost = ( $card_qty > 0 ) ? cpc_cards_shipping_cost() : 0.00;
 
-	// Olive oil: $5 for a single bottle, free for 2 or more.
-	$oil_cost = ( 1 === $oil_qty ) ? 5.00 : 0.00;
+	// Olive oil: the configured cost, free once the free-delivery threshold is
+	// reached (default $5 for one bottle, free from two up; threshold 0 = always
+	// charge).
+	$free_qty = cpc_oil_free_qty();
+	$oil_free = ( $free_qty > 0 && $oil_qty >= $free_qty );
+	$oil_cost = ( $oil_qty > 0 && ! $oil_free ) ? cpc_oil_delivery_cost() : 0.00;
 
 	$new_cost = $card_cost + $oil_cost;
 
@@ -729,9 +925,9 @@ function cpc_category_shipping_rates( $rates, $package ) {
 }
 
 /**
- * Explain why delivery is unavailable when olive oil is in the cart but the
- * destination is outside postcode 6152 (shown when no methods remain for the
- * package — e.g. if Local Pickup isn't offered).
+ * Explain why delivery is unavailable when olive oil is in the cart but can't be
+ * delivered to the destination (shown when no methods remain for the package —
+ * e.g. if Local Pickup isn't offered).
  */
 add_filter( 'woocommerce_no_shipping_available_html', 'cpc_oil_no_shipping_msg' );
 add_filter( 'woocommerce_cart_no_shipping_available_html', 'cpc_oil_no_shipping_msg' );
@@ -748,8 +944,8 @@ function cpc_oil_no_shipping_msg( $html ) {
 }
 
 /* -----------------------------------------------------------------
- * 7b. Hard block — olive oil must never be SHIPPED outside 6152,
- *     whatever the payment method.
+ * 7b. Hard block — olive oil must never be SHIPPED anywhere it isn't
+ *     deliverable, whatever the payment method.
  *
  *     Withdrawing the flat rate (§7a) hides delivery in the normal
  *     cart/checkout, but Apple Pay / Google Pay express buttons drive
@@ -758,12 +954,14 @@ function cpc_oil_no_shipping_msg( $html ) {
  *     BOTH the Store API (block checkout + express wallets, via
  *     woocommerce_store_api_cart_errors) and the classic checkout: if
  *     the cart holds olive oil and the customer is shipping (not Local
- *     Pickup) to a postcode other than 6152, checkout is blocked with
- *     a clear message. Local Pickup is always allowed (oil can be
- *     collected from anywhere); cards-only carts are never affected.
+ *     Pickup) to an address that isn't deliverable — because delivery
+ *     is switched off, or the postcode is outside the configured area —
+ *     checkout is blocked with a clear message. Local Pickup is always
+ *     allowed (oil can be collected from anywhere); cards-only carts
+ *     are never affected.
  * --------------------------------------------------------------- */
 
-/** True when the cart would ship olive oil to a non-6152 address. */
+/** True when the cart would ship olive oil to an address it can't go to. */
 function cpc_oil_delivery_blocked() {
 	if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
 		return false;
@@ -786,17 +984,101 @@ function cpc_oil_delivery_blocked() {
 			return false;
 		}
 	}
-	// Shipping: enforce the 6152 delivery area.
-	$postcode = ( WC()->customer ) ? strtoupper( preg_replace( '/\s+/', '', (string) WC()->customer->get_shipping_postcode() ) ) : '';
-	if ( '' === $postcode ) {
+	// Shipping: enforce the configured delivery area (or block outright when
+	// olive-oil delivery is switched off).
+	$postcode = ( WC()->customer ) ? (string) WC()->customer->get_shipping_postcode() : '';
+	if ( '' === strtoupper( preg_replace( '/\s+/', '', $postcode ) ) ) {
 		return false; // no address entered yet — don't error prematurely
 	}
-	return ( '6152' !== $postcode );
+	return ! cpc_oil_postcode_deliverable( $postcode );
+}
+
+/**
+ * Human-readable delivery area, e.g. "postcode 6152 (Como, Karawara, Manning,
+ * Salter Point, Waterford)". Built from the settings so the message can never
+ * drift from the rule it describes.
+ */
+function cpc_oil_delivery_area_text() {
+	$postcodes = cpc_oil_delivery_postcodes();
+	$suburbs   = cpc_oil_delivery_suburbs();
+
+	if ( empty( $postcodes ) ) {
+		return '';
+	}
+
+	$area = ( 1 === count( $postcodes ) )
+		/* translators: %s: a single postcode. */
+		? sprintf( __( 'postcode %s', 'curtin-pc-shop' ), $postcodes[0] )
+		/* translators: %s: comma-separated list of postcodes. */
+		: sprintf( __( 'postcodes %s', 'curtin-pc-shop' ), implode( ', ', $postcodes ) );
+
+	if ( ! empty( $suburbs ) ) {
+		$area .= ' (' . implode( ', ', $suburbs ) . ')';
+	}
+	return $area;
 }
 
 /** Clear message shown when olive-oil delivery is blocked. */
 function cpc_oil_block_message() {
-	return __( 'Curtin Gold olive oil can only be delivered within postcode 6152 (Como, Karawara, Manning, Salter Point, Waterford). Please choose Local Pickup, or remove the olive oil, to continue. Greeting cards can be posted anywhere in Australia.', 'curtin-pc-shop' );
+	if ( ! cpc_oil_delivery_enabled() ) {
+		return __( 'Curtin Gold olive oil is available for pickup only — we can\'t post or deliver it at the moment. Please choose Local Pickup, or remove the olive oil, to continue. Greeting cards can be posted anywhere in Australia.', 'curtin-pc-shop' );
+	}
+	return sprintf(
+		/* translators: %s: delivery area, e.g. "postcode 6152 (Como, Karawara)". */
+		__( 'Curtin Gold olive oil can only be delivered within %s. Please choose Local Pickup, or remove the olive oil, to continue. Greeting cards can be posted anywhere in Australia.', 'curtin-pc-shop' ),
+		cpc_oil_delivery_area_text()
+	);
+}
+
+/**
+ * Customer-facing delivery line for the Olive oil page's "Collection & Delivery"
+ * card. Reflects the settings exactly, so switching delivery off also stops the
+ * site advertising it.
+ */
+function cpc_oil_delivery_page_copy() {
+	if ( ! cpc_oil_delivery_enabled() ) {
+		return __( 'Local delivery is currently unavailable — olive oil orders are pickup only.', 'curtin-pc-shop' );
+	}
+
+	$cost     = cpc_oil_delivery_cost();
+	$free_qty = cpc_oil_free_qty();
+	$cost_str = function_exists( 'wc_price' ) ? wp_strip_all_tags( wc_price( $cost ) ) : ( '$' . number_format_i18n( $cost, 2 ) );
+
+	if ( $free_qty > 0 ) {
+		return sprintf(
+			/* translators: 1: delivery cost, 2: number of bottles for free delivery. */
+			__( 'Delivery is %1$s, or free when you order %2$s or more bottles.', 'curtin-pc-shop' ),
+			$cost_str,
+			number_format_i18n( $free_qty )
+		);
+	}
+
+	/* translators: %s: delivery cost. */
+	return sprintf( __( 'Delivery is %s per order.', 'curtin-pc-shop' ), $cost_str );
+}
+
+/**
+ * Config handed to the cart/checkout JS (see §3's wp_localize_script) so the
+ * block cart/checkout mirrors the server rules instead of hardcoding them.
+ */
+function cpc_oil_js_config() {
+	$enabled = cpc_oil_delivery_enabled();
+
+	if ( $enabled ) {
+		$notice = sprintf(
+			/* translators: %s: delivery area, e.g. "postcode 6152 (Como, Karawara)". */
+			__( 'Curtin Gold olive oil can only be delivered within %s. Please choose “Pickup”, or use an address inside the delivery area — greeting cards can be posted anywhere in Australia.', 'curtin-pc-shop' ),
+			cpc_oil_delivery_area_text()
+		);
+	} else {
+		$notice = __( 'Curtin Gold olive oil is available for pickup only — we can’t post or deliver it at the moment. Please choose “Pickup”, or remove the olive oil, to continue. Greeting cards can be posted anywhere in Australia.', 'curtin-pc-shop' );
+	}
+
+	return array(
+		'enabled'   => $enabled ? '1' : '',
+		'postcodes' => $enabled ? cpc_oil_delivery_postcodes() : array(),
+		'notice'    => $notice,
+	);
 }
 
 // Store API — covers the block checkout AND Apple Pay / Google Pay express wallets.
