@@ -21,7 +21,7 @@ get_header();
 			<p><?php
 				printf(
 					/* translators: %s: artist name (bold) */
-					esc_html__( 'In 2023 the whole Curtin Primary community — every student from kindy to year 6, alongside parents, families and staff — painted a single artwork with local artist %s. In 2024 we drew four floral images from it for our first set of cards, and the collection has been growing ever since.', 'curtin-pc-shop' ),
+					esc_html__( 'In 2024, under the guidance of %s, we drew images inspired by the Banksia woodland on our grounds, to create ‘A Feeling of Awe’.', 'curtin-pc-shop' ),
 					'<b>' . esc_html__( 'Kelly Muller', 'curtin-pc-shop' ) . '</b>'
 				);
 			?></p>
