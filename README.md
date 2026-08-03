@@ -146,7 +146,16 @@ Same tab, **Delivery & pickup text** group.
 | Setting | Where it shows |
 |---|---|
 | **Shared delivery & pickup text** | A rich-text box. Appears at the **end of every olive oil product description**, **under the Olive oil page's "Free collection" card**, and on the **cart and checkout** whenever the cart holds oil. Blank = nothing shown. Art cards are never affected. |
-| **Olive oil page: collection card** | Body text of the "Free collection (preferred)" card. The shared text above is added underneath it. |
+Every string in the Olive oil page's **Collection & Delivery** section is editable too,
+in the **Olive oil page: Collection & Delivery section** group:
+
+| Setting | Notes |
+|---|---|
+| **Section heading** | Clear it to hide the whole section. |
+| **Collection card — title / body** | The shared text above is added under the body. Clear both to drop the card. |
+| **Delivery card — title** | |
+| **Delivery card — suburb list intro** | Line above the suburb list, which only shows while delivery is on. |
+| **Delivery card — body (delivery ON / pickup only)** | **Leave blank to auto-generate from the delivery rules** — the recommended setting, because a generated sentence can't contradict what the checkout does. The settings screen shows the live auto text as the field's placeholder. Type something to override; the price and area then become fixed text and won't follow a later rule change. |
 
 Basic formatting and links are allowed; everything is run through `wp_kses_post`, so
 scripts and unsafe markup are stripped on save. The cart/checkout copy is injected by

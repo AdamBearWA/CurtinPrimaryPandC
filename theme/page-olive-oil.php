@@ -99,46 +99,71 @@ endif; ?>
 </section>
 
 <!-- SECTION 4: COLLECTION & DELIVERY -->
+<?php
+// Every string in this section is editable in WooCommerce → Settings →
+// Curtin P&C → "Olive oil page: Collection & Delivery section"
+// (functions.php §7t). Clearing the heading hides the section; clearing a
+// card's title and body drops that card.
+$cpc_sec_heading   = function_exists( 'cpc_delivery_section_heading' ) ? trim( cpc_delivery_section_heading() ) : '';
+$cpc_coll_title    = function_exists( 'cpc_collection_card_title' ) ? trim( cpc_collection_card_title() ) : '';
+$cpc_coll_body     = function_exists( 'cpc_collection_card_text' ) ? trim( cpc_collection_card_text() ) : '';
+$cpc_coll_extra    = function_exists( 'cpc_pickup_text_html' ) ? cpc_pickup_text_html() : '';
+$cpc_del_title     = function_exists( 'cpc_delivery_card_title' ) ? trim( cpc_delivery_card_title() ) : '';
+$cpc_del_body      = function_exists( 'cpc_delivery_card_text' ) ? trim( cpc_delivery_card_text() ) : '';
+
+// Suburb list only makes sense while delivery is actually on.
+$cpc_oil_delivery  = function_exists( 'cpc_oil_delivery_enabled' ) && cpc_oil_delivery_enabled();
+$cpc_oil_suburbs   = ( $cpc_oil_delivery && function_exists( 'cpc_oil_delivery_suburbs' ) ) ? cpc_oil_delivery_suburbs() : array();
+
+$cpc_show_coll     = ( '' !== $cpc_coll_title || '' !== $cpc_coll_body || '' !== $cpc_coll_extra );
+$cpc_show_del      = ( '' !== $cpc_del_title || '' !== $cpc_del_body || ! empty( $cpc_oil_suburbs ) );
+
+if ( '' !== $cpc_sec_heading && ( $cpc_show_coll || $cpc_show_del ) ) :
+	?>
 <section class="cpc-olive-delivery cpc-container">
-	<h2><?php esc_html_e( 'Collection & Delivery', 'curtin-pc-shop' ); ?></h2>
+	<h2><?php echo esc_html( $cpc_sec_heading ); ?></h2>
 	<div class="cpc-olive-delivery-grid">
-		<div class="cpc-olive-delivery-card">
-			<div class="cpc-olive-delivery-title"><?php esc_html_e( 'Free collection (preferred)', 'curtin-pc-shop' ); ?></div>
-			<?php
-			// Card body and the shared pickup text are both editable in
-			// WooCommerce → Settings → Curtin P&C (functions.php §7t).
-			$cpc_card_text = function_exists( 'cpc_collection_card_text' ) ? trim( cpc_collection_card_text() ) : '';
-			if ( '' !== $cpc_card_text ) {
-				echo wp_kses_post( wpautop( $cpc_card_text ) );
-			}
-			if ( function_exists( 'cpc_pickup_text_html' ) ) {
-				echo cpc_pickup_text_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already wp_kses_post filtered.
-			}
-			?>
-		</div>
-		<?php
-		// Local delivery is driven entirely by WooCommerce → Settings → Curtin P&C
-		// (functions.php §7s). When it's switched off we say so rather
-		// than advertising a delivery the checkout would refuse.
-		$cpc_oil_delivery = function_exists( 'cpc_oil_delivery_enabled' ) && cpc_oil_delivery_enabled();
-		$cpc_oil_suburbs  = function_exists( 'cpc_oil_delivery_suburbs' ) ? cpc_oil_delivery_suburbs() : array();
-		?>
-		<div class="cpc-olive-delivery-card">
-			<div class="cpc-olive-delivery-title"><?php esc_html_e( 'Local delivery', 'curtin-pc-shop' ); ?></div>
-			<?php if ( $cpc_oil_delivery ) : ?>
+		<?php if ( $cpc_show_coll ) : ?>
+			<div class="cpc-olive-delivery-card">
+				<?php if ( '' !== $cpc_coll_title ) : ?>
+					<div class="cpc-olive-delivery-title"><?php echo esc_html( $cpc_coll_title ); ?></div>
+				<?php endif; ?>
+				<?php
+				if ( '' !== $cpc_coll_body ) {
+					echo wp_kses_post( wpautop( $cpc_coll_body ) );
+				}
+				echo $cpc_coll_extra; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already wp_kses_post filtered.
+				?>
+			</div>
+		<?php endif; ?>
+		<?php if ( $cpc_show_del ) : ?>
+			<div class="cpc-olive-delivery-card">
+				<?php if ( '' !== $cpc_del_title ) : ?>
+					<div class="cpc-olive-delivery-title"><?php echo esc_html( $cpc_del_title ); ?></div>
+				<?php endif; ?>
 				<?php if ( ! empty( $cpc_oil_suburbs ) ) : ?>
-					<p><?php esc_html_e( 'Local delivery is available to:', 'curtin-pc-shop' ); ?></p>
+					<?php
+					$cpc_sub_intro = function_exists( 'cpc_delivery_suburbs_intro' ) ? trim( cpc_delivery_suburbs_intro() ) : '';
+					if ( '' !== $cpc_sub_intro ) :
+						?>
+						<p><?php echo esc_html( $cpc_sub_intro ); ?></p>
+					<?php endif; ?>
 					<ul class="cpc-olive-suburbs">
 						<?php foreach ( $cpc_oil_suburbs as $cpc_suburb ) : ?>
 							<li><?php echo esc_html( $cpc_suburb ); ?></li>
 						<?php endforeach; ?>
 					</ul>
 				<?php endif; ?>
-			<?php endif; ?>
-			<p><?php echo esc_html( function_exists( 'cpc_oil_delivery_page_copy' ) ? cpc_oil_delivery_page_copy() : '' ); ?></p>
-		</div>
+				<?php
+				if ( '' !== $cpc_del_body ) {
+					echo wp_kses_post( wpautop( $cpc_del_body ) );
+				}
+				?>
+			</div>
+		<?php endif; ?>
 	</div>
 </section>
+<?php endif; ?>
 
 <!-- SECTION 5: THANK YOU -->
 <section class="cpc-olive-thanks cpc-container">

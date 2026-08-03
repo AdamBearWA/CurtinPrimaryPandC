@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CPC_VERSION', '3.1.0' );
+define( 'CPC_VERSION', '3.2.0' );
 
 /* -----------------------------------------------------------------
  * 1. Theme supports
@@ -842,9 +842,52 @@ function cpc_pickup_text_html() {
 	return '<div class="cpc-pickup-text">' . wpautop( wp_kses_post( $raw ) ) . '</div>';
 }
 
+/* ---- Olive oil page "Collection & Delivery" section wording ---- */
+
+/** Heading above the two cards. Blank hides the whole section. */
+function cpc_delivery_section_heading() {
+	return (string) get_option( 'cpc_delivery_section_heading', __( 'Collection & Delivery', 'curtin-pc-shop' ) );
+}
+
+/** Title of the collection card. */
+function cpc_collection_card_title() {
+	return (string) get_option( 'cpc_collection_card_title', __( 'Free collection (preferred)', 'curtin-pc-shop' ) );
+}
+
 /** Body of the Olive oil page's "Free collection (preferred)" card. */
 function cpc_collection_card_text() {
 	return (string) get_option( 'cpc_collection_card_text', __( 'Collect your order from Karawara on our advertised collection day.', 'curtin-pc-shop' ) );
+}
+
+/** Title of the delivery card. */
+function cpc_delivery_card_title() {
+	return (string) get_option( 'cpc_delivery_card_title', __( 'Local delivery', 'curtin-pc-shop' ) );
+}
+
+/** Line introducing the suburb list on the delivery card. */
+function cpc_delivery_suburbs_intro() {
+	return (string) get_option( 'cpc_delivery_suburbs_intro', __( 'Local delivery is available to:', 'curtin-pc-shop' ) );
+}
+
+/**
+ * Body of the delivery card.
+ *
+ * Defaults to the sentence generated from the delivery settings — that's
+ * deliberate: an auto-generated line can never contradict what the checkout
+ * actually does. Each mode has its own override field, and a non-empty override
+ * wins. If you override it, remember the price and delivery area are then fixed
+ * text and won't follow a later change to the rules.
+ */
+function cpc_delivery_card_text() {
+	$enabled  = cpc_oil_delivery_enabled();
+	$override = $enabled
+		? get_option( 'cpc_delivery_card_text_on', '' )
+		: get_option( 'cpc_delivery_card_text_off', '' );
+
+	if ( '' !== trim( (string) $override ) ) {
+		return (string) $override;
+	}
+	return cpc_oil_delivery_page_copy( $enabled );
 }
 
 /* -----------------------------------------------------------------
@@ -981,16 +1024,75 @@ function cpc_ship_settings_fields() {
 			'default'  => '',
 		),
 		array(
-			'title'    => __( 'Olive oil page: collection card', 'curtin-pc-shop' ),
-			'desc_tip' => __( 'The body of the "Free collection (preferred)" card in the Collection & Delivery section. The shared text above is added underneath it.', 'curtin-pc-shop' ),
+			'type' => 'sectionend',
+			'id'   => 'cpc_text_options',
+		),
+
+		/* ---- Olive oil page: the "Collection & Delivery" section ---- */
+		array(
+			'title' => __( 'Olive oil page: Collection & Delivery section', 'curtin-pc-shop' ),
+			'type'  => 'title',
+			'desc'  => __( 'The heading and the two cards in that section of the Olive oil page. Clear the heading to hide the whole section; clear a card\'s title and body to drop just that card.', 'curtin-pc-shop' ),
+			'id'    => 'cpc_section_options',
+		),
+		array(
+			'title'   => __( 'Section heading', 'curtin-pc-shop' ),
+			'id'      => 'cpc_delivery_section_heading',
+			'type'    => 'text',
+			'default' => 'Collection & Delivery',
+			'css'     => 'width:100%;',
+		),
+		array(
+			'title'   => __( 'Collection card — title', 'curtin-pc-shop' ),
+			'id'      => 'cpc_collection_card_title',
+			'type'    => 'text',
+			'default' => 'Free collection (preferred)',
+			'css'     => 'width:100%;',
+		),
+		array(
+			'title'    => __( 'Collection card — body', 'curtin-pc-shop' ),
+			'desc_tip' => __( 'The shared delivery & pickup text above is added underneath this.', 'curtin-pc-shop' ),
 			'id'       => 'cpc_collection_card_text',
 			'type'     => 'textarea',
 			'default'  => 'Collect your order from Karawara on our advertised collection day.',
 			'css'      => 'width:100%;height:70px;',
 		),
 		array(
+			'title'   => __( 'Delivery card — title', 'curtin-pc-shop' ),
+			'id'      => 'cpc_delivery_card_title',
+			'type'    => 'text',
+			'default' => 'Local delivery',
+			'css'     => 'width:100%;',
+		),
+		array(
+			'title'    => __( 'Delivery card — suburb list intro', 'curtin-pc-shop' ),
+			'desc_tip' => __( 'Line above the suburb list, which only shows while delivery is on. Clear it to show the bare list; clear the "Olive oil delivery suburbs" setting above to drop the list entirely.', 'curtin-pc-shop' ),
+			'id'       => 'cpc_delivery_suburbs_intro',
+			'type'     => 'text',
+			'default'  => 'Local delivery is available to:',
+			'css'      => 'width:100%;',
+		),
+		array(
+			'title'       => __( 'Delivery card — body (when delivery is ON)', 'curtin-pc-shop' ),
+			'desc'        => __( 'Leave blank to generate this from the delivery settings above — recommended, because a generated sentence can never contradict what the checkout actually does. Type here only if you want to word it yourself, and remember the price and area then become fixed text.', 'curtin-pc-shop' ),
+			'id'          => 'cpc_delivery_card_text_on',
+			'type'        => 'textarea',
+			'default'     => '',
+			'placeholder' => cpc_oil_delivery_page_copy( true ),
+			'css'         => 'width:100%;height:70px;',
+		),
+		array(
+			'title'       => __( 'Delivery card — body (when pickup only)', 'curtin-pc-shop' ),
+			'desc'        => __( 'Leave blank to generate this automatically. Shown while "Olive oil delivery" is unticked.', 'curtin-pc-shop' ),
+			'id'          => 'cpc_delivery_card_text_off',
+			'type'        => 'textarea',
+			'default'     => '',
+			'placeholder' => cpc_oil_delivery_page_copy( false ),
+			'css'         => 'width:100%;height:70px;',
+		),
+		array(
 			'type' => 'sectionend',
-			'id'   => 'cpc_text_options',
+			'id'   => 'cpc_section_options',
 		),
 
 		/* ---- Olive oil page FAQ ---- */
@@ -1331,8 +1433,14 @@ function cpc_oil_block_message() {
  * card. Reflects the settings exactly, so switching delivery off also stops the
  * site advertising it.
  */
-function cpc_oil_delivery_page_copy() {
-	if ( ! cpc_oil_delivery_enabled() ) {
+function cpc_oil_delivery_page_copy( $enabled = null ) {
+	// $enabled lets the settings screen render BOTH wordings as live placeholders
+	// (see §7t) without changing the actual delivery setting. Null = current mode.
+	if ( null === $enabled ) {
+		$enabled = cpc_oil_delivery_enabled();
+	}
+
+	if ( ! $enabled ) {
 		return __( 'Local delivery is currently unavailable — olive oil orders are pickup only.', 'curtin-pc-shop' );
 	}
 
